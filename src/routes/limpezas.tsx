@@ -122,12 +122,18 @@ function ProfissionaisList() {
   if (cleaners.length === 0) return <p className="text-sm text-muted-foreground text-center py-10">Nenhum profissional cadastrado.</p>;
   return (
     <ul className="flex flex-col gap-3">
-      {cleaners.map((c: any) => (
+      {cleaners.map((c: any) => {
+        const avatar = c.photo_url ? supabase.storage.from("cleaner-avatars").getPublicUrl(c.photo_url).data.publicUrl : null;
+        return (
         <li key={c.id} className="hostly-card !p-4 flex items-center gap-3">
-          <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
-            style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
-            {c.name.charAt(0)}
-          </div>
+          {avatar ? (
+            <img src={avatar} alt={c.name} className="w-12 h-12 rounded-full object-cover" />
+          ) : (
+            <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
+              style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
+              {c.name.charAt(0)}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="font-semibold truncate">{c.name}</p>
             <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
@@ -147,7 +153,7 @@ function ProfissionaisList() {
             )}
           </div>
         </li>
-      ))}
+      );})}
     </ul>
   );
 }
@@ -425,10 +431,19 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [form, setForm] = useState({ name: "", phone: "", email: "", pix_key: "", price_per_cleaning: 0, notes: "" });
+  const [photo, setPhoto] = useState<File | null>(null);
   const m = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Não autenticado");
-      const { error } = await supabase.from("cleaners").insert({ ...form, user_id: user.id });
+      let photo_url: string | null = null;
+      if (photo) {
+        const ext = photo.name.split(".").pop();
+        const path = `${user.id}/${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("cleaner-avatars").upload(path, photo);
+        if (upErr) throw upErr;
+        photo_url = path;
+      }
+      const { error } = await supabase.from("cleaners").insert({ ...form, user_id: user.id, photo_url });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Profissional cadastrado"); qc.invalidateQueries({ queryKey: ["cleaners"] }); onClose(); },
@@ -443,6 +458,7 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
         </div>
         <form onSubmit={(e) => { e.preventDefault(); m.mutate(); }} className="flex flex-col gap-3 text-sm">
           <Field label="Nome"><input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inp} /></Field>
+          <Field label="Foto (opcional)"><input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="text-xs text-muted-foreground" /></Field>
           <Field label="Telefone (com DDI, ex: 5511...)"><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inp} /></Field>
           <Field label="E-mail"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inp} /></Field>
           <Field label="Chave Pix"><input value={form.pix_key} onChange={(e) => setForm({ ...form, pix_key: e.target.value })} className={inp} /></Field>

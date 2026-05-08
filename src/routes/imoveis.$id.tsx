@@ -1,11 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
 import { supabase } from "@/integrations/supabase/client";
 import { fullAddress, formatBRL } from "@/lib/format";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive } from "lucide-react";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostly" }, { name: "description", content: "Detalhes do imóvel." }] }),
@@ -14,6 +15,16 @@ export const Route = createFileRoute("/imoveis/$id")({
 
 function PropertyDetail() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
+
+  const archive = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("properties").update({ archived: true }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Imóvel arquivado"); navigate({ to: "/imoveis" }); },
+    onError: (e: any) => toast.error(e.message),
+  });
 
   const { data: p, isLoading } = useQuery({
     queryKey: ["property", id],
@@ -121,6 +132,11 @@ function PropertyDetail() {
           </ul>
         )}
       </section>
+
+      <button onClick={() => { if (confirm("Arquivar este imóvel?")) archive.mutate(); }}
+        className="btn-secondary justify-center w-full mb-6" style={{ color: "var(--color-warning)" }}>
+        <Archive size={14} /> Arquivar imóvel
+      </button>
     </AppShell>
   );
 }
