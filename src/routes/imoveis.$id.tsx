@@ -189,6 +189,8 @@ function IcalSection({ propertyId }: { propertyId: string }) {
       toast.success(`Sincronizado: ${d?.imported ?? 0} importados, ${d?.skipped ?? 0} ignorados`);
       qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] });
       qc.invalidateQueries({ queryKey: ["property-guests", propertyId] });
+      qc.invalidateQueries({ queryKey: ["guests-cal"] });
+      qc.invalidateQueries({ queryKey: ["jobs-cal"] });
     },
     onError: (e: any) => toast.error(e.message),
   });
