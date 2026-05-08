@@ -122,12 +122,18 @@ function ProfissionaisList() {
   if (cleaners.length === 0) return <p className="text-sm text-muted-foreground text-center py-10">Nenhum profissional cadastrado.</p>;
   return (
     <ul className="flex flex-col gap-3">
-      {cleaners.map((c: any) => (
+      {cleaners.map((c: any) => {
+        const avatar = c.photo_url ? supabase.storage.from("cleaner-avatars").getPublicUrl(c.photo_url).data.publicUrl : null;
+        return (
         <li key={c.id} className="hostly-card !p-4 flex items-center gap-3">
-          <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
-            style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
-            {c.name.charAt(0)}
-          </div>
+          {avatar ? (
+            <img src={avatar} alt={c.name} className="w-12 h-12 rounded-full object-cover" />
+          ) : (
+            <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
+              style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
+              {c.name.charAt(0)}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="font-semibold truncate">{c.name}</p>
             <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
@@ -147,7 +153,7 @@ function ProfissionaisList() {
             )}
           </div>
         </li>
-      ))}
+      );})}
     </ul>
   );
 }
