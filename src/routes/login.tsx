@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
@@ -43,6 +44,16 @@ function LoginPage() {
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
+        <button
+          type="button"
+          onClick={async () => {
+            const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app" });
+            if (r.error) toast.error("Falha no login com Google");
+          }}
+          className="btn-secondary justify-center w-full mt-3"
+        >
+          Continuar com Google
+        </button>
         <p className="text-sm text-muted-foreground mt-5 text-center">
           Não tem conta? <Link to={"/signup" as any} style={{ color: "var(--color-accent)" }}>Criar conta</Link>
         </p>
