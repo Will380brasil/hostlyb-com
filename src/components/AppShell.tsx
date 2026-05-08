@@ -3,7 +3,7 @@ import { Bell, LayoutDashboard, Home, Sparkles, Users, Calendar } from "lucide-r
 import type { ReactNode } from "react";
 
 const tabs = [
-  { to: "/",          label: "Dashboard", icon: LayoutDashboard },
+  { to: "/app",       label: "Dashboard", icon: LayoutDashboard },
   { to: "/imoveis",   label: "Imóveis",   icon: Home },
   { to: "/limpezas",  label: "Limpezas",  icon: Sparkles },
   { to: "/hospedes",  label: "Hóspedes",  icon: Users },
