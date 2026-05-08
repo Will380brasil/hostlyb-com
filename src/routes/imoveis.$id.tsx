@@ -183,6 +183,15 @@ function IcalSection({ propertyId }: { propertyId: string }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }),
   });
 
+  const updateFreq = useMutation({
+    mutationFn: async ({ id, sync_frequency }: { id: string; sync_frequency: string }) => {
+      const { error } = await supabase.from("ical_feeds").update({ sync_frequency }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Frequência atualizada"); qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const sync = useMutation({
     mutationFn: async (id: string) => {
       const { data, error } = await supabase.functions.invoke("sync-ical", { body: { feed_id: id } });
@@ -230,15 +239,27 @@ function IcalSection({ propertyId }: { propertyId: string }) {
       ) : (
         <ul className="flex flex-col gap-2">
           {feeds.map((f: any) => (
-            <li key={f.id} className="flex items-center justify-between gap-2 text-sm">
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold capitalize">{f.platform}</p>
-                <p className="text-xs text-muted-foreground truncate">{f.url}</p>
-                {f.last_synced_at && <p className="text-[10px] text-muted-foreground">Sincronizado: {new Date(f.last_synced_at).toLocaleString("pt-BR")}</p>}
-                {f.last_error && <p className="text-[10px]" style={{ color: "var(--color-danger)" }}>{f.last_error}</p>}
+            <li key={f.id} className="flex flex-col gap-2 p-2 rounded-lg bg-secondary/40">
+              <div className="flex items-center justify-between gap-2 text-sm">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold capitalize">{f.platform}</p>
+                  <p className="text-xs text-muted-foreground truncate">{f.url}</p>
+                  {f.last_synced_at && <p className="text-[10px] text-muted-foreground">Sincronizado: {new Date(f.last_synced_at).toLocaleString("pt-BR")}</p>}
+                  {f.last_error && <p className="text-[10px]" style={{ color: "var(--color-danger)" }}>{f.last_error}</p>}
+                </div>
+                <button onClick={() => sync.mutate(f.id)} disabled={sync.isPending} className="p-2 rounded-lg bg-secondary"><RefreshCw size={14} /></button>
+                <button onClick={() => { if (confirm("Remover feed?")) del.mutate(f.id); }} className="p-2 rounded-lg bg-secondary"><Trash2 size={14} /></button>
               </div>
-              <button onClick={() => sync.mutate(f.id)} disabled={sync.isPending} className="p-2 rounded-lg bg-secondary"><RefreshCw size={14} /></button>
-              <button onClick={() => { if (confirm("Remover feed?")) del.mutate(f.id); }} className="p-2 rounded-lg bg-secondary"><Trash2 size={14} /></button>
+              <label className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-muted-foreground">Sincronização automática</span>
+                <select value={f.sync_frequency ?? "manual"}
+                  onChange={(e) => updateFreq.mutate({ id: f.id, sync_frequency: e.target.value })}
+                  className="px-2 py-1 rounded bg-background border border-card-border text-xs">
+                  <option value="manual">Manual</option>
+                  <option value="hourly">A cada hora</option>
+                  <option value="daily">Diariamente</option>
+                </select>
+              </label>
             </li>
           ))}
         </ul>
