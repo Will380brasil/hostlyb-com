@@ -3,7 +3,7 @@ import { Bell, LayoutDashboard, Home, Sparkles, Users, Calendar } from "lucide-r
 import type { ReactNode } from "react";
 
 const tabs = [
-  { to: "/",          label: "Dashboard", icon: LayoutDashboard },
+  { to: "/app",       label: "Dashboard", icon: LayoutDashboard },
   { to: "/imoveis",   label: "Imóveis",   icon: Home },
   { to: "/limpezas",  label: "Limpezas",  icon: Sparkles },
   { to: "/hospedes",  label: "Hóspedes",  icon: Users },
@@ -34,7 +34,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       <nav className="fixed bottom-0 inset-x-0 mx-auto max-w-[480px] border-t border-card-border bg-card/95 backdrop-blur">
         <ul className="grid grid-cols-5">
           {tabs.map(({ to, label, icon: Icon }) => {
-            const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
+            const active = to === "/app" ? pathname === "/app" : pathname.startsWith(to);
             return (
               <li key={to}>
                 <Link
