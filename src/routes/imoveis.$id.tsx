@@ -15,6 +15,16 @@ export const Route = createFileRoute("/imoveis/$id")({
 
 function PropertyDetail() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
+
+  const archive = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("properties").update({ archived: true }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Imóvel arquivado"); navigate({ to: "/imoveis" }); },
+    onError: (e: any) => toast.error(e.message),
+  });
 
   const { data: p, isLoading } = useQuery({
     queryKey: ["property", id],
