@@ -270,6 +270,12 @@ function Hero() {
           </a>
         </div>
 
+        <div data-reveal className="reveal" style={{ marginTop: 14, textAlign: "center" }}>
+          <Link to={"/app" as any} style={{ color: C.g600, fontSize: 14, fontWeight: 500, borderBottom: `1px dashed ${C.g300}`, paddingBottom: 2 }}>
+            Ou explore a demo →
+          </Link>
+        </div>
+
         <p data-reveal className="reveal" style={{ marginTop: 20, color: C.g400, fontSize: 13, display: "flex", gap: 18, justifyContent: "center", flexWrap: "wrap" }}>
           <span>✓ Sem cartão de crédito</span>
           <span>✓ Cancele quando quiser</span>
