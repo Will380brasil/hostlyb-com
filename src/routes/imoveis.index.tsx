@@ -86,7 +86,15 @@ function NewPropertySheet({ onClose }: { onClose: () => void }) {
   const m = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Não autenticado");
-      const { error } = await supabase.from("properties").insert({ ...form, user_id: user.id });
+      let latitude: number | null = null;
+      let longitude: number | null = null;
+      try {
+        const q = encodeURIComponent([form.address, form.city, form.state, form.zip_code, "Brasil"].filter(Boolean).join(", "));
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`);
+        const arr = await res.json();
+        if (arr?.[0]) { latitude = Number(arr[0].lat); longitude = Number(arr[0].lon); }
+      } catch { /* ignore geocoding failure */ }
+      const { error } = await supabase.from("properties").insert({ ...form, user_id: user.id, latitude, longitude });
       if (error) throw error;
     },
     onSuccess: () => {
