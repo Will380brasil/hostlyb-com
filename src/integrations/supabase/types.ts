@@ -263,6 +263,7 @@ export type Database = {
           created_at: string
           document: string | null
           email: string | null
+          ical_uid: string | null
           id: string
           name: string
           nights: number | null
@@ -271,6 +272,7 @@ export type Database = {
           platform: string
           property_id: string
           rating: number | null
+          source: string | null
           status: string
           total_value: number | null
           updated_at: string
@@ -282,6 +284,7 @@ export type Database = {
           created_at?: string
           document?: string | null
           email?: string | null
+          ical_uid?: string | null
           id?: string
           name: string
           nights?: number | null
@@ -290,6 +293,7 @@ export type Database = {
           platform?: string
           property_id: string
           rating?: number | null
+          source?: string | null
           status?: string
           total_value?: number | null
           updated_at?: string
@@ -301,6 +305,7 @@ export type Database = {
           created_at?: string
           document?: string | null
           email?: string | null
+          ical_uid?: string | null
           id?: string
           name?: string
           nights?: number | null
@@ -309,6 +314,7 @@ export type Database = {
           platform?: string
           property_id?: string
           rating?: number | null
+          source?: string | null
           status?: string
           total_value?: number | null
           updated_at?: string
@@ -323,6 +329,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ical_feeds: {
+        Row: {
+          created_at: string
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          platform: string
+          property_id: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          platform?: string
+          property_id: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          platform?: string
+          property_id?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
