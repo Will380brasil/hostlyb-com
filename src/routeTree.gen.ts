@@ -18,6 +18,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
+import { Route as ApiPublicHooksSyncIcalAllRouteImport } from './routes/api/public/hooks/sync-ical-all'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -64,6 +65,12 @@ const ImoveisIdRoute = ImoveisIdRouteImport.update({
   path: '/imoveis/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksSyncIcalAllRoute =
+  ApiPublicHooksSyncIcalAllRouteImport.update({
+    id: '/api/public/hooks/sync-ical-all',
+    path: '/api/public/hooks/sync-ical-all',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
+  '/api/public/hooks/sync-ical-all': typeof ApiPublicHooksSyncIcalAllRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
+  '/api/public/hooks/sync-ical-all': typeof ApiPublicHooksSyncIcalAllRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +107,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
+  '/api/public/hooks/sync-ical-all': typeof ApiPublicHooksSyncIcalAllRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/imoveis/$id'
     | '/imoveis/'
+    | '/api/public/hooks/sync-ical-all'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/imoveis/$id'
     | '/imoveis'
+    | '/api/public/hooks/sync-ical-all'
   id:
     | '__root__'
     | '/'
@@ -133,6 +145,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/imoveis/$id'
     | '/imoveis/'
+    | '/api/public/hooks/sync-ical-all'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +158,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
+  ApiPublicHooksSyncIcalAllRoute: typeof ApiPublicHooksSyncIcalAllRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImoveisIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/sync-ical-all': {
+      id: '/api/public/hooks/sync-ical-all'
+      path: '/api/public/hooks/sync-ical-all'
+      fullPath: '/api/public/hooks/sync-ical-all'
+      preLoaderRoute: typeof ApiPublicHooksSyncIcalAllRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +246,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
+  ApiPublicHooksSyncIcalAllRoute: ApiPublicHooksSyncIcalAllRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
