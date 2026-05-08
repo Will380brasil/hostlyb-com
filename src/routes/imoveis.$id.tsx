@@ -135,10 +135,108 @@ function PropertyDetail() {
         )}
       </section>
 
+      <IcalSection propertyId={id} />
+
       <button onClick={() => { if (confirm("Arquivar este imóvel?")) archive.mutate(); }}
         className="btn-secondary justify-center w-full mb-6" style={{ color: "var(--color-warning)" }}>
         <Archive size={14} /> Arquivar imóvel
       </button>
     </AppShell>
+  );
+}
+
+function IcalSection({ propertyId }: { propertyId: string }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [platform, setPlatform] = useState("airbnb");
+  const [url, setUrl] = useState("");
+
+  const { data: feeds = [] } = useQuery({
+    queryKey: ["ical-feeds", propertyId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("ical_feeds").select("*").eq("property_id", propertyId).order("created_at");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const add = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Não autenticado");
+      const { error } = await supabase.from("ical_feeds").insert({ user_id: user.id, property_id: propertyId, platform, url });
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Feed adicionado"); setUrl(""); setAdding(false); qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const del = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("ical_feeds").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }),
+  });
+
+  const sync = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase.functions.invoke("sync-ical", { body: { feed_id: id } });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (d: any) => {
+      toast.success(`Sincronizado: ${d?.imported ?? 0} importados, ${d?.skipped ?? 0} ignorados`);
+      qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] });
+      qc.invalidateQueries({ queryKey: ["property-guests", propertyId] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <section className="hostly-card mb-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-bold flex items-center gap-2"><Calendar size={16} /> Sincronização iCal</h3>
+        {!adding && (
+          <button onClick={() => setAdding(true)} className="text-xs inline-flex items-center gap-1 text-muted-foreground"><Plus size={13} /> Adicionar</button>
+        )}
+      </div>
+
+      {adding && (
+        <form onSubmit={(e) => { e.preventDefault(); add.mutate(); }} className="flex flex-col gap-2 mb-3">
+          <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="px-3 py-2 rounded-lg bg-background border border-card-border text-sm">
+            <option value="airbnb">Airbnb</option>
+            <option value="booking">Booking</option>
+            <option value="vrbo">Vrbo</option>
+            <option value="outro">Outro</option>
+          </select>
+          <input value={url} onChange={(e) => setUrl(e.target.value)} required placeholder="https://...ics"
+            className="px-3 py-2 rounded-lg bg-background border border-card-border text-sm" />
+          <div className="flex gap-2">
+            <button type="submit" disabled={add.isPending} className="btn-primary flex-1 justify-center">{add.isPending ? "..." : "Salvar"}</button>
+            <button type="button" onClick={() => setAdding(false)} className="btn-secondary">Cancelar</button>
+          </div>
+        </form>
+      )}
+
+      {feeds.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Nenhum calendário externo conectado.</p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {feeds.map((f: any) => (
+            <li key={f.id} className="flex items-center justify-between gap-2 text-sm">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold capitalize">{f.platform}</p>
+                <p className="text-xs text-muted-foreground truncate">{f.url}</p>
+                {f.last_synced_at && <p className="text-[10px] text-muted-foreground">Sincronizado: {new Date(f.last_synced_at).toLocaleString("pt-BR")}</p>}
+                {f.last_error && <p className="text-[10px]" style={{ color: "var(--color-danger)" }}>{f.last_error}</p>}
+              </div>
+              <button onClick={() => sync.mutate(f.id)} disabled={sync.isPending} className="p-2 rounded-lg bg-secondary"><RefreshCw size={14} /></button>
+              <button onClick={() => { if (confirm("Remover feed?")) del.mutate(f.id); }} className="p-2 rounded-lg bg-secondary"><Trash2 size={14} /></button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
