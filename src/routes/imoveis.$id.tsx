@@ -132,6 +132,11 @@ function PropertyDetail() {
           </ul>
         )}
       </section>
+
+      <button onClick={() => { if (confirm("Arquivar este imóvel?")) archive.mutate(); }}
+        className="btn-secondary justify-center w-full mb-6" style={{ color: "var(--color-warning)" }}>
+        <Archive size={14} /> Arquivar imóvel
+      </button>
     </AppShell>
   );
 }
