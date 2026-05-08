@@ -183,7 +183,14 @@ function IcalSection({ propertyId }: { propertyId: string }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }),
   });
 
-  const sync = useMutation({
+  const updateFreq = useMutation({
+    mutationFn: async ({ id, sync_frequency }: { id: string; sync_frequency: string }) => {
+      const { error } = await supabase.from("ical_feeds").update({ sync_frequency }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Frequência atualizada"); qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
     mutationFn: async (id: string) => {
       const { data, error } = await supabase.functions.invoke("sync-ical", { body: { feed_id: id } });
       if (error) throw error;
