@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { fullAddress, formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive } from "lucide-react";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, Calendar, RefreshCw, Trash2, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostly" }, { name: "description", content: "Detalhes do imóvel." }] }),
