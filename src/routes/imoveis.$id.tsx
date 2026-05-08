@@ -191,6 +191,8 @@ function IcalSection({ propertyId }: { propertyId: string }) {
     onSuccess: () => { toast.success("Frequência atualizada"); qc.invalidateQueries({ queryKey: ["ical-feeds", propertyId] }); },
     onError: (e: any) => toast.error(e.message),
   });
+
+  const sync = useMutation({
     mutationFn: async (id: string) => {
       const { data, error } = await supabase.functions.invoke("sync-ical", { body: { feed_id: id } });
       if (error) throw error;
