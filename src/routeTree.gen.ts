@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as CalendarioRouteImport } from './routes/calendario'
@@ -17,6 +19,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LimpezasRoute = LimpezasRouteImport.update({
   id: '/limpezas',
   path: '/limpezas',
@@ -59,6 +71,8 @@ export interface FileRoutesByFullPath {
   '/calendario': typeof CalendarioRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
 }
@@ -68,6 +82,8 @@ export interface FileRoutesByTo {
   '/calendario': typeof CalendarioRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
 }
@@ -78,6 +94,8 @@ export interface FileRoutesById {
   '/calendario': typeof CalendarioRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
 }
@@ -89,6 +107,8 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/hospedes'
     | '/limpezas'
+    | '/login'
+    | '/signup'
     | '/imoveis/$id'
     | '/imoveis/'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +118,8 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/hospedes'
     | '/limpezas'
+    | '/login'
+    | '/signup'
     | '/imoveis/$id'
     | '/imoveis'
   id:
@@ -107,6 +129,8 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/hospedes'
     | '/limpezas'
+    | '/login'
+    | '/signup'
     | '/imoveis/$id'
     | '/imoveis/'
   fileRoutesById: FileRoutesById
@@ -117,12 +141,28 @@ export interface RootRouteChildren {
   CalendarioRoute: typeof CalendarioRoute
   HospedesRoute: typeof HospedesRoute
   LimpezasRoute: typeof LimpezasRoute
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/limpezas': {
       id: '/limpezas'
       path: '/limpezas'
@@ -181,9 +221,21 @@ const rootRouteChildren: RootRouteChildren = {
   CalendarioRoute: CalendarioRoute,
   HospedesRoute: HospedesRoute,
   LimpezasRoute: LimpezasRoute,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
