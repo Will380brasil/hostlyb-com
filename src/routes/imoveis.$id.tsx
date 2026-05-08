@@ -125,7 +125,11 @@ function PropertyDetail() {
             {guests.map((g: any) => (
               <li key={g.id} className="flex items-center justify-between text-sm">
                 <div>
-                  <p className="font-semibold">{g.name}</p>
+                  <p className="font-semibold flex items-center gap-2">
+                    {g.name}
+                    <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{g.platform}</span>
+                    {g.source === "ical" && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--color-info)", color: "white" }}>iCal</span>}
+                  </p>
                   <p className="text-xs text-muted-foreground">{g.checkin_date} → {g.checkout_date}</p>
                 </div>
                 <span className="font-mono text-xs">{formatBRL(Number(g.total_value ?? 0))}</span>
