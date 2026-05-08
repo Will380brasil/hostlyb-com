@@ -1,17 +1,29 @@
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Bell, LayoutDashboard, Home, Sparkles, Users, Calendar } from "lucide-react";
-import type { ReactNode } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar } from "lucide-react";
+import { useEffect, type ReactNode } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const tabs = [
-  { to: "/app",       label: "Dashboard", icon: LayoutDashboard },
-  { to: "/imoveis",   label: "Imóveis",   icon: Home },
-  { to: "/limpezas",  label: "Limpezas",  icon: Sparkles },
-  { to: "/hospedes",  label: "Hóspedes",  icon: Users },
+  { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
+  { to: "/imoveis",    label: "Imóveis",    icon: Home },
+  { to: "/limpezas",   label: "Limpezas",   icon: Sparkles },
+  { to: "/hospedes",   label: "Hóspedes",   icon: Users },
   { to: "/calendario", label: "Calendário", icon: Calendar },
 ] as const;
 
 export function AppShell({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { session, loading, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !session) navigate({ to: "/login" as any });
+  }, [session, loading, navigate]);
+
+  if (loading || !session) {
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando…</div>;
+  }
+
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full max-w-[480px] bg-background">
       <header className="sticky top-0 z-30 flex items-center justify-between px-5 h-14 bg-background/90 backdrop-blur border-b border-card-border">
@@ -19,11 +31,11 @@ export function AppShell({ children }: { children?: ReactNode }) {
           Host<span style={{ color: "var(--color-accent)" }}>ly</span>
         </h1>
         <button
-          aria-label="Notificações"
-          className="relative grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          aria-label="Sair"
+          onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
+          className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
         >
-          <Bell size={18} />
-          <span className="absolute top-2 right-2 w-2 h-2 rounded-full" style={{ background: "var(--color-accent)" }} />
+          <LogOut size={16} />
         </button>
       </header>
 

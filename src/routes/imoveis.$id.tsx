@@ -1,30 +1,48 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
-import {
-  getProperty, fullAddress, cleaningJobs, guests, cleaners, getCleaner, formatBRL,
-} from "@/lib/mock-data";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Pencil, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { fullAddress, formatBRL } from "@/lib/format";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/imoveis/$id")({
-  head: ({ params }) => ({
-    meta: [{ title: `Imóvel — Hostly` }, { name: "description", content: `Detalhes do imóvel ${params.id}` }],
-  }),
+  head: () => ({ meta: [{ title: "Imóvel — Hostly" }, { name: "description", content: "Detalhes do imóvel." }] }),
   component: PropertyDetail,
-  notFoundComponent: () => (
-    <AppShell><p className="text-muted-foreground">Imóvel não encontrado.</p></AppShell>
-  ),
 });
 
 function PropertyDetail() {
   const { id } = Route.useParams();
-  const p = getProperty(id);
-  if (!p) throw notFound();
 
-  const propJobs = cleaningJobs.filter((j) => j.property_id === id);
-  const propGuests = guests.filter((g) => g.property_id === id);
-  const linkedCleaners = cleaners.slice(0, 2);
+  const { data: p, isLoading } = useQuery({
+    queryKey: ["property", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("properties").select("*").eq("id", id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const { data: jobs = [] } = useQuery({
+    queryKey: ["property-jobs", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("cleaning_jobs")
+        .select("*, cleaners(name)").eq("property_id", id).order("scheduled_date", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const { data: guests = [] } = useQuery({
+    queryKey: ["property-guests", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("guests").select("*").eq("property_id", id).order("checkin_date", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  if (isLoading) return <AppShell><p className="text-muted-foreground">Carregando…</p></AppShell>;
+  if (!p) return <AppShell><p className="text-muted-foreground">Imóvel não encontrado.</p></AppShell>;
 
   return (
     <AppShell>
@@ -35,9 +53,9 @@ function PropertyDetail() {
       <header className="flex items-start justify-between gap-3 mb-4">
         <div>
           <h2 className="text-2xl font-bold leading-tight">{p.name}</h2>
-          <p className="text-sm text-muted-foreground">{p.city} · {p.state}</p>
+          <p className="text-sm text-muted-foreground">{p.city ?? "—"} · {p.state ?? ""}</p>
         </div>
-        <StatusBadge status={p.status} />
+        <StatusBadge status={p.status as any} />
       </header>
 
       <section className="hostly-card mb-4">
@@ -48,55 +66,36 @@ function PropertyDetail() {
         <h3 className="font-bold mb-3">Detalhes</h3>
         <div className="grid grid-cols-3 gap-3 text-sm">
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-secondary">
-            <BedDouble size={18} /><span className="font-semibold">{p.bedrooms}</span>
+            <BedDouble size={18} /><span className="font-semibold">{p.bedrooms ?? 0}</span>
             <span className="text-[10px] text-muted-foreground">Quartos</span>
           </div>
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-secondary">
-            <Bath size={18} /><span className="font-semibold">{p.bathrooms}</span>
+            <Bath size={18} /><span className="font-semibold">{p.bathrooms ?? 0}</span>
             <span className="text-[10px] text-muted-foreground">Banheiros</span>
           </div>
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-secondary">
-            <Users size={18} /><span className="font-semibold">{p.max_guests}</span>
+            <Users size={18} /><span className="font-semibold">{p.max_guests ?? 0}</span>
             <span className="text-[10px] text-muted-foreground">Hóspedes</span>
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-2 text-sm">
-          <Wifi size={16} style={{ color: "var(--color-info)" }} />
-          <span className="text-muted-foreground">Wi-Fi:</span>
-          <code className="font-mono text-foreground">{p.wifi_password}</code>
-        </div>
-      </section>
-
-      <section className="hostly-card mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold">Profissionais vinculados</h3>
-          <button className="text-xs" style={{ color: "var(--color-accent)" }}>+ Vincular</button>
-        </div>
-        <ul className="flex flex-col gap-2">
-          {linkedCleaners.map((c) => (
-            <li key={c.id} className="flex items-center gap-3">
-              <div className="grid place-items-center w-9 h-9 rounded-full font-bold text-sm"
-                   style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
-                {c.name.charAt(0)}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold">{c.name}</p>
-                <p className="text-xs text-muted-foreground">★ {c.rating} · {c.total_cleanings} limpezas</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {p.wifi_password && (
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <Wifi size={16} style={{ color: "var(--color-info)" }} />
+            <span className="text-muted-foreground">Wi-Fi:</span>
+            <code className="font-mono">{p.wifi_password}</code>
+          </div>
+        )}
       </section>
 
       <section className="hostly-card mb-4">
         <h3 className="font-bold mb-3 flex items-center gap-2"><Sparkles size={16} /> Histórico de limpezas</h3>
-        {propJobs.length === 0 ? (
+        {jobs.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhuma limpeza registrada.</p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {propJobs.map((j) => (
+            {jobs.map((j: any) => (
               <li key={j.id} className="flex items-center justify-between text-sm">
-                <span>{j.scheduled_date} · {getCleaner(j.cleaner_id)?.name}</span>
+                <span>{j.scheduled_date} · {j.cleaners?.name ?? "—"}</span>
                 <StatusBadge status={j.status} />
               </li>
             ))}
@@ -106,24 +105,22 @@ function PropertyDetail() {
 
       <section className="hostly-card mb-4">
         <h3 className="font-bold mb-3">Histórico de hóspedes</h3>
-        {propGuests.length === 0 ? (
+        {guests.length === 0 ? (
           <p className="text-sm text-muted-foreground">Sem hóspedes ainda.</p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {propGuests.map((g) => (
+            {guests.map((g: any) => (
               <li key={g.id} className="flex items-center justify-between text-sm">
                 <div>
                   <p className="font-semibold">{g.name}</p>
                   <p className="text-xs text-muted-foreground">{g.checkin_date} → {g.checkout_date}</p>
                 </div>
-                <span className="font-mono text-xs">{formatBRL(g.total_value)}</span>
+                <span className="font-mono text-xs">{formatBRL(Number(g.total_value ?? 0))}</span>
               </li>
             ))}
           </ul>
         )}
       </section>
-
-      <button className="btn-secondary w-full"><Pencil size={14} /> Editar imóvel</button>
     </AppShell>
   );
 }
