@@ -33,6 +33,8 @@ const platformLabel: Record<string, string> = Object.fromEntries(PLATFORMS.map(p
 function GuestsPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [detail, setDetail] = useState<any | null>(null);
   const { data: guests = [] } = useQuery({
     queryKey: ["guests"],
     queryFn: async () => {
@@ -42,6 +44,11 @@ function GuestsPage() {
     },
   });
 
+  const term = q.trim().toLowerCase();
+  const filtered = term
+    ? guests.filter((g: any) => [g.name, g.email, g.phone, g.document, g.properties?.name, g.platform].some((v) => (v ?? "").toString().toLowerCase().includes(term)))
+    : guests;
+
   return (
     <AppShell>
       <header className="flex items-center justify-between mb-4">
@@ -49,49 +56,62 @@ function GuestsPage() {
         <button className="btn-primary !py-2 !px-3" onClick={() => setOpen(true)}><Plus size={16} /> Novo</button>
       </header>
 
+      {guests.length > 0 && (
+        <div className="relative mb-3">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar nome, e-mail, telefone, imóvel..."
+            className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-card border border-card-border text-sm" />
+        </div>
+      )}
+
       {guests.length === 0 ? (
         <div className="hostly-card text-center text-sm text-muted-foreground">Nenhum hóspede ainda.</div>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-6">Nenhum hóspede encontrado para "{q}".</p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {guests.map((g: any) => (
-            <li key={g.id} className="hostly-card !p-4 flex flex-col gap-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-semibold truncate">{g.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{g.properties?.name ?? "—"}</p>
+          {filtered.map((g: any) => (
+            <li key={g.id}>
+              <button onClick={() => setDetail(g)} className="hostly-card !p-4 flex flex-col gap-3 w-full text-left active:scale-[0.99] transition">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold truncate">{g.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{g.properties?.name ?? "—"}</p>
+                  </div>
+                  <StatusBadge status={g.status} />
                 </div>
-                <StatusBadge status={g.status} />
-              </div>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{g.checkin_date} → {g.checkout_date}</span>
-                <span>{g.nights ?? "—"} noites</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="hostly-pill" style={{ background: "var(--color-info-soft)", color: "var(--color-info)" }}>
-                  {platformLabel[g.platform] ?? g.platform}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-sm" style={{ color: "var(--color-success)" }}>
-                    {formatMoney(Number(g.total_value ?? 0), currency, lang)}
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{g.checkin_date} → {g.checkout_date}</span>
+                  <span>{g.nights ?? "—"} noites</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="hostly-pill" style={{ background: "var(--color-info-soft)", color: "var(--color-info)" }}>
+                    {platformLabel[g.platform] ?? g.platform}
                   </span>
-                  {g.phone && (
-                    <>
-                      <a href={`tel:+${g.phone}`} className="grid place-items-center w-8 h-8 rounded-full bg-secondary"><Phone size={13} /></a>
-                      <a href={`https://wa.me/${g.phone}`} target="_blank" rel="noreferrer"
-                         className="grid place-items-center w-8 h-8 rounded-full"
-                         style={{ background: "var(--color-success-soft)", color: "var(--color-success)" }}>
-                        <MessageCircle size={13} />
-                      </a>
-                    </>
-                  )}
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <span className="font-mono text-sm" style={{ color: "var(--color-success)" }}>
+                      {formatMoney(Number(g.total_value ?? 0), currency, lang)}
+                    </span>
+                    {g.phone && (
+                      <>
+                        <a href={`tel:+${g.phone}`} className="grid place-items-center w-8 h-8 rounded-full bg-secondary"><Phone size={13} /></a>
+                        <a href={`https://wa.me/${g.phone}`} target="_blank" rel="noreferrer"
+                           className="grid place-items-center w-8 h-8 rounded-full"
+                           style={{ background: "var(--color-success-soft)", color: "var(--color-success)" }}>
+                          <MessageCircle size={13} />
+                        </a>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </button>
             </li>
           ))}
         </ul>
       )}
 
       {open && <NewGuestSheet onClose={() => setOpen(false)} />}
+      {detail && <GuestDetailSheet guest={detail} onClose={() => setDetail(null)} />}
     </AppShell>
   );
 }
