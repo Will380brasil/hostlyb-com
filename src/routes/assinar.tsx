@@ -33,7 +33,7 @@ function SubscribePage() {
         .from("organization_members")
         .select("organization_id, role")
         .eq("user_id", user.id)
-        .order("joined_at", { ascending: true })
+        .order("created_at", { ascending: true })
         .limit(1)
         .maybeSingle();
       if (m) { setOrgId(m.organization_id); setRole(m.role); }
