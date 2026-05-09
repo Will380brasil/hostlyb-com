@@ -329,24 +329,25 @@ function SocialProof() {
 }
 
 function ObjectionBreaker() {
+  const t = useT();
   const items = [
-    { q: "“Não tenho tempo de aprender outro app.”", a: "Setup em 5 minutos. Se você usa WhatsApp, sabe usar o Hostly." },
-    { q: "“Minha faxineira não é boa com tecnologia.”", a: "Ela só clica num link. Sem instalar app, sem criar conta, sem senha." },
-    { q: "“Já tenho planilha funcionando.”", a: "Planilha não te avisa de checkout. Não tira foto. Não fala com a faxineira." },
-    { q: "“É caro?”", a: "R$ 59,90/mês. Menos que uma diária. Cancela em 1 clique se não gostar." },
+    { q: t("obj.q1"), a: t("obj.a1") },
+    { q: t("obj.q2"), a: t("obj.a2") },
+    { q: t("obj.q3"), a: t("obj.a3") },
+    { q: t("obj.q4"), a: t("obj.a4") },
   ];
   return (
     <section style={{ padding: "72px 24px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p data-reveal className="reveal" style={{ textAlign: "center", color: C.coral, fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
-          Quebrando as objeções
+          {t("obj.eyebrow")}
         </p>
         <h2 data-reveal className="reveal" style={{
           fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800,
           marginBottom: 40, letterSpacing: "-0.02em", lineHeight: 1.1,
           fontSize: "clamp(26px, 3.8vw, 38px)",
         }}>
-          Você já pensou em usar — e travou aqui.
+          {t("obj.title")}
         </h2>
         <div className="obj-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {items.map((it) => (
@@ -369,19 +370,20 @@ function ObjectionBreaker() {
 }
 
 function Features() {
+  const t = useT();
   const features = [
-    { icon: "🧹", title: "Limpezas", desc: "Checklist e fotos." },
-    { icon: "🏠", title: "Imóveis", desc: "Endereço, mapas, wifi." },
-    { icon: "👷", title: "Equipe", desc: "Convide até 4 funcionários." },
-    { icon: "📅", title: "Calendário", desc: "iCal Airbnb/Booking." },
-    { icon: "👥", title: "Hóspedes", desc: "Histórico e avaliações." },
-    { icon: "📊", title: "Dashboard", desc: "KPIs em tempo real." },
+    { icon: "🧹", title: t("feat.cleanings"), desc: t("feat.cleanings.d") },
+    { icon: "🏠", title: t("feat.properties"), desc: t("feat.properties.d") },
+    { icon: "👷", title: t("feat.team"), desc: t("feat.team.d") },
+    { icon: "📅", title: t("feat.calendar"), desc: t("feat.calendar.d") },
+    { icon: "👥", title: t("feat.guests"), desc: t("feat.guests.d") },
+    { icon: "📊", title: t("feat.dashboard"), desc: t("feat.dashboard.d") },
   ];
   return (
     <section id="features" style={{ padding: "96px 24px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, lineHeight: 1.1, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Tudo que você precisa.
+          {t("feat.title")}
         </h2>
         <div className="features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
           {features.map((f) => (
@@ -547,43 +549,32 @@ function FAQ() {
 }
 
 function ProblemSolution() {
-  const without = [
-    "Avisa a faxineira pelo WhatsApp e não sabe se foi feita",
-    "Controla hóspedes em planilha do Excel",
-    "Esquece o checkout e o próximo hóspede chega num imóvel sujo",
-    "Não sabe se ficou objeto esquecido",
-    "Perde horas gerenciando cada imóvel separado",
-  ];
-  const withHostly = [
-    "Faxineira recebe checklist no celular e manda fotos de cada cômodo",
-    "Dashboard com status de todos os imóveis em tempo real",
-    "Alerta automático antes de cada checkout",
-    "Foto e alerta imediato de todo objeto esquecido encontrado",
-    "Tudo num só app, em 2 minutos por dia",
-  ];
+  const t = useT();
+  const without = [t("ps.w1"), t("ps.w2"), t("ps.w3"), t("ps.w4"), t("ps.w5")];
+  const withHostly = [t("ps.h1"), t("ps.h2"), t("ps.h3"), t("ps.h4"), t("ps.h5")];
   return (
     <section id="problema" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Antes vs. depois do Hostly
+          {t("ps.title")}
         </h2>
         <div className="ps-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
           <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.g100}` }}>
-            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ Sem o Hostly</h3>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ {t("ps.without")}</h3>
             <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {without.map((t) => (
-                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
-                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+              {without.map((tx) => (
+                <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
+                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `2px solid ${C.emerald}33` }}>
-            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ Com o Hostly</h3>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ {t("ps.with")}</h3>
             <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {withHostly.map((t) => (
-                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
-                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+              {withHostly.map((tx) => (
+                <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
+                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
                 </li>
               ))}
             </ul>
@@ -596,16 +587,17 @@ function ProblemSolution() {
 }
 
 function HowItWorks() {
+  const t = useT();
   const steps = [
-    { n: "1", t: "Cadastre seus imóveis", d: "Adicione endereço, fotos e o link iCal do seu Airbnb ou Booking." },
-    { n: "2", t: "Conecte sua equipe", d: "Cadastre as faxineiras, vincule a cada imóvel e envie o link de acesso." },
-    { n: "3", t: "Gerencie pelo celular", d: "Veja o status de tudo em tempo real e receba alertas automáticos." },
+    { n: "1", t: t("hiw.s1.t"), d: t("hiw.s1.d") },
+    { n: "2", t: t("hiw.s2.t"), d: t("hiw.s2.d") },
+    { n: "3", t: t("hiw.s3.t"), d: t("hiw.s3.d") },
   ];
   return (
     <section id="como-funciona" style={{ padding: "96px 24px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Pronto em 3 passos
+          {t("hiw.title")}
         </h2>
         <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
           {steps.map((s) => (
