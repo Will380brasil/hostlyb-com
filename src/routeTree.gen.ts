@@ -16,6 +16,7 @@ import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as AssinarRouteImport } from './routes/assinar'
 import { Route as AppRouteImport } from './routes/app'
@@ -64,6 +65,11 @@ const EquipeRoute = EquipeRouteImport.update({
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
   id: '/diagnostico',
   path: '/diagnostico',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/demo'
     | '/diagnostico'
     | '/equipe'
     | '/hospedes'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/demo'
     | '/diagnostico'
     | '/equipe'
     | '/hospedes'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/demo'
     | '/diagnostico'
     | '/equipe'
     | '/hospedes'
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   AssinarRoute: typeof AssinarRoute
   CalendarioRoute: typeof CalendarioRoute
+  DemoRoute: typeof DemoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
   EquipeRoute: typeof EquipeRoute
   HospedesRoute: typeof HospedesRoute
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/diagnostico'
       fullPath: '/diagnostico'
       preLoaderRoute: typeof DiagnosticoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -463,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   AssinarRoute: AssinarRoute,
   CalendarioRoute: CalendarioRoute,
+  DemoRoute: DemoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
   EquipeRoute: EquipeRoute,
   HospedesRoute: HospedesRoute,

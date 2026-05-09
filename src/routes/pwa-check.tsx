@@ -7,7 +7,7 @@ export const Route = createFileRoute("/pwa-check")({
 });
 
 type Status = "ok" | "warn" | "fail" | "pending";
-type Check = { id: string; label: string; status: Status; detail?: string };
+type Check = { id: string; label: string; status: Status; detail?: string; fix?: string };
 
 function PwaCheckPage() {
   const [checks, setChecks] = useState<Check[]>([]);
