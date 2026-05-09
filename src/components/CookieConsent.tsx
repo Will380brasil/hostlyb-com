@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { setConsent, getStoredConsent, type ConsentChoice } from "@/lib/analytics";
+import { useT } from "@/lib/i18n";
 
 const COLORS = {
   bg: "#111111",
@@ -11,16 +13,19 @@ const COLORS = {
 };
 
 export function CookieConsent() {
+  const t = useT();
+  const location = useLocation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (getStoredConsent() === null) {
-      // Slight delay so it doesn't flash before the page paints
       const t = setTimeout(() => setVisible(true), 400);
       return () => clearTimeout(t);
     }
   }, []);
 
+  // Show only on the public landing page so it never covers signup/login CTAs.
+  if (location.pathname !== "/") return null;
   if (!visible) return null;
 
   const decide = (choice: ConsentChoice) => {
@@ -32,13 +37,13 @@ export function CookieConsent() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Aviso de cookies"
+      aria-label={t("cookies.title")}
       style={{
         position: "fixed",
         left: 16,
         right: 16,
-        bottom: 88,
-        zIndex: 1000,
+        bottom: 16,
+        zIndex: 60,
         maxWidth: 720,
         margin: "0 auto",
         background: COLORS.bg,
@@ -58,16 +63,15 @@ export function CookieConsent() {
     >
       <div style={{ flex: "1 1 280px", minWidth: 240 }}>
         <strong style={{ display: "block", marginBottom: 4, color: "#fff", fontSize: 15 }}>
-          🍪 Sua privacidade
+          {t("cookies.title")}
         </strong>
         <span style={{ color: COLORS.muted }}>
-          Usamos cookies para entender como você usa o Hostly e melhorar sua experiência.
-          Você pode aceitar ou recusar. {""}
+          {t("cookies.body")}{" "}
           <a
             href="/privacidade"
             style={{ color: COLORS.text, textDecoration: "underline", textUnderlineOffset: 3 }}
           >
-            Saber mais
+            {t("cookies.more")}
           </a>
           .
         </span>
@@ -86,7 +90,7 @@ export function CookieConsent() {
             cursor: "pointer",
           }}
         >
-          Recusar
+          {t("cookies.deny")}
         </button>
         <button
           onClick={() => decide("granted")}
@@ -104,7 +108,7 @@ export function CookieConsent() {
           onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.coralDark)}
           onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.coral)}
         >
-          Aceitar
+          {t("cookies.accept")}
         </button>
       </div>
     </div>
