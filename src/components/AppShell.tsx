@@ -17,6 +17,27 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { session, loading, signOut } = useAuth();
+  const qc = useQueryClient();
+
+  const { data: unread = 0 } = useQuery({
+    queryKey: ["alerts-unread", session?.user.id],
+    enabled: !!session?.user.id,
+    queryFn: async () => {
+      const { count } = await supabase.from("alerts").select("id", { count: "exact", head: true }).eq("is_read", false).eq("is_dismissed", false);
+      return count ?? 0;
+    },
+  });
+
+  useEffect(() => {
+    if (!session?.user.id) return;
+    const ch = supabase
+      .channel("alerts-shell")
+      .on("postgres_changes", { event: "*", schema: "public", table: "alerts", filter: `user_id=eq.${session.user.id}` }, () => {
+        qc.invalidateQueries({ queryKey: ["alerts-unread"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [session?.user.id, qc]);
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/login" as any });
