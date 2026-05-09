@@ -32,7 +32,7 @@ function downloadIcs(events: Ev[]) {
     const t = e.time.replace(":", "") + "00";
     lines.push(
       "BEGIN:VEVENT",
-      `UID:${e.id}@hostly.app`,
+      `UID:${e.id}@hostlyb.com`,
       `DTSTART:${d}T${t}`,
       `DTEND:${d}T${t}`,
       `SUMMARY:${e.label}`,
@@ -43,7 +43,7 @@ function downloadIcs(events: Ev[]) {
   lines.push("END:VCALENDAR");
   const blob = new Blob([lines.join("\r\n")], { type: "text/calendar" });
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "hostly.ics"; a.click();
+  a.href = URL.createObjectURL(blob); a.download = "hostlyb.ics"; a.click();
   URL.revokeObjectURL(a.href);
 }
 
@@ -60,7 +60,7 @@ function downloadXlsx(events: Ev[]) {
   ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Agenda Hostlyb");
-  XLSX.writeFile(wb, `hostly-agenda-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  XLSX.writeFile(wb, `hostlyb-agenda-${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
 async function shareEvent(e: Ev) {
