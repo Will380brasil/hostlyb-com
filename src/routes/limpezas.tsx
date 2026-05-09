@@ -16,9 +16,50 @@ export const Route = createFileRoute("/limpezas")({
 });
 
 const defaultChecklist = [
-  "Sala de estar", "Cozinha completa", "Banheiros", "Quartos",
-  "Troca de roupas de cama", "Reposição de amenities", "Aspiração",
+  "Sala de estar / Living room",
+  "Cozinha completa / Kitchen",
+  "Banheiros / Bathrooms",
+  "Quartos / Bedrooms",
+  "Troca de roupas de cama / Bed linen change",
+  "Troca de toalhas / Towel change",
+  "Reposição de amenities / Restock amenities",
+  "Aspiração / Vacuum",
+  "Lixo retirado / Trash out",
+  "Janelas e espelhos / Windows & mirrors",
+  "Verificar objetos esquecidos / Check forgotten items",
 ];
+
+const PAYMENT_METHODS = [
+  { v: "pix", l: "PIX (Brasil)" },
+  { v: "iban", l: "IBAN / SEPA (Europa)" },
+  { v: "mbway", l: "MB WAY (Portugal)" },
+  { v: "zelle", l: "Zelle (USA)" },
+  { v: "venmo", l: "Venmo (USA)" },
+  { v: "cashapp", l: "Cash App (USA)" },
+  { v: "paypal", l: "PayPal" },
+  { v: "wise", l: "Wise" },
+  { v: "revolut", l: "Revolut" },
+  { v: "bank", l: "Transferência bancária / Bank transfer" },
+  { v: "cash", l: "Dinheiro / Cash" },
+  { v: "other", l: "Outro / Other" },
+];
+
+function paymentPlaceholder(m: string) {
+  switch (m) {
+    case "pix": return "Chave PIX (CPF, e-mail, telefone ou aleatória)";
+    case "iban": return "PT50 0000 0000 0000 0000 0000 0";
+    case "mbway": return "+351 9XX XXX XXX";
+    case "zelle": return "E-mail ou telefone Zelle";
+    case "venmo": return "@usuario";
+    case "cashapp": return "$cashtag";
+    case "paypal": return "E-mail PayPal";
+    case "wise": return "E-mail / @tag Wise";
+    case "revolut": return "@revtag ou telefone";
+    case "bank": return "Banco, agência, conta";
+    case "cash": return "Pagamento em dinheiro";
+    default: return "Detalhes do pagamento";
+  }
+}
 
 function CleaningsPage() {
   const [tab, setTab] = useState<"agenda" | "profissionais">("agenda");
@@ -457,7 +498,7 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
   const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [form, setForm] = useState({ name: "", phone: "", email: "", pix_key: "", price_per_cleaning: 0, notes: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", payment_method: "pix", payment_details: "", price_per_cleaning: 0, notes: "" });
   const [photo, setPhoto] = useState<File | null>(null);
   const m = useMutation({
     mutationFn: async () => {
@@ -470,7 +511,7 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
         if (upErr) throw upErr;
         photo_url = path;
       }
-      const { error } = await supabase.from("cleaners").insert({ ...form, user_id: user.id, photo_url });
+      const { error } = await supabase.from("cleaners").insert({ ...form, pix_key: form.payment_details, user_id: user.id, photo_url });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Profissional cadastrado"); qc.invalidateQueries({ queryKey: ["cleaners"] }); onClose(); },
@@ -488,7 +529,8 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
           <Field label="Foto (opcional)"><input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="text-xs text-muted-foreground" /></Field>
           <Field label="Telefone (com DDI, ex: 5511...)"><input autoComplete="tel" inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inp} /></Field>
           <Field label="E-mail"><input type="email" autoComplete="email" inputMode="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inp} /></Field>
-          <Field label="Chave Pix / IBAN / MBWAY / Outro"><input autoComplete="off" placeholder="Ex: IBAN, MBWAY, PayPal, Zelle..." value={form.pix_key} onChange={(e) => setForm({ ...form, pix_key: e.target.value })} className={inp} /></Field>
+          <Select label="Método de pagamento" value={form.payment_method} onChange={(v) => setForm({ ...form, payment_method: v })} options={PAYMENT_METHODS} />
+          <Field label="Detalhes do pagamento"><input autoComplete="off" placeholder={paymentPlaceholder(form.payment_method)} value={form.payment_details} onChange={(e) => setForm({ ...form, payment_details: e.target.value })} className={inp} /></Field>
           <Field label={`Valor por limpeza (${currencySymbol(currency)})`}><input type="number" inputMode="decimal" min={0} step="0.01" placeholder="0,00" value={form.price_per_cleaning === 0 ? "" : form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: e.target.value === "" ? 0 : Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
           <button type="submit" disabled={m.isPending || !form.name} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>

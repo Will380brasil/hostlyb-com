@@ -132,6 +132,8 @@ export type Database = {
           is_active: boolean
           name: string
           notes: string | null
+          payment_details: string | null
+          payment_method: string
           phone: string | null
           photo_url: string | null
           pix_key: string | null
@@ -148,6 +150,8 @@ export type Database = {
           is_active?: boolean
           name: string
           notes?: string | null
+          payment_details?: string | null
+          payment_method?: string
           phone?: string | null
           photo_url?: string | null
           pix_key?: string | null
@@ -164,6 +168,8 @@ export type Database = {
           is_active?: boolean
           name?: string
           notes?: string | null
+          payment_details?: string | null
+          payment_method?: string
           phone?: string | null
           photo_url?: string | null
           pix_key?: string | null
