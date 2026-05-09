@@ -518,25 +518,26 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 function FAQ() {
+  const t = useT();
   return (
     <section id="faq" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 32, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Perguntas frequentes
+          {t("faq.title")}
         </h2>
         <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: "8px 24px", border: `1px solid ${C.g100}` }}>
-          {FAQ_ITEMS.map((it) => (
-            <details key={it.q} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
+          {FAQ_KEYS.map(([qk, ak]) => (
+            <details key={qk} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
               <summary style={{
                 listStyle: "none", cursor: "pointer", padding: "20px 0",
                 display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16,
                 fontWeight: 700, color: C.g800, fontSize: 16,
               }}>
-                <span>{it.q}</span>
+                <span>{t(qk)}</span>
                 <Plus size={20} color={C.g600} className="faq-icon-closed" />
                 <Minus size={20} color={C.coral} className="faq-icon-open" />
               </summary>
-              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{it.a}</p>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{t(ak)}</p>
             </details>
           ))}
         </div>
