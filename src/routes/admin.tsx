@@ -13,6 +13,12 @@ export const Route = createFileRoute("/admin")({
   },
   component: AdminPage,
 });
+  beforeLoad: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/login" as any });
+  },
+  component: AdminPage,
+});
 
 function AdminPage() {
   const fetchMetrics = useServerFn(getAdminMetrics);
