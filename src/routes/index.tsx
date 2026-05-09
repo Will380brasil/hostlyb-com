@@ -549,43 +549,32 @@ function FAQ() {
 }
 
 function ProblemSolution() {
-  const without = [
-    "Avisa a faxineira pelo WhatsApp e não sabe se foi feita",
-    "Controla hóspedes em planilha do Excel",
-    "Esquece o checkout e o próximo hóspede chega num imóvel sujo",
-    "Não sabe se ficou objeto esquecido",
-    "Perde horas gerenciando cada imóvel separado",
-  ];
-  const withHostly = [
-    "Faxineira recebe checklist no celular e manda fotos de cada cômodo",
-    "Dashboard com status de todos os imóveis em tempo real",
-    "Alerta automático antes de cada checkout",
-    "Foto e alerta imediato de todo objeto esquecido encontrado",
-    "Tudo num só app, em 2 minutos por dia",
-  ];
+  const t = useT();
+  const without = [t("ps.w1"), t("ps.w2"), t("ps.w3"), t("ps.w4"), t("ps.w5")];
+  const withHostly = [t("ps.h1"), t("ps.h2"), t("ps.h3"), t("ps.h4"), t("ps.h5")];
   return (
     <section id="problema" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Antes vs. depois do Hostly
+          {t("ps.title")}
         </h2>
         <div className="ps-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
           <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.g100}` }}>
-            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ Sem o Hostly</h3>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ {t("ps.without")}</h3>
             <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {without.map((t) => (
-                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
-                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+              {without.map((tx) => (
+                <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
+                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `2px solid ${C.emerald}33` }}>
-            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ Com o Hostly</h3>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ {t("ps.with")}</h3>
             <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {withHostly.map((t) => (
-                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
-                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+              {withHostly.map((tx) => (
+                <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
+                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
                 </li>
               ))}
             </ul>
