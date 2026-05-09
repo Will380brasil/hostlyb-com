@@ -19,6 +19,7 @@ import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
+import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -70,6 +71,11 @@ const ImoveisIdRoute = ImoveisIdRouteImport.update({
   path: '/imoveis/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaxineiraTokenRoute = FaxineiraTokenRouteImport.update({
+  id: '/faxineira/$token',
+  path: '/faxineira/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  FaxineiraTokenRoute: typeof FaxineiraTokenRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
 }
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImoveisIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faxineira/$token': {
+      id: '/faxineira/$token'
+      path: '/faxineira/$token'
+      fullPath: '/faxineira/$token'
+      preLoaderRoute: typeof FaxineiraTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -244,9 +264,20 @@ const rootRouteChildren: RootRouteChildren = {
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  FaxineiraTokenRoute: FaxineiraTokenRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
