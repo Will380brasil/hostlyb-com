@@ -128,7 +128,7 @@ function NewGuestSheet({ onClose }: { onClose: () => void }) {
             <Field label="Check-in"><input type="date" required value={form.checkin_date} onChange={(e) => setForm({ ...form, checkin_date: e.target.value })} className={inp} /></Field>
             <Field label="Check-out"><input type="date" required value={form.checkout_date} onChange={(e) => setForm({ ...form, checkout_date: e.target.value })} className={inp} /></Field>
           </div>
-          <Field label="Valor total (R$)"><input type="number" min={0} step="0.01" value={form.total_value} onChange={(e) => setForm({ ...form, total_value: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor total (${currencySymbol(currency)})`}><input type="number" min={0} step="0.01" value={form.total_value} onChange={(e) => setForm({ ...form, total_value: Number(e.target.value) })} className={inp} /></Field>
           <Select label="Plataforma" value={form.platform} onChange={(v) => setForm({ ...form, platform: v })}
             options={[{ v: "airbnb", l: "Airbnb" }, { v: "booking", l: "Booking" }, { v: "direto", l: "Direto" }]} />
           <button disabled={m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>
