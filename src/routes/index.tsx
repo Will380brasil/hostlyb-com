@@ -278,7 +278,7 @@ function Hero() {
           }} />
           <img
             src={heroWoman}
-            alt="Anfitriã usando o Hostly no celular"
+            alt={t("hero.imageAlt")}
             width={1024}
             height={1024}
             style={{
