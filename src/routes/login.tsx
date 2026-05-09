@@ -51,8 +51,21 @@ function LoginPage() {
         <button
           type="button"
           onClick={async () => {
-            const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app" });
-            if (r.error) toast.error(t("login.googleFail"));
+            try {
+              const r = await lovable.auth.signInWithOAuth("google", {
+                redirect_uri: window.location.origin + "/app",
+              });
+              if (r.redirected) return;
+              if (r.error) {
+                console.error("[google-oauth login]", r.error);
+                toast.error(`${t("login.googleFail")}: ${(r.error as any)?.message ?? r.error}`);
+                return;
+              }
+              window.location.assign("/app");
+            } catch (err: any) {
+              console.error("[google-oauth login] threw", err);
+              toast.error(`${t("login.googleFail")}: ${err?.message ?? "erro desconhecido"}`);
+            }
           }}
           className="btn-secondary justify-center w-full mt-3"
         >
