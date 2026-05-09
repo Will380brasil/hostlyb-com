@@ -42,6 +42,11 @@ function SignupPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 8 || digits.length > 15) {
+      toast.error(t("signup.phoneInvalid"));
+      return;
+    }
     setLoading(true);
     const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/app` : undefined;
     const { error } = await supabase.auth.signUp({
