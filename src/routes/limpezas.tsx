@@ -161,6 +161,7 @@ function ProfissionaisList() {
 }
 
 function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void }) {
+  const { currency, lang } = useLocale();
   const qc = useQueryClient();
   const { user } = useAuth();
   const { data: job } = useQuery({
