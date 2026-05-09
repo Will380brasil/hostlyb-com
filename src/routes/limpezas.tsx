@@ -16,9 +16,50 @@ export const Route = createFileRoute("/limpezas")({
 });
 
 const defaultChecklist = [
-  "Sala de estar", "Cozinha completa", "Banheiros", "Quartos",
-  "Troca de roupas de cama", "Reposição de amenities", "Aspiração",
+  "Sala de estar / Living room",
+  "Cozinha completa / Kitchen",
+  "Banheiros / Bathrooms",
+  "Quartos / Bedrooms",
+  "Troca de roupas de cama / Bed linen change",
+  "Troca de toalhas / Towel change",
+  "Reposição de amenities / Restock amenities",
+  "Aspiração / Vacuum",
+  "Lixo retirado / Trash out",
+  "Janelas e espelhos / Windows & mirrors",
+  "Verificar objetos esquecidos / Check forgotten items",
 ];
+
+const PAYMENT_METHODS = [
+  { v: "pix", l: "PIX (Brasil)" },
+  { v: "iban", l: "IBAN / SEPA (Europa)" },
+  { v: "mbway", l: "MB WAY (Portugal)" },
+  { v: "zelle", l: "Zelle (USA)" },
+  { v: "venmo", l: "Venmo (USA)" },
+  { v: "cashapp", l: "Cash App (USA)" },
+  { v: "paypal", l: "PayPal" },
+  { v: "wise", l: "Wise" },
+  { v: "revolut", l: "Revolut" },
+  { v: "bank", l: "Transferência bancária / Bank transfer" },
+  { v: "cash", l: "Dinheiro / Cash" },
+  { v: "other", l: "Outro / Other" },
+];
+
+function paymentPlaceholder(m: string) {
+  switch (m) {
+    case "pix": return "Chave PIX (CPF, e-mail, telefone ou aleatória)";
+    case "iban": return "PT50 0000 0000 0000 0000 0000 0";
+    case "mbway": return "+351 9XX XXX XXX";
+    case "zelle": return "E-mail ou telefone Zelle";
+    case "venmo": return "@usuario";
+    case "cashapp": return "$cashtag";
+    case "paypal": return "E-mail PayPal";
+    case "wise": return "E-mail / @tag Wise";
+    case "revolut": return "@revtag ou telefone";
+    case "bank": return "Banco, agência, conta";
+    case "cash": return "Pagamento em dinheiro";
+    default: return "Detalhes do pagamento";
+  }
+}
 
 function CleaningsPage() {
   const [tab, setTab] = useState<"agenda" | "profissionais">("agenda");
