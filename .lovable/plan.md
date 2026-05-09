@@ -25,7 +25,7 @@
 8. **Vista do dia ao clicar numa data** (lista cronológica de eventos do dia, igual Google Calendar) com modal de detalhes do evento + botão "Editar" (se for limpeza/hóspede, abre o registro real).
 9. **Seletor rápido de mês/ano** clicando no título (popover com ano e meses).
 10. **Próximos eventos clicáveis** + menu de compartilhamento (WhatsApp, Email, Telegram, SMS via `navigator.share` quando disponível, fallback links).
-11. **Exportar como Excel (.xlsx) com logo Hostly** usando SheetJS no client; manter `.ics` opcional como secundário.
+11. **Exportar como Excel (.xlsx) com logo Hostlyb** usando SheetJS no client; manter `.ics` opcional como secundário.
 
 ## Fase 4 — Alertas, CRM e busca
 

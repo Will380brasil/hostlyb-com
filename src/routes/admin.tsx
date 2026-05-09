@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getAdminMetrics } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin · Hostly" }, { name: "robots", content: "noindex, nofollow" }] }),
+  head: () => ({ meta: [{ title: "Admin · Hostlyb" }, { name: "robots", content: "noindex, nofollow" }] }),
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" as any });

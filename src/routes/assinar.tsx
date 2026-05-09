@@ -65,7 +65,7 @@ function SubscribePage() {
         ) : isActive ? (
           <div className="rounded-lg border p-6 space-y-3">
             <div className="text-sm uppercase tracking-wide text-muted-foreground">Plano atual</div>
-            <div className="text-xl font-semibold">Hostly Pro</div>
+            <div className="text-xl font-semibold">Hostlyb Pro</div>
             <div className="text-sm">
               Status: <span className="font-medium">{subscription?.status}</span>
               {subscription?.current_period_end && (
@@ -86,7 +86,7 @@ function SubscribePage() {
           <div className="rounded-lg border p-6 space-y-4">
             <div>
               <div className="text-sm uppercase tracking-wide text-muted-foreground">Plano</div>
-              <div className="text-2xl font-bold">Hostly Pro</div>
+              <div className="text-2xl font-bold">Hostlyb Pro</div>
               <div className="text-3xl font-bold mt-2">{priceLabel}</div>
               <div className="text-sm text-muted-foreground mt-1">7 dias grátis · até 5 usuários · apartamentos ilimitados</div>
             </div>

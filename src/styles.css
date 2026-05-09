@@ -54,7 +54,7 @@ html { scroll-behavior: smooth; }
 .dark {
   --radius: 12px;
 
-  /* Hostly dark palette */
+  /* Hostlyb dark palette */
   --background: oklch(0.18 0.02 265);            /* #0F1117 */
   --foreground: oklch(0.96 0.005 270);           /* #F0F0F5 */
 

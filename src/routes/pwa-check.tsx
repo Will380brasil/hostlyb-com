@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/pwa-check")({
-  head: () => ({ meta: [{ title: "Diagnóstico PWA — Hostly" }, { name: "robots", content: "noindex, nofollow" }] }),
+  head: () => ({ meta: [{ title: "Diagnóstico PWA — Hostlyb" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: PwaCheckPage,
 });
 

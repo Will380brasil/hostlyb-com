@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/faxineira/$token")({
-  head: () => ({ meta: [{ title: "Limpeza — Hostly" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Limpeza — Hostlyb" }, { name: "robots", content: "noindex" }] }),
   component: CleanerPortal,
 });
 

@@ -1,6 +1,6 @@
 {
-  "name": "Hostly",
-  "short_name": "Hostly",
+  "name": "Hostlyb",
+  "short_name": "Hostlyb",
   "description": "Gestão de Airbnb simplificada — controle limpezas, hóspedes e profissionais.",
   "start_url": "/",
   "display": "standalone",

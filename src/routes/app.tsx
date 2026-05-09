@@ -8,7 +8,7 @@ import { useLocale } from "@/lib/i18n";
 import { Wallet, Home, Star, Users as UsersIcon, AlertTriangle, ChevronRight, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/app")({
-  head: () => ({ meta: [{ title: "Dashboard — Hostly" }, { name: "description", content: "Visão geral dos seus imóveis." }] }),
+  head: () => ({ meta: [{ title: "Dashboard — Hostlyb" }, { name: "description", content: "Visão geral dos seus imóveis." }] }),
   component: Dashboard,
 });
 
