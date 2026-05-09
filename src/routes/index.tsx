@@ -625,6 +625,7 @@ function Footer() {
 
 function LandingPage() {
   useReveal();
+  useAnalytics();
   return (
     <div style={{ background: "#fff", color: C.g800, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       <style>{`
