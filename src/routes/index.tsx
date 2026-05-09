@@ -8,6 +8,7 @@ import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
+import { DemoLeadModal } from "@/components/DemoLeadModal";
 
 const FAQ_KEYS = [
   ["faq.q1", "faq.a1"],
