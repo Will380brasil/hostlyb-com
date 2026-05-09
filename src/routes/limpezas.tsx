@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle } from "lucide-react";
+import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/limpezas")({
   head: () => ({ meta: [{ title: "Limpezas — Hostly" }, { name: "description", content: "Agenda de limpezas." }] }),
