@@ -184,3 +184,65 @@ function Select({ label, value, onChange, options }: { label: string; value: str
     </Field>
   );
 }
+
+function GuestDetailSheet({ guest, onClose }: { guest: any; onClose: () => void }) {
+  const { currency, lang } = useLocale();
+  // History: all stays from this guest by name+email/phone match
+  const { data: history = [] } = useQuery({
+    queryKey: ["guest-history", guest.email ?? guest.phone ?? guest.name],
+    queryFn: async () => {
+      let q = supabase.from("guests").select("id, checkin_date, checkout_date, total_value, properties(name)").neq("id", guest.id).order("checkin_date", { ascending: false }).limit(20);
+      if (guest.email) q = q.eq("email", guest.email);
+      else if (guest.phone) q = q.eq("phone", guest.phone);
+      else q = q.ilike("name", guest.name);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-end" onClick={onClose}>
+      <div className="bg-card border-t border-card-border w-full max-w-[480px] mx-auto rounded-t-2xl p-5 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-lg">{guest.name}</h3>
+          <button onClick={onClose}><X size={20} /></button>
+        </div>
+        <div className="text-sm space-y-1.5 mb-4">
+          <p className="text-muted-foreground">📍 {guest.properties?.name ?? "—"}</p>
+          <p className="text-muted-foreground"><Calendar size={12} className="inline mr-1" />{guest.checkin_date} → {guest.checkout_date} · {guest.nights ?? "—"} noites</p>
+          <p className="text-muted-foreground">{platformLabel[guest.platform] ?? guest.platform} · <span className="font-mono" style={{ color: "var(--color-success)" }}>{formatMoney(Number(guest.total_value ?? 0), currency, lang)}</span></p>
+          {guest.email && <p className="text-muted-foreground">✉️ {guest.email}</p>}
+          {guest.phone && <p className="text-muted-foreground">📱 +{guest.phone}</p>}
+          {guest.document && <p className="text-muted-foreground">🪪 {guest.document}</p>}
+          {guest.notes && <p className="text-muted-foreground">📝 {guest.notes}</p>}
+        </div>
+
+        <div className="flex gap-2 mb-4">
+          {guest.phone && (
+            <>
+              <a href={`tel:+${guest.phone}`} className="btn-secondary flex-1 justify-center"><Phone size={13} /> Ligar</a>
+              <a href={`https://wa.me/${guest.phone}`} target="_blank" rel="noreferrer" className="btn-primary flex-1 justify-center"><MessageCircle size={13} /> WhatsApp</a>
+            </>
+          )}
+        </div>
+
+        <h4 className="font-semibold text-sm mb-2 flex items-center gap-1.5"><History size={14} /> Outras estadias</h4>
+        {history.length === 0 ? (
+          <p className="text-xs text-muted-foreground">Primeira estadia deste hóspede.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {history.map((h: any) => (
+              <li key={h.id} className="flex items-center justify-between text-xs p-2 rounded-lg bg-secondary">
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{h.properties?.name ?? "—"}</p>
+                  <p className="text-muted-foreground">{h.checkin_date} → {h.checkout_date}</p>
+                </div>
+                <span className="font-mono" style={{ color: "var(--color-success)" }}>{formatMoney(Number(h.total_value ?? 0), currency, lang)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
