@@ -77,7 +77,7 @@ function Dashboard() {
       </section>
 
       <section className="grid grid-cols-2 gap-3 mt-4">
-        <KpiCard icon={Wallet} label="Receita do mês" value={formatBRL(monthlyRevenue)} color="#FF5A5F" />
+        <KpiCard icon={Wallet} label="Receita do mês" value={fm(monthlyRevenue)} color="#FF5A5F" />
         <KpiCard icon={Home} label="Imóveis ativos" value={String(properties.length)} color="#4A9EFF" />
         <KpiCard icon={Star} label="Avaliação média" value={`${avgRating} ★`} color="#FFB347" />
         <KpiCard icon={UsersIcon} label="Hóspedes" value={String(guests.length)} color="#00C896" />
@@ -103,7 +103,7 @@ function Dashboard() {
                 </div>
                 <p className="text-xs text-muted-foreground">{p.city ?? "—"} · {p.state ?? ""}</p>
                 <p className="text-sm font-mono mt-2" style={{ color: "var(--color-success)" }}>
-                  {formatBRL(Number(p.income_monthly ?? 0))}<span className="text-xs text-muted-foreground"> /mês</span>
+                  {fm(Number(p.income_monthly ?? 0))}<span className="text-xs text-muted-foreground"> /mês</span>
                 </p>
               </Link>
             ))}
