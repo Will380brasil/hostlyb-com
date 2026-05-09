@@ -370,19 +370,20 @@ function ObjectionBreaker() {
 }
 
 function Features() {
+  const t = useT();
   const features = [
-    { icon: "🧹", title: "Limpezas", desc: "Checklist e fotos." },
-    { icon: "🏠", title: "Imóveis", desc: "Endereço, mapas, wifi." },
-    { icon: "👷", title: "Equipe", desc: "Convide até 4 funcionários." },
-    { icon: "📅", title: "Calendário", desc: "iCal Airbnb/Booking." },
-    { icon: "👥", title: "Hóspedes", desc: "Histórico e avaliações." },
-    { icon: "📊", title: "Dashboard", desc: "KPIs em tempo real." },
+    { icon: "🧹", title: t("feat.cleanings"), desc: t("feat.cleanings.d") },
+    { icon: "🏠", title: t("feat.properties"), desc: t("feat.properties.d") },
+    { icon: "👷", title: t("feat.team"), desc: t("feat.team.d") },
+    { icon: "📅", title: t("feat.calendar"), desc: t("feat.calendar.d") },
+    { icon: "👥", title: t("feat.guests"), desc: t("feat.guests.d") },
+    { icon: "📊", title: t("feat.dashboard"), desc: t("feat.dashboard.d") },
   ];
   return (
     <section id="features" style={{ padding: "96px 24px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, lineHeight: 1.1, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Tudo que você precisa.
+          {t("feat.title")}
         </h2>
         <div className="features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
           {features.map((f) => (
