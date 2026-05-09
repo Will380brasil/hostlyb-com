@@ -515,14 +515,30 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       .then((r) => r.json())
       .then((d: { country: string; currency: Currency; language: Lang }) => {
         setCountry(d.country || "BR");
-        if (!storedLang) setLangState((d.language as Lang) || "pt");
-        if (!storedCurr) setCurrencyState(d.currency || "BRL");
+        if (!storedLang) {
+          const l = (d.language as Lang) || "pt";
+          setLangState(l);
+          // Persist so subsequent pages don't flip language while user navigates.
+          try { localStorage.setItem(STORAGE_LANG, l); } catch {}
+        }
+        if (!storedCurr) {
+          const c = d.currency || "BRL";
+          setCurrencyState(c);
+          try { localStorage.setItem(STORAGE_CURRENCY, c); } catch {}
+        }
       })
       .catch(() => {
         const nav = (navigator.language || "pt").slice(0, 2).toLowerCase() as Lang;
         const isLang = (["pt","en","es","fr","it","de"] as Lang[]).includes(nav);
-        if (!storedLang) setLangState(isLang ? nav : "en");
-        if (!storedCurr) setCurrencyState("USD");
+        if (!storedLang) {
+          const l = isLang ? nav : "en";
+          setLangState(l);
+          try { localStorage.setItem(STORAGE_LANG, l); } catch {}
+        }
+        if (!storedCurr) {
+          setCurrencyState("USD");
+          try { localStorage.setItem(STORAGE_CURRENCY, "USD"); } catch {}
+        }
       })
       .finally(() => setLoading(false));
   }, []);
