@@ -6,6 +6,7 @@ import {
 import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
+import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 
 const FAQ_ITEMS = [
   { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial." },
@@ -101,6 +102,30 @@ function useReveal() {
     }, { threshold: 0.12 });
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
+  }, []);
+}
+
+function useAnalytics() {
+  useEffect(() => {
+    initAnalytics();
+    initScrollDepth();
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement)?.closest?.<HTMLAnchorElement>('a[href="/signup"]');
+      if (a) trackEvent("cta_click", { location: a.dataset.ctaLocation || "unknown" });
+    };
+    const onToggle = (e: Event) => {
+      const d = e.target as HTMLDetailsElement;
+      if (d.tagName === "DETAILS" && d.open) {
+        const q = d.querySelector("summary span")?.textContent || "";
+        trackEvent("faq_open", { question: q.slice(0, 80) });
+      }
+    };
+    document.addEventListener("click", onClick);
+    document.addEventListener("toggle", onToggle, true);
+    return () => {
+      document.removeEventListener("click", onClick);
+      document.removeEventListener("toggle", onToggle, true);
+    };
   }, []);
 }
 
@@ -600,6 +625,7 @@ function Footer() {
 
 function LandingPage() {
   useReveal();
+  useAnalytics();
   return (
     <div style={{ background: "#fff", color: C.g800, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       <style>{`
