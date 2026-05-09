@@ -84,6 +84,7 @@ function GuestsPage() {
 }
 
 function NewGuestSheet({ onClose }: { onClose: () => void }) {
+  const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
   const { data: properties = [] } = useQuery({
