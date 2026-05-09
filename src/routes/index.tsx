@@ -669,10 +669,15 @@ function LandingPage() {
   return (
     <div style={{ background: "#fff", color: C.g800, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       <style>{`
-        [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
-        [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
-        /* Hero is above the fold — render visible immediately to avoid blank first paint */
-        .hero-copy[data-reveal], .hero-image-wrap[data-reveal] { opacity: 1; transform: none; }
+        /* Content is visible by default; reveal only adds a soft entrance once scrolled into view. */
+        [data-reveal] { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; }
+        @media (prefers-reduced-motion: no-preference) {
+          [data-reveal]:not(.is-visible) { opacity: 0; transform: translateY(16px); }
+          [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+          /* Above the fold — render immediately, no fade-in to avoid blank first paint */
+          .hero-copy[data-reveal], .hero-image-wrap[data-reveal],
+          #features [data-reveal], #features ~ section [data-reveal] { opacity: 1; transform: none; }
+        }
         .btn-coral:hover { transform: translateY(-1px); filter: brightness(1.04); }
         .nav-link { transition: color .15s ease; } .nav-link:hover { color: ${C.coral}; }
         .feature-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: ${C.coralLight}; }
