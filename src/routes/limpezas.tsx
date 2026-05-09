@@ -98,7 +98,7 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1"><Clock size={12} /> {j.scheduled_date} · {j.scheduled_time?.slice(0,5)}</span>
-                <span className="font-mono">{formatBRL(Number(j.payment_amount ?? 0))}</span>
+                <span className="font-mono">{formatMoney(Number(j.payment_amount ?? 0), currency, lang)}</span>
               </div>
               <div>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
