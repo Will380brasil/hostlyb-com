@@ -27,6 +27,8 @@ function KpiCard({ icon: Icon, label, value, color }: { icon: any; label: string
 }
 
 function Dashboard() {
+  const { currency, lang } = useLocale();
+  const fm = (v: number) => formatMoney(v, currency, lang);
   const { data: properties = [] } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
