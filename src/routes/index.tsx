@@ -445,22 +445,109 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 function FAQ() {
-  const items = [
-    { q: "Preciso de cartão de crédito para testar?", a: "Não. 7 dias grátis sem cartão." },
-    { q: "Quantos usuários posso ter?", a: "Você + até 4 funcionários (5 no total) através de link de convite." },
-    { q: "Posso cancelar quando quiser?", a: "Sim. Sem contrato, sem fidelidade." },
-    { q: "Tem app para a faxineira?", a: "Sim. Ela recebe um link com o checklist do dia, sem precisar baixar nada." },
-  ];
   return (
     <section id="faq" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 32, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          FAQ
+          Perguntas frequentes
         </h2>
         <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: "8px 24px", border: `1px solid ${C.g100}` }}>
-          {items.map((it) => <FAQItem key={it.q} {...it} />)}
+          {FAQ_ITEMS.map((it) => (
+            <details key={it.q} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
+              <summary style={{
+                listStyle: "none", cursor: "pointer", padding: "20px 0",
+                display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16,
+                fontWeight: 700, color: C.g800, fontSize: 16,
+              }}>
+                <span>{it.q}</span>
+                <Plus size={20} color={C.g600} className="faq-icon-closed" />
+                <Minus size={20} color={C.coral} className="faq-icon-open" />
+              </summary>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{it.a}</p>
+            </details>
+          ))}
         </div>
       </div>
+    </section>
+  );
+}
+
+function ProblemSolution() {
+  const without = [
+    "Avisa a faxineira pelo WhatsApp e não sabe se foi feita",
+    "Controla hóspedes em planilha do Excel",
+    "Esquece o checkout e o próximo hóspede chega num imóvel sujo",
+    "Não sabe se ficou objeto esquecido",
+    "Perde horas gerenciando cada imóvel separado",
+  ];
+  const withHostly = [
+    "Faxineira recebe checklist no celular e manda fotos de cada cômodo",
+    "Dashboard com status de todos os imóveis em tempo real",
+    "Alerta automático antes de cada checkout",
+    "Foto e alerta imediato de todo objeto esquecido encontrado",
+    "Tudo num só app, em 2 minutos por dia",
+  ];
+  return (
+    <section id="problema" style={{ padding: "96px 24px", background: C.g50 }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          Antes vs. depois do Hostly
+        </h2>
+        <div className="ps-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+          <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.g100}` }}>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ Sem o Hostly</h3>
+            <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
+              {without.map((t) => (
+                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
+                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `2px solid ${C.emerald}33` }}>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ Com o Hostly</h3>
+            <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
+              {withHostly.map((t) => (
+                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
+                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <style>{`@media (max-width: 768px) { .ps-grid { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    { n: "1", t: "Cadastre seus imóveis", d: "Adicione endereço, fotos e o link iCal do seu Airbnb ou Booking." },
+    { n: "2", t: "Conecte sua equipe", d: "Cadastre as faxineiras, vincule a cada imóvel e envie o link de acesso." },
+    { n: "3", t: "Gerencie pelo celular", d: "Veja o status de tudo em tempo real e receba alertas automáticos." },
+  ];
+  return (
+    <section id="como-funciona" style={{ padding: "96px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          Pronto em 3 passos
+        </h2>
+        <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
+          {steps.map((s) => (
+            <div key={s.n} data-reveal className="reveal" style={{ textAlign: "center", padding: 16 }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: "50%", background: C.coralLight,
+                color: C.coral, fontFamily: displayFont, fontWeight: 800, fontSize: 28,
+                display: "grid", placeItems: "center", margin: "0 auto 18px",
+              }}>{s.n}</div>
+              <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.black, marginBottom: 8 }}>{s.t}</h3>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, maxWidth: 280, margin: "0 auto" }}>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <style>{`@media (max-width: 768px) { .hiw-grid { grid-template-columns: 1fr !important; } }`}</style>
     </section>
   );
 }
