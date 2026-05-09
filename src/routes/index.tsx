@@ -250,17 +250,26 @@ function Hero() {
             {t("hero.subtitle")}
           </p>
 
-          <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
             <CoralButton big href="/signup">{t("hero.cta")} <ArrowRight size={18} /></CoralButton>
-            <a href="#features" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "16px 24px", color: C.g800, fontWeight: 600, fontSize: 16 }}>
-              <Play size={18} /> {t("nav.features")}
-            </a>
+            <Link
+              to={"/app" as any}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "16px 28px", borderRadius: 999, fontSize: 16, fontWeight: 700,
+                background: "#fff", color: C.coral, border: `2px solid ${C.coral}`,
+                boxShadow: `0 4px 20px ${C.coralGlow}`,
+              }}
+            >
+              <Play size={18} fill={C.coral} /> {t("hero.demo")}
+            </Link>
           </div>
 
-          <div style={{ marginTop: 14 }}>
-            <Link to={"/app" as any} style={{ color: C.g600, fontSize: 14, fontWeight: 500, borderBottom: `1px dashed ${C.g300}`, paddingBottom: 2 }}>
-              {t("hero.demo")}
-            </Link>
+          <div style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: C.coralLight }}>
+            <span style={{ width: 8, height: 8, borderRadius: 999, background: C.coral, boxShadow: `0 0 0 4px ${C.coralGlow}` }} />
+            <span style={{ fontSize: 13, fontWeight: 600, color: C.coral }}>
+              Demo ao vivo · sem cadastro · explore o painel completo
+            </span>
           </div>
 
           <p style={{ marginTop: 20, color: C.g400, fontSize: 13, display: "flex", gap: 18, flexWrap: "wrap" }}>
