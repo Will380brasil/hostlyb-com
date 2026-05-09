@@ -225,7 +225,10 @@ function Navbar() {
 
 function Hero() {
   const t = useT();
+  const [demoOpen, setDemoOpen] = useState(false);
   return (
+    <>
+    <DemoLeadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     <section id="top" style={{ padding: "48px 24px 64px", background: "#fff" }}>
       <div className="hero-grid" style={{
         maxWidth: 1200, margin: "0 auto",
