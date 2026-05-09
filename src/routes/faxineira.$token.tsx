@@ -148,7 +148,7 @@ function CleanerPortal() {
     <div className="min-h-screen mx-auto w-full max-w-[480px] bg-background pb-32">
       <header className="sticky top-0 z-10 px-5 py-4 bg-background/95 backdrop-blur border-b border-card-border">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-black">Host<span style={{ color: "var(--color-accent)" }}>ly</span></h1>
+          <h1 className="text-xl font-black">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
           <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
             style={{ background: data.status === "concluido" ? "var(--color-accent)" : "var(--color-card)", color: data.status === "concluido" ? "white" : "var(--color-foreground)", border: "1px solid var(--color-card-border)" }}>
             {STATUS_LABEL[data.status] ?? data.status}
