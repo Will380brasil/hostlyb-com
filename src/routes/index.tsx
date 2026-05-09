@@ -6,6 +6,7 @@ import {
 import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
+import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 
 const FAQ_ITEMS = [
   { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial." },
