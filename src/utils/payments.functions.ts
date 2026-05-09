@@ -76,7 +76,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       ui_mode: "embedded_page",
       return_url: data.returnUrl,
       customer: customerId,
-      managed_payments: { enabled: true },
+      // managed_payments isn't typed in this SDK version yet — pass via cast
+      ...({ managed_payments: { enabled: true } } as Record<string, unknown>),
       metadata: {
         userId,
         organizationId: data.organizationId,
