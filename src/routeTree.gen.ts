@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
@@ -31,6 +32,11 @@ import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/publi
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PwaCheckRoute = PwaCheckRouteImport.update({
+  id: '/pwa-check',
+  path: '/pwa-check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
+  '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
+  '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
+  '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/hospedes'
     | '/limpezas'
     | '/login'
+    | '/pwa-check'
     | '/signup'
     | '/checkout/return'
     | '/convite/$token'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/hospedes'
     | '/limpezas'
     | '/login'
+    | '/pwa-check'
     | '/signup'
     | '/checkout/return'
     | '/convite/$token'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/hospedes'
     | '/limpezas'
     | '/login'
+    | '/pwa-check'
     | '/signup'
     | '/checkout/return'
     | '/convite/$token'
@@ -255,6 +267,7 @@ export interface RootRouteChildren {
   HospedesRoute: typeof HospedesRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
+  PwaCheckRoute: typeof PwaCheckRoute
   SignupRoute: typeof SignupRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pwa-check': {
+      id: '/pwa-check'
+      path: '/pwa-check'
+      fullPath: '/pwa-check'
+      preLoaderRoute: typeof PwaCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -407,6 +427,7 @@ const rootRouteChildren: RootRouteChildren = {
   HospedesRoute: HospedesRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
+  PwaCheckRoute: PwaCheckRoute,
   SignupRoute: SignupRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ConviteTokenRoute: ConviteTokenRoute,
