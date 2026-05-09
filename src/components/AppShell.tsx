@@ -1,7 +1,9 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const tabs = [
   { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
