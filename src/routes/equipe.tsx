@@ -101,7 +101,7 @@ function EquipePage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["org-invites", orgId] }),
   });
 
-  const inviteLink = (token: string) => `https://hostlyb.com/convite/${token}`;
+  const inviteLink = (token: string) => publicUrl(`/convite/${token}`);
   const copy = (text: string) => navigator.clipboard.writeText(text);
 
   const used = members.length + invites.length;

@@ -340,7 +340,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
               <h4 className="font-bold text-sm mb-2 inline-flex items-center gap-2"><Link2 size={14} /> Link da faxineira</h4>
               <p className="text-xs text-muted-foreground mb-2">Compartilhe este link para a faxineira preencher o checklist sem login.</p>
               {(() => {
-                const url = `https://hostlyb.com/faxineira/${(job as any).access_token}`;
+                const url = publicUrl(`/faxineira/${(job as any).access_token}`);
                 const wppMsg = encodeURIComponent(`Olá! Aqui está o link da limpeza: ${url}`);
                 return (
                   <div className="flex flex-col gap-2">
