@@ -143,7 +143,7 @@ function NewGuestSheet({ onClose }: { onClose: () => void }) {
           </div>
           <Field label={`Valor total (${currencySymbol(currency)})`}><input type="number" inputMode="decimal" min={0} step="0.01" placeholder="0,00" value={form.total_value === 0 ? "" : form.total_value} onChange={(e) => setForm({ ...form, total_value: e.target.value === "" ? 0 : Number(e.target.value) })} className={inp} /></Field>
           <Select label="Plataforma" value={form.platform} onChange={(v) => setForm({ ...form, platform: v })}
-            options={[{ v: "airbnb", l: "Airbnb" }, { v: "booking", l: "Booking" }, { v: "direto", l: "Direto" }]} />
+            options={PLATFORMS} />
           <button disabled={m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>
         </form>
       </div>
