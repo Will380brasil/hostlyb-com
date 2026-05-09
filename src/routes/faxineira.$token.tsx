@@ -79,7 +79,7 @@ function CleanerPortal() {
   const addItem = useMutation({
     mutationFn: async (vars: { description: string; notes: string; photo_url: string | null }) => {
       const { error } = await supabase.rpc("cleaner_add_forgotten_item", {
-        p_token: token, p_description: vars.description, p_photo_url: vars.photo_url, p_notes: vars.notes || null,
+        p_token: token, p_description: vars.description, p_photo_url: vars.photo_url ?? undefined, p_notes: vars.notes || undefined,
       });
       if (error) throw error;
     },
