@@ -783,6 +783,60 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          cleaning_job_id: string | null
+          created_at: string
+          date: string
+          description: string
+          guest_id: string | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          property_id: string | null
+          status: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          cleaning_job_id?: string | null
+          created_at?: string
+          date?: string
+          description: string
+          guest_id?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          property_id?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          cleaning_job_id?: string | null
+          created_at?: string
+          date?: string
+          description?: string
+          guest_id?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          property_id?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
