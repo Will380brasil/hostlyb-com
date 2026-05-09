@@ -5,7 +5,8 @@ import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { formatBRL } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, ChevronRight, BedDouble, Bath, Users, X } from "lucide-react";
 
