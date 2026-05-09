@@ -157,6 +157,24 @@ const pt: Dict = {
   "signup.success": "Conta criada!",
   "signup.googleFail": "Falha no login com Google",
   "signup.or": "ou",
+  "signup.phoneInvalid": "Telefone inválido. Digite apenas números (8-15 dígitos).",
+
+  "login.title": "Entre na sua conta",
+  "login.email": "E-mail",
+  "login.password": "Senha",
+  "login.submit": "Entrar",
+  "login.submitting": "Entrando...",
+  "login.google": "Continuar com Google",
+  "login.googleFail": "Falha no login com Google",
+  "login.noAccount": "Não tem conta?",
+  "login.signup": "Criar conta",
+  "login.fail": "E-mail ou senha inválidos",
+
+  "cookies.title": "🍪 Sua privacidade",
+  "cookies.body": "Usamos cookies para entender como você usa o Hostly e melhorar sua experiência.",
+  "cookies.more": "Saber mais",
+  "cookies.accept": "Aceitar",
+  "cookies.deny": "Recusar",
 };
 
 const en: Dict = {
@@ -284,6 +302,24 @@ const en: Dict = {
   "signup.success": "Account created!",
   "signup.googleFail": "Google sign-in failed",
   "signup.or": "or",
+  "signup.phoneInvalid": "Invalid phone. Use digits only (8-15).",
+
+  "login.title": "Sign in to your account",
+  "login.email": "Email",
+  "login.password": "Password",
+  "login.submit": "Sign in",
+  "login.submitting": "Signing in...",
+  "login.google": "Continue with Google",
+  "login.googleFail": "Google sign-in failed",
+  "login.noAccount": "No account?",
+  "login.signup": "Create account",
+  "login.fail": "Invalid email or password",
+
+  "cookies.title": "🍪 Your privacy",
+  "cookies.body": "We use cookies to understand how you use Hostly and improve your experience.",
+  "cookies.more": "Learn more",
+  "cookies.accept": "Accept",
+  "cookies.deny": "Decline",
 };
 
 const es: Dict = {
@@ -411,6 +447,24 @@ const es: Dict = {
   "signup.success": "¡Cuenta creada!",
   "signup.googleFail": "Error al iniciar sesión con Google",
   "signup.or": "o",
+  "signup.phoneInvalid": "Teléfono inválido. Solo dígitos (8-15).",
+
+  "login.title": "Entra en tu cuenta",
+  "login.email": "Email",
+  "login.password": "Contraseña",
+  "login.submit": "Entrar",
+  "login.submitting": "Entrando...",
+  "login.google": "Continuar con Google",
+  "login.googleFail": "Error al iniciar sesión con Google",
+  "login.noAccount": "¿No tienes cuenta?",
+  "login.signup": "Crear cuenta",
+  "login.fail": "Email o contraseña inválidos",
+
+  "cookies.title": "🍪 Tu privacidad",
+  "cookies.body": "Usamos cookies para entender cómo usas Hostly y mejorar tu experiencia.",
+  "cookies.more": "Saber más",
+  "cookies.accept": "Aceptar",
+  "cookies.deny": "Rechazar",
 };
 
 const DICTS: Record<Lang, Dict> = {
