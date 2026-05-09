@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Plus, ChevronRight, BedDouble, Bath, Users, X } from "lucide-react";
+import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search } from "lucide-react";
 
 export const Route = createFileRoute("/imoveis/")({
   head: () => ({ meta: [{ title: "Imóveis — Hostly" }, { name: "description", content: "Gerencie seus imóveis." }] }),
