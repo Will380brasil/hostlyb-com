@@ -59,7 +59,7 @@ function GuestsPage() {
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-sm" style={{ color: "var(--color-success)" }}>
-                    {formatBRL(Number(g.total_value ?? 0))}
+                    {formatMoney(Number(g.total_value ?? 0), currency, lang)}
                   </span>
                   {g.phone && (
                     <>
