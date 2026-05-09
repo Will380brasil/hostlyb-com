@@ -10,6 +10,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LocaleProvider } from "@/lib/i18n";
+import { CookieConsent } from "@/components/CookieConsent";
 
 import appCss from "../styles.css?url";
 
