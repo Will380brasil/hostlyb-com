@@ -38,6 +38,21 @@ function PropertiesPage() {
         <button className="btn-primary !py-2 !px-3" onClick={() => setOpen(true)}><Plus size={16} /> Novo</button>
       </header>
 
+      {properties.length > 0 && (
+        <div className="relative mb-3">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome, endereço, cidade..."
+            className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-card border border-card-border text-sm" />
+        </div>
+      )}
+
+      {(() => {
+        const term = q.trim().toLowerCase();
+        const filtered = term
+          ? properties.filter((p: any) => [p.name, p.address, p.city, p.state, p.zip_code].some((v) => (v ?? "").toString().toLowerCase().includes(term)))
+          : properties;
+        return (
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
       ) : properties.length === 0 ? (
