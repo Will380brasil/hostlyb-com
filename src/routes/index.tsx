@@ -658,12 +658,12 @@ function Footer() {
   return (
     <footer style={{ background: C.black, color: C.g300, padding: "48px 24px 32px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, alignItems: "center", textAlign: "center" }}>
-        <a href="#top" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 700, color: "#fff" }}>
+        <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 700, color: "#fff" }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
           Host<span style={{ color: C.coral }}>ly</span>
-        </a>
+        </Link>
         <LanguageSelector />
         <p style={{ fontSize: 13, color: C.g400 }}>{t("footer.rights")}</p>
       </div>
