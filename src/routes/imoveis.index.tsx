@@ -89,6 +89,17 @@ function PropertiesPage() {
             ) : filtered.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">Nenhum imóvel encontrado para "{q}".</p>
             ) : (
+      {properties.length > 0 && (
+        <div className="flex items-center gap-2 mb-3">
+          <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
+            className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" title="Ver disponibilidade na data" />
+          {filterDate && (
+            <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">Limpar</button>
+          )}
+          <span className="text-xs text-muted-foreground">{filterDate ? `Disponibilidade em ${new Date(filterDate).toLocaleDateString()}` : "Filtrar por data"}</span>
+        </div>
+      )}
+
               <ul className="flex flex-col gap-3">
                 {filtered.map((p: any) => (
                   <li key={p.id}>
@@ -98,7 +109,7 @@ function PropertiesPage() {
                           <h3 className="font-semibold truncate">{p.name}</h3>
                           <p className="text-xs text-muted-foreground truncate">{p.address}{p.city ? `, ${p.city}` : ""}{p.state ? ` - ${p.state}` : ""}</p>
                         </div>
-                        <StatusBadge status={p.status} />
+                        <StatusBadge status={filterDate ? statusForDate(p.id) : p.status} />
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
