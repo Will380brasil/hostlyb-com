@@ -59,6 +59,7 @@ function CleaningsPage() {
 }
 
 function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
+  const { currency, lang } = useLocale();
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["cleaning_jobs"],
     queryFn: async () => {
