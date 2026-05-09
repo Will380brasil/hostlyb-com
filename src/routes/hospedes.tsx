@@ -18,6 +18,7 @@ export const Route = createFileRoute("/hospedes")({
 const platformLabel: Record<string, string> = { airbnb: "Airbnb", booking: "Booking", direto: "Direto" };
 
 function GuestsPage() {
+  const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const { data: guests = [] } = useQuery({
     queryKey: ["guests"],
