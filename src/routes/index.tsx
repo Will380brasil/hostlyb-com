@@ -587,16 +587,17 @@ function ProblemSolution() {
 }
 
 function HowItWorks() {
+  const t = useT();
   const steps = [
-    { n: "1", t: "Cadastre seus imóveis", d: "Adicione endereço, fotos e o link iCal do seu Airbnb ou Booking." },
-    { n: "2", t: "Conecte sua equipe", d: "Cadastre as faxineiras, vincule a cada imóvel e envie o link de acesso." },
-    { n: "3", t: "Gerencie pelo celular", d: "Veja o status de tudo em tempo real e receba alertas automáticos." },
+    { n: "1", t: t("hiw.s1.t"), d: t("hiw.s1.d") },
+    { n: "2", t: t("hiw.s2.t"), d: t("hiw.s2.d") },
+    { n: "3", t: t("hiw.s3.t"), d: t("hiw.s3.d") },
   ];
   return (
     <section id="como-funciona" style={{ padding: "96px 24px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Pronto em 3 passos
+          {t("hiw.title")}
         </h2>
         <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
           {steps.map((s) => (
