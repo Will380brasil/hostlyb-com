@@ -15,7 +15,20 @@ export const Route = createFileRoute("/hospedes")({
   component: GuestsPage,
 });
 
-const platformLabel: Record<string, string> = { airbnb: "Airbnb", booking: "Booking", direto: "Direto" };
+const PLATFORMS = [
+  { v: "airbnb", l: "Airbnb" },
+  { v: "booking", l: "Booking.com" },
+  { v: "vrbo", l: "Vrbo" },
+  { v: "expedia", l: "Expedia" },
+  { v: "agoda", l: "Agoda" },
+  { v: "hotels", l: "Hotels.com" },
+  { v: "tripadvisor", l: "TripAdvisor" },
+  { v: "trivago", l: "Trivago" },
+  { v: "homeaway", l: "HomeAway" },
+  { v: "direto", l: "Direto / Direct" },
+  { v: "outro", l: "Outro / Other" },
+];
+const platformLabel: Record<string, string> = Object.fromEntries(PLATFORMS.map(p => [p.v, p.l]));
 
 function GuestsPage() {
   const { currency, lang } = useLocale();
