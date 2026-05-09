@@ -368,7 +368,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
           <section className="hostly-card !p-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Pagamento</p>
-              <p className="font-mono">{formatBRL(Number(job.payment_amount ?? 0))}</p>
+              <p className="font-mono">{formatMoney(Number(job.payment_amount ?? 0), currency, lang)}</p>
             </div>
             {job.payment_status === "pago" ? (
               <span className="hostly-pill" style={{ color: "var(--color-success)", background: "var(--color-success-soft)" }}>Pago</span>
