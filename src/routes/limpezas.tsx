@@ -237,11 +237,13 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
       if (!user || !job) throw new Error("Erro");
       let photo_url: string | null = null;
       if (forgFile) {
-        const ext = forgFile.name.split(".").pop();
+        const ext = (forgFile.name.split(".").pop() || "jpg").toLowerCase();
         const path = `${user.id}/${jobId}/${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage.from("forgotten-items").upload(path, forgFile);
+        const { error: upErr } = await supabase.storage
+          .from("forgotten-items")
+          .upload(path, forgFile, { upsert: true, contentType: forgFile.type || "image/jpeg" });
         if (upErr) throw upErr;
-        photo_url = path;
+        photo_url = supabase.storage.from("forgotten-items").getPublicUrl(path).data.publicUrl;
       }
       const { error } = await supabase.from("forgotten_items").insert({
         user_id: user.id, cleaning_job_id: jobId, property_id: job.property_id,
