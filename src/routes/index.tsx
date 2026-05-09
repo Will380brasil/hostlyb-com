@@ -104,6 +104,30 @@ function useReveal() {
   }, []);
 }
 
+function useAnalytics() {
+  useEffect(() => {
+    initAnalytics();
+    initScrollDepth();
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement)?.closest?.<HTMLAnchorElement>('a[href="/signup"]');
+      if (a) trackEvent("cta_click", { location: a.dataset.ctaLocation || "unknown" });
+    };
+    const onToggle = (e: Event) => {
+      const d = e.target as HTMLDetailsElement;
+      if (d.tagName === "DETAILS" && d.open) {
+        const q = d.querySelector("summary span")?.textContent || "";
+        trackEvent("faq_open", { question: q.slice(0, 80) });
+      }
+    };
+    document.addEventListener("click", onClick);
+    document.addEventListener("toggle", onToggle, true);
+    return () => {
+      document.removeEventListener("click", onClick);
+      document.removeEventListener("toggle", onToggle, true);
+    };
+  }, []);
+}
+
 function useScrolled(threshold = 80) {
   const [s, setS] = useState(false);
   useEffect(() => {
