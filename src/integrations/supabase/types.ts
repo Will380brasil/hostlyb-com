@@ -285,25 +285,31 @@ export type Database = {
       }
       demo_leads: {
         Row: {
+          access_count: number
           created_at: string
           email: string
           id: string
+          last_access_at: string
           phone: string
           source: string | null
           user_agent: string | null
         }
         Insert: {
+          access_count?: number
           created_at?: string
           email: string
           id?: string
+          last_access_at?: string
           phone: string
           source?: string | null
           user_agent?: string | null
         }
         Update: {
+          access_count?: number
           created_at?: string
           email?: string
           id?: string
+          last_access_at?: string
           phone?: string
           source?: string | null
           user_agent?: string | null
@@ -833,6 +839,7 @@ export type Database = {
         Args: { _env?: string; _org_id: string }
         Returns: boolean
       }
+      user_can_access_app: { Args: { _user: string }; Returns: boolean }
     }
     Enums: {
       org_role: "owner" | "admin" | "staff"

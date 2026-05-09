@@ -29,8 +29,11 @@ export function DemoLeadModal({ open, onClose }: { open: boolean; onClose: () =>
         source: "landing_demo",
         user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       });
-      try { localStorage.setItem("hostlyb_demo_lead", "1"); } catch {}
-      navigate({ to: "/app" as any });
+      try {
+        localStorage.setItem("hostlyb_demo_lead", "1");
+        localStorage.setItem("hostlyb_demo_email", email.trim().toLowerCase());
+      } catch {}
+      navigate({ to: "/demo" as any });
     } catch (err: any) {
       toast.error("Erro ao registrar. Tente novamente.");
     } finally {

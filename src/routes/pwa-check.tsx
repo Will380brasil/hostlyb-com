@@ -7,7 +7,7 @@ export const Route = createFileRoute("/pwa-check")({
 });
 
 type Status = "ok" | "warn" | "fail" | "pending";
-type Check = { id: string; label: string; status: Status; detail?: string };
+type Check = { id: string; label: string; status: Status; detail?: string; fix?: string };
 
 function PwaCheckPage() {
   const [checks, setChecks] = useState<Check[]>([]);
@@ -22,7 +22,8 @@ function PwaCheckPage() {
         id: "https",
         label: "Servido por HTTPS (ou localhost)",
         status: window.isSecureContext ? "ok" : "fail",
-        detail: window.isSecureContext ? location.origin : "PWA exige HTTPS — publique o app",
+        detail: window.isSecureContext ? location.origin : "PWA exige HTTPS",
+        fix: "Publique o app em https://hostlyb.com — preview em iframe não conta como contexto seguro.",
       });
 
       // 2. Manifest link tag
@@ -31,7 +32,8 @@ function PwaCheckPage() {
         id: "manifest-link",
         label: '<link rel="manifest"> no <head>',
         status: manifestLink ? "ok" : "fail",
-        detail: manifestLink?.href ?? "Adicione um <link rel='manifest' href='/site.webmanifest'> no head",
+        detail: manifestLink?.href ?? "Tag ausente",
+        fix: 'Adicione <link rel="manifest" href="/site.webmanifest"> em src/routes/__root.tsx no head.',
       });
 
       // 3. Manifest fetch + validate
@@ -43,7 +45,11 @@ function PwaCheckPage() {
           manifest = await r.json();
           results.push({ id: "manifest-fetch", label: "Manifest carrega e é JSON válido", status: "ok", detail: manifestLink.href });
         } catch (e: any) {
-          results.push({ id: "manifest-fetch", label: "Manifest carrega e é JSON válido", status: "fail", detail: e.message });
+          results.push({
+            id: "manifest-fetch", label: "Manifest carrega e é JSON válido",
+            status: "fail", detail: e.message,
+            fix: "Verifique se public/site.webmanifest existe e contém JSON válido. Teste em: " + manifestLink.href,
+          });
         }
       }
 
@@ -55,6 +61,7 @@ function PwaCheckPage() {
           label: `Campos obrigatórios: ${required.join(", ")}`,
           status: missing.length ? "fail" : "ok",
           detail: missing.length ? `Faltando: ${missing.join(", ")}` : "Todos presentes",
+          fix: missing.length ? `Adicione os campos ausentes em public/site.webmanifest: ${missing.join(", ")}.` : undefined,
         });
 
         const okDisplay = ["standalone", "fullscreen", "minimal-ui"].includes(manifest.display);
@@ -63,9 +70,9 @@ function PwaCheckPage() {
           label: 'display: "standalone" / "fullscreen" / "minimal-ui"',
           status: okDisplay ? "ok" : "fail",
           detail: `display = "${manifest.display ?? "(ausente)"}"`,
+          fix: okDisplay ? undefined : 'Defina "display": "standalone" em public/site.webmanifest.',
         });
 
-        // Icons
         const icons: any[] = manifest.icons ?? [];
         const has192 = icons.some((i) => /(^|\s)192x192(\s|$)/.test(i.sizes ?? ""));
         const has512 = icons.some((i) => /(^|\s)512x512(\s|$)/.test(i.sizes ?? ""));
@@ -74,6 +81,7 @@ function PwaCheckPage() {
           label: "Ícones 192×192 e 512×512 declarados",
           status: has192 && has512 ? "ok" : "fail",
           detail: `192=${has192 ? "ok" : "✗"} · 512=${has512 ? "ok" : "✗"}`,
+          fix: has192 && has512 ? undefined : "Inclua ícones PNG 192×192 e 512×512 em public/ e referencie-os em site.webmanifest.",
         });
 
         const hasMaskable = icons.some((i) => (i.purpose ?? "").includes("maskable"));
@@ -81,19 +89,17 @@ function PwaCheckPage() {
           id: "icons-maskable",
           label: 'Ícone com purpose="maskable" (Android)',
           status: hasMaskable ? "ok" : "warn",
-          detail: hasMaskable ? "ok" : "Recomendado para o launcher do Android cortar bem",
+          detail: hasMaskable ? "ok" : "Recomendado",
+          fix: hasMaskable ? undefined : 'Adicione "purpose": "any maskable" ao ícone 512×512 do manifest.',
         });
 
-        // Test each icon URL
         const iconResults = await Promise.all(
           icons.map(async (i) => {
             try {
               const u = new URL(i.src, manifestLink!.href).href;
               const r = await fetch(u, { method: "GET" });
               return { src: u, ok: r.ok, status: r.status };
-            } catch {
-              return { src: i.src, ok: false, status: 0 };
-            }
+            } catch { return { src: i.src, ok: false, status: 0 }; }
           })
         );
         const broken = iconResults.filter((r) => !r.ok);
@@ -102,6 +108,7 @@ function PwaCheckPage() {
           label: `Todos os ícones do manifest retornam 200 (${iconResults.length})`,
           status: iconResults.length === 0 ? "fail" : broken.length ? "fail" : "ok",
           detail: broken.length ? broken.map((b) => `${b.src} → ${b.status}`).join(" · ") : "todos ok",
+          fix: broken.length ? "Confirme que os arquivos existem em public/ e que o caminho no manifest é absoluto (começa com /)." : undefined,
         });
       }
 
@@ -111,13 +118,13 @@ function PwaCheckPage() {
         results.push({
           id: "sw",
           label: "Service Worker registrado",
-          status: regs.length ? "ok" : "fail",
-          detail: regs.length
-            ? regs.map((r) => r.active?.scriptURL ?? r.scope).join(", ")
-            : "Sem SW — Chrome no Android NÃO mostra prompt 'Instalar' sem service worker",
+          status: regs.length ? "ok" : "warn",
+          detail: regs.length ? regs.map((r) => r.active?.scriptURL ?? r.scope).join(", ") : "Sem SW",
+          fix: regs.length ? undefined : "Para PWA 'apenas instalável' (configuração atual) o SW é opcional. Chrome/Android pode não exibir o prompt automático sem SW — use 'Adicionar à tela inicial' no menu.",
         });
       } else {
-        results.push({ id: "sw", label: "Service Worker disponível no navegador", status: "fail", detail: "API ausente" });
+        results.push({ id: "sw", label: "Service Worker disponível no navegador", status: "fail", detail: "API ausente",
+          fix: "Use um navegador moderno (Chrome, Edge, Safari, Firefox)." });
       }
 
       // 5. Apple meta tags (iOS)
@@ -125,18 +132,20 @@ function PwaCheckPage() {
       const appleIcon = !!document.querySelector('link[rel="apple-touch-icon"]');
       results.push({
         id: "apple",
-        label: "Tags Apple (iOS): apple-mobile-web-app-capable + apple-touch-icon",
+        label: "Tags Apple (iOS)",
         status: appleCapable && appleIcon ? "ok" : "warn",
         detail: `capable=${appleCapable ? "ok" : "✗"} · touch-icon=${appleIcon ? "ok" : "✗"}`,
+        fix: appleCapable && appleIcon ? undefined : 'Adicione no head: <meta name="apple-mobile-web-app-capable" content="yes"> e <link rel="apple-touch-icon" href="/apple-touch-icon.png">.',
       });
 
       // 6. theme-color
       const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
       results.push({
         id: "theme",
-        label: 'meta name="theme-color" presente',
+        label: 'meta name="theme-color"',
         status: themeColor ? "ok" : "warn",
-        detail: themeColor?.content ?? "Recomendado para barra do navegador no Android",
+        detail: themeColor?.content ?? "ausente",
+        fix: themeColor ? undefined : 'Adicione <meta name="theme-color" content="#FF6B6B"> no head.',
       });
 
       // 7. Already installed?
@@ -145,9 +154,10 @@ function PwaCheckPage() {
         (window.navigator as any).standalone === true;
       results.push({
         id: "installed",
-        label: "App rodando em modo standalone (já instalado)",
+        label: "App rodando em modo standalone",
         status: standalone ? "ok" : "warn",
-        detail: standalone ? "Sim" : "Não — abra após instalar para confirmar",
+        detail: standalone ? "Sim" : "Não",
+        fix: standalone ? undefined : "Após instalar, reabra pelo ícone do app na tela inicial para ver standalone=true.",
       });
 
       setChecks(results);
@@ -213,6 +223,11 @@ function PwaCheckPage() {
               {c.detail && (
                 <p style={{ marginTop: 6, color: "#616161", fontSize: 12, fontFamily: "ui-monospace, monospace", wordBreak: "break-all" }}>
                   {c.detail}
+                </p>
+              )}
+              {c.fix && c.status !== "ok" && (
+                <p style={{ marginTop: 8, padding: "8px 10px", background: "#FFF8E1", border: "1px dashed #FFD580", borderRadius: 8, color: "#7a4a00", fontSize: 12 }}>
+                  <strong>Como corrigir:</strong> {c.fix}
                 </p>
               )}
             </li>

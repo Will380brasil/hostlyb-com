@@ -38,7 +38,6 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
 
     const allUsers = await listAllUsers();
 
-    // Subscriptions (live, paying)
     const { data: subs } = await supabaseAdmin
       .from("subscriptions")
       .select("status, environment, current_period_end, user_id");
@@ -47,19 +46,18 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       liveSubs.filter((s: any) => s.status === "active" || s.status === "trialing").map((s: any) => s.user_id)
     );
 
-    // Profiles for phone numbers
     const { data: profiles } = await supabaseAdmin
       .from("profiles")
-      .select("user_id, phone, full_name");
-    const profileMap = new Map<string, any>((profiles ?? []).map((p: any) => [p.user_id, p]));
+      .select("id, email, display_name");
+    const profileMap = new Map<string, any>((profiles ?? []).map((p: any) => [p.id, p]));
 
     const users = allUsers.map((u) => {
       const p = profileMap.get(u.id);
       return {
         id: u.id,
         email: u.email ?? "—",
-        phone: p?.phone ?? u.phone ?? "—",
-        name: p?.full_name ?? (u.user_metadata as any)?.full_name ?? "—",
+        phone: u.phone ?? "—",
+        name: p?.display_name ?? (u.user_metadata as any)?.full_name ?? "—",
         created_at: u.created_at,
         last_sign_in_at: u.last_sign_in_at,
         is_paying: payingUserIds.has(u.id),
@@ -73,4 +71,42 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       users,
       generatedAt: new Date().toISOString(),
     };
+  });
+
+export const listAdminUsers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { data } = await supabaseAdmin.from("admin_users").select("user_id, email, created_at").order("created_at", { ascending: true });
+    return data ?? [];
+  });
+
+export const addAdminUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { email: string }) => {
+    const email = d.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email inválido");
+    return { email };
+  })
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const allUsers = await listAllUsers();
+    const target = allUsers.find((u) => (u.email ?? "").toLowerCase() === data.email);
+    if (!target) throw new Error("Usuário não encontrado. Ele precisa criar conta antes.");
+    const { error } = await supabaseAdmin.from("admin_users").upsert(
+      { user_id: target.id, email: data.email },
+      { onConflict: "user_id" }
+    );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const removeAdminUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { user_id: string }) => d)
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const { error } = await supabaseAdmin.from("admin_users").delete().eq("user_id", data.user_id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
