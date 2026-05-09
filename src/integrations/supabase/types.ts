@@ -177,6 +177,7 @@ export type Database = {
       }
       cleaning_jobs: {
         Row: {
+          access_token: string
           admin_email_sent: boolean
           calendar_event_id: string | null
           checklist: Json
@@ -197,6 +198,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          access_token?: string
           admin_email_sent?: boolean
           calendar_event_id?: string | null
           checklist?: Json
@@ -217,6 +219,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          access_token?: string
           admin_email_sent?: boolean
           calendar_event_id?: string | null
           checklist?: Json
@@ -560,6 +563,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleaner_add_forgotten_item: {
+        Args: {
+          p_description: string
+          p_notes?: string
+          p_photo_url?: string
+          p_token: string
+        }
+        Returns: string
+      }
+      cleaner_get_job: { Args: { p_token: string }; Returns: Json }
+      cleaner_update_job: {
+        Args: {
+          p_checklist?: Json
+          p_notes?: string
+          p_photos?: Json
+          p_status?: string
+          p_token: string
+        }
+        Returns: Json
+      }
       create_alert: {
         Args: {
           p_action_label?: string
