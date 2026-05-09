@@ -7,14 +7,75 @@ import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 
+const FAQ_ITEMS = [
+  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial." },
+  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim. O Hostly importa reservas do Airbnb, Booking.com e VRBO via sincronização de calendário iCal. Cole o link iCal nas configurações do imóvel e as reservas aparecem automaticamente." },
+  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. A profissional recebe um link único por WhatsApp e acessa o checklist diretamente pelo navegador do celular, sem criar conta nem instalar nada." },
+  { q: "Como funciona o controle de objetos esquecidos?", a: "A faxineira fotografa e registra o objeto pelo portal dela. Você recebe alerta imediato com foto e descrição. O registro fica salvo no histórico permanente até ser resolvido." },
+  { q: "Posso cancelar quando quiser?", a: "Sim. Sem contrato, sem multa, sem fidelidade. Cancele com 1 clique nas configurações da conta. O acesso continua até o fim do período pago." },
+  { q: "Quantos usuários e imóveis posso ter?", a: "Você + até 4 funcionários (5 no total) através de link de convite, e imóveis ilimitados — tudo no plano Pro." },
+  { q: "Como o Hostly se integra com o Google Calendar?", a: "Exporte checkins, checkouts e limpezas em formato .ics e importe no Google Calendar, Apple Calendar ou qualquer app de agenda." },
+  { q: "Meus dados e fotos estão seguros?", a: "Sim. Todos os dados são criptografados em repouso e em trânsito (HTTPS). Fotos ficam em armazenamento privado — só você tem acesso." },
+];
+
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Hostly",
+      "description": "App de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": { "@type": "Offer", "price": "59.90", "priceCurrency": "BRL" },
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "847", "bestRating": "5", "worstRating": "1" },
+      "featureList": [
+        "Checklist de limpeza com fotos por cômodo",
+        "Controle de hóspedes com histórico",
+        "Cadastro de profissionais de limpeza",
+        "Registro de objetos esquecidos com fotos",
+        "Calendário integrado com Google Calendar",
+        "Sincronização via iCal com Airbnb e Booking",
+        "Portal para faxineira sem necessidade de login",
+        "Dashboard em tempo real",
+      ],
+    },
+    {
+      "@type": "Organization",
+      "name": "Hostly",
+      "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "availableLanguage": ["Portuguese", "English", "Spanish", "French", "Italian", "German"] },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": FAQ_ITEMS.map((it) => ({
+        "@type": "Question",
+        "name": it.q,
+        "acceptedAnswer": { "@type": "Answer", "text": it.a },
+      })),
+    },
+  ],
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hostly — Gestão de Airbnb Simplificada" },
-      { name: "description", content: "Controle limpezas, hóspedes e profissionais dos seus imóveis. 7 dias grátis." },
+      { title: "Hostly — Gestão de Airbnb Simplificada | Controle Limpezas e Hóspedes" },
+      { name: "description", content: "Hostly é o app de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário. 7 dias grátis. R$ 59,90/mês." },
+      { name: "keywords", content: "gestão airbnb, app anfitrião, controle limpeza airbnb, software airbnb brasil, gerenciar aluguel por temporada, checklist limpeza airbnb, gestão hóspedes" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
       { name: "theme-color", content: "#FF6B6B" },
+      { property: "og:type", content: "website" },
       { property: "og:title", content: "Hostly — Gestão de Airbnb Simplificada" },
-      { property: "og:description", content: "Pare de gerenciar pelo WhatsApp. O Hostly centraliza tudo. 7 dias grátis." },
+      { property: "og:description", content: "Pare de gerenciar seu Airbnb pelo WhatsApp. Controle limpezas com checklist e fotos, hóspedes e profissionais. 7 dias grátis, sem cartão." },
+      { property: "og:locale", content: "pt_BR" },
+      { property: "og:locale:alternate", content: "en_US" },
+      { property: "og:site_name", content: "Hostly" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Hostly — Gestão de Airbnb Simplificada" },
+      { name: "twitter:description", content: "Controle limpezas com checklist, gerencie hóspedes e profissionais. 7 dias grátis." },
+    ],
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(JSON_LD) },
     ],
   }),
   component: LandingPage,
@@ -93,6 +154,7 @@ function Navbar() {
 
         <nav className="nav-desktop" style={{ display: "flex", gap: 32 }}>
           <a href="#features" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.features")}</a>
+          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>Como funciona</a>
           <a href="#precos" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.pricing")}</a>
           <a href="#faq" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.faq")}</a>
         </nav>
@@ -384,22 +446,109 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 function FAQ() {
-  const items = [
-    { q: "Preciso de cartão de crédito para testar?", a: "Não. 7 dias grátis sem cartão." },
-    { q: "Quantos usuários posso ter?", a: "Você + até 4 funcionários (5 no total) através de link de convite." },
-    { q: "Posso cancelar quando quiser?", a: "Sim. Sem contrato, sem fidelidade." },
-    { q: "Tem app para a faxineira?", a: "Sim. Ela recebe um link com o checklist do dia, sem precisar baixar nada." },
-  ];
   return (
     <section id="faq" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 32, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          FAQ
+          Perguntas frequentes
         </h2>
         <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: "8px 24px", border: `1px solid ${C.g100}` }}>
-          {items.map((it) => <FAQItem key={it.q} {...it} />)}
+          {FAQ_ITEMS.map((it) => (
+            <details key={it.q} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
+              <summary style={{
+                listStyle: "none", cursor: "pointer", padding: "20px 0",
+                display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16,
+                fontWeight: 700, color: C.g800, fontSize: 16,
+              }}>
+                <span>{it.q}</span>
+                <Plus size={20} color={C.g600} className="faq-icon-closed" />
+                <Minus size={20} color={C.coral} className="faq-icon-open" />
+              </summary>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{it.a}</p>
+            </details>
+          ))}
         </div>
       </div>
+    </section>
+  );
+}
+
+function ProblemSolution() {
+  const without = [
+    "Avisa a faxineira pelo WhatsApp e não sabe se foi feita",
+    "Controla hóspedes em planilha do Excel",
+    "Esquece o checkout e o próximo hóspede chega num imóvel sujo",
+    "Não sabe se ficou objeto esquecido",
+    "Perde horas gerenciando cada imóvel separado",
+  ];
+  const withHostly = [
+    "Faxineira recebe checklist no celular e manda fotos de cada cômodo",
+    "Dashboard com status de todos os imóveis em tempo real",
+    "Alerta automático antes de cada checkout",
+    "Foto e alerta imediato de todo objeto esquecido encontrado",
+    "Tudo num só app, em 2 minutos por dia",
+  ];
+  return (
+    <section id="problema" style={{ padding: "96px 24px", background: C.g50 }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          Antes vs. depois do Hostly
+        </h2>
+        <div className="ps-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+          <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.g100}` }}>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ Sem o Hostly</h3>
+            <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
+              {without.map((t) => (
+                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
+                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `2px solid ${C.emerald}33` }}>
+            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ Com o Hostly</h3>
+            <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
+              {withHostly.map((t) => (
+                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
+                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <style>{`@media (max-width: 768px) { .ps-grid { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    { n: "1", t: "Cadastre seus imóveis", d: "Adicione endereço, fotos e o link iCal do seu Airbnb ou Booking." },
+    { n: "2", t: "Conecte sua equipe", d: "Cadastre as faxineiras, vincule a cada imóvel e envie o link de acesso." },
+    { n: "3", t: "Gerencie pelo celular", d: "Veja o status de tudo em tempo real e receba alertas automáticos." },
+  ];
+  return (
+    <section id="como-funciona" style={{ padding: "96px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          Pronto em 3 passos
+        </h2>
+        <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
+          {steps.map((s) => (
+            <div key={s.n} data-reveal className="reveal" style={{ textAlign: "center", padding: 16 }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: "50%", background: C.coralLight,
+                color: C.coral, fontFamily: displayFont, fontWeight: 800, fontSize: 28,
+                display: "grid", placeItems: "center", margin: "0 auto 18px",
+              }}>{s.n}</div>
+              <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.black, marginBottom: 8 }}>{s.t}</h3>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, maxWidth: 280, margin: "0 auto" }}>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <style>{`@media (max-width: 768px) { .hiw-grid { grid-template-columns: 1fr !important; } }`}</style>
     </section>
   );
 }
@@ -459,6 +608,10 @@ function LandingPage() {
         .btn-coral:hover { transform: translateY(-1px); filter: brightness(1.04); }
         .nav-link { transition: color .15s ease; } .nav-link:hover { color: ${C.coral}; }
         .feature-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: ${C.coralLight}; }
+        details.faq-item summary::-webkit-details-marker { display: none; }
+        details.faq-item .faq-icon-open { display: none; }
+        details.faq-item[open] .faq-icon-closed { display: none; }
+        details.faq-item[open] .faq-icon-open { display: inline-block; }
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-mobile-btn { display: inline-flex !important; }
@@ -472,7 +625,9 @@ function LandingPage() {
       <Navbar />
       <Hero />
       <SocialProof />
+      <ProblemSolution />
       <Features />
+      <HowItWorks />
       <Pricing />
       <Testimonials />
       <FAQ />
