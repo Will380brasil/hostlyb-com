@@ -930,8 +930,10 @@ function LandingPage() {
       `}</style>
 
       <Navbar />
+      <PwaInstallBanner />
       <Hero />
       <SocialProof />
+      <StartInFourSteps />
       <ObjectionBreaker />
       <ProblemSolution />
       <Features />
