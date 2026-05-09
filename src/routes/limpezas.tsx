@@ -487,7 +487,7 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
           <Field label="Telefone (com DDI, ex: 5511...)"><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inp} /></Field>
           <Field label="E-mail"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inp} /></Field>
           <Field label="Chave Pix"><input value={form.pix_key} onChange={(e) => setForm({ ...form, pix_key: e.target.value })} className={inp} /></Field>
-          <Field label="Valor por limpeza (R$)"><input type="number" min={0} step="0.01" value={form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor por limpeza (${currencySymbol(currency)})`}><input type="number" min={0} step="0.01" value={form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
           <button disabled={m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>
         </form>
