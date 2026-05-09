@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { Wallet, Home, Star, Users as UsersIcon, AlertTriangle, ChevronRight, Clock } from "lucide-react";
+import { Onboarding, OnboardingHelpButton, useOnboarding } from "@/components/Onboarding";
 
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Dashboard — Hostlyb" }, { name: "description", content: "Visão geral dos seus imóveis." }] }),
@@ -69,11 +70,17 @@ function Dashboard() {
     ? (properties.reduce((s, p) => s + Number(p.rating ?? 0), 0) / properties.length).toFixed(1)
     : "—";
 
+  const onboarding = useOnboarding();
+
   return (
     <AppShell>
-      <section className="mb-2">
-        <p className="text-sm text-muted-foreground">Bem-vindo de volta 👋</p>
-        <h2 className="text-2xl font-bold">Sua operação hoje</h2>
+      <Onboarding open={onboarding.open} onClose={onboarding.close} />
+      <section className="mb-2 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-muted-foreground">Bem-vindo de volta 👋</p>
+          <h2 className="text-2xl font-bold">Sua operação hoje</h2>
+        </div>
+        <OnboardingHelpButton onClick={onboarding.show} />
       </section>
 
       <section className="grid grid-cols-2 gap-3 mt-4">

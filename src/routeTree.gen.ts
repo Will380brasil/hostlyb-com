@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as EquipeRouteImport } from './routes/equipe'
+import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as AssinarRouteImport } from './routes/assinar'
 import { Route as AppRouteImport } from './routes/app'
@@ -26,6 +27,7 @@ import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -57,6 +59,11 @@ const HospedesRoute = HospedesRouteImport.update({
 const EquipeRoute = EquipeRouteImport.update({
   id: '/equipe',
   path: '/equipe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticoRoute = DiagnosticoRouteImport.update({
+  id: '/diagnostico',
+  path: '/diagnostico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -114,6 +121,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGeoRoute = ApiPublicGeoRouteImport.update({
   id: '/api/public/geo',
   path: '/api/public/geo',
@@ -133,12 +145,14 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/diagnostico': typeof DiagnosticoRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
@@ -154,12 +168,14 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/diagnostico': typeof DiagnosticoRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
@@ -176,12 +192,14 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/diagnostico': typeof DiagnosticoRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
@@ -199,12 +217,14 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/diagnostico'
     | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/auth/callback'
     | '/checkout/return'
     | '/convite/$token'
     | '/faxineira/$token'
@@ -220,12 +240,14 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/diagnostico'
     | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/auth/callback'
     | '/checkout/return'
     | '/convite/$token'
     | '/faxineira/$token'
@@ -241,12 +263,14 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/diagnostico'
     | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/auth/callback'
     | '/checkout/return'
     | '/convite/$token'
     | '/faxineira/$token'
@@ -263,12 +287,14 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   AssinarRoute: typeof AssinarRoute
   CalendarioRoute: typeof CalendarioRoute
+  DiagnosticoRoute: typeof DiagnosticoRoute
   EquipeRoute: typeof EquipeRoute
   HospedesRoute: typeof HospedesRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   PwaCheckRoute: typeof PwaCheckRoute
   SignupRoute: typeof SignupRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
   FaxineiraTokenRoute: typeof FaxineiraTokenRoute
@@ -320,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/equipe'
       fullPath: '/equipe'
       preLoaderRoute: typeof EquipeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostico': {
+      id: '/diagnostico'
+      path: '/diagnostico'
+      fullPath: '/diagnostico'
+      preLoaderRoute: typeof DiagnosticoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -399,6 +432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/geo': {
       id: '/api/public/geo'
       path: '/api/public/geo'
@@ -423,12 +463,14 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   AssinarRoute: AssinarRoute,
   CalendarioRoute: CalendarioRoute,
+  DiagnosticoRoute: DiagnosticoRoute,
   EquipeRoute: EquipeRoute,
   HospedesRoute: HospedesRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   PwaCheckRoute: PwaCheckRoute,
   SignupRoute: SignupRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ConviteTokenRoute: ConviteTokenRoute,
   FaxineiraTokenRoute: FaxineiraTokenRoute,
