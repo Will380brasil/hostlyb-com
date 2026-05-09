@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
+import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AlertasRouteImport } from './routes/alertas'
@@ -40,6 +41,11 @@ const LimpezasRoute = LimpezasRouteImport.update({
 const HospedesRoute = HospedesRouteImport.update({
   id: '/hospedes',
   path: '/hospedes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipeRoute = EquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/calendario': typeof CalendarioRoute
+  '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/calendario': typeof CalendarioRoute
+  '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/calendario': typeof CalendarioRoute
+  '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/alertas'
     | '/app'
     | '/calendario'
+    | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/alertas'
     | '/app'
     | '/calendario'
+    | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/alertas'
     | '/app'
     | '/calendario'
+    | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   AlertasRoute: typeof AlertasRoute
   AppRoute: typeof AppRoute
   CalendarioRoute: typeof CalendarioRoute
+  EquipeRoute: typeof EquipeRoute
   HospedesRoute: typeof HospedesRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
@@ -214,6 +227,13 @@ declare module '@tanstack/react-router' {
       path: '/hospedes'
       fullPath: '/hospedes'
       preLoaderRoute: typeof HospedesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipe': {
+      id: '/equipe'
+      path: '/equipe'
+      fullPath: '/equipe'
+      preLoaderRoute: typeof EquipeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlertasRoute: AlertasRoute,
   AppRoute: AppRoute,
   CalendarioRoute: CalendarioRoute,
+  EquipeRoute: EquipeRoute,
   HospedesRoute: HospedesRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
@@ -292,3 +313,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
