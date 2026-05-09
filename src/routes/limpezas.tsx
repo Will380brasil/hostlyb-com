@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle } from "lucide-react";
+import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/limpezas")({
   head: () => ({ meta: [{ title: "Limpezas — Hostly" }, { name: "description", content: "Agenda de limpezas." }] }),
@@ -288,6 +288,26 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
               </div>
             )}
           </section>
+
+          {(job as any).access_token && (
+            <section className="hostly-card !p-4">
+              <h4 className="font-bold text-sm mb-2 inline-flex items-center gap-2"><Link2 size={14} /> Link da faxineira</h4>
+              <p className="text-xs text-muted-foreground mb-2">Compartilhe este link para a faxineira preencher o checklist sem login.</p>
+              {(() => {
+                const url = `${typeof window !== "undefined" ? window.location.origin : ""}/faxineira/${(job as any).access_token}`;
+                const wppMsg = encodeURIComponent(`Olá! Aqui está o link da limpeza: ${url}`);
+                return (
+                  <div className="flex flex-col gap-2">
+                    <code className="text-[11px] break-all bg-background border border-card-border rounded px-2 py-1.5">{url}</code>
+                    <div className="flex gap-2">
+                      <button onClick={() => { navigator.clipboard.writeText(url); toast.success("Link copiado"); }} className="btn-secondary flex-1 justify-center"><Copy size={14} /> Copiar</button>
+                      {phone && <a href={`https://wa.me/${phone}?text=${wppMsg}`} target="_blank" rel="noreferrer" className="btn-secondary flex-1 justify-center"><MessageCircle size={14} /> Enviar</a>}
+                    </div>
+                  </div>
+                );
+              })()}
+            </section>
+          )}
 
           <section className="hostly-card !p-4">
             <h4 className="font-bold text-sm mb-3">Checklist</h4>
