@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
+import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -76,6 +77,11 @@ const FaxineiraTokenRoute = FaxineiraTokenRouteImport.update({
   path: '/faxineira/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGeoRoute = ApiPublicGeoRouteImport.update({
+  id: '/api/public/geo',
+  path: '/api/public/geo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
+  '/api/public/geo': typeof ApiPublicGeoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
+  '/api/public/geo': typeof ApiPublicGeoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
+  '/api/public/geo': typeof ApiPublicGeoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
+    | '/api/public/geo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis'
+    | '/api/public/geo'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
+    | '/api/public/geo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   FaxineiraTokenRoute: typeof FaxineiraTokenRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
+  ApiPublicGeoRoute: typeof ApiPublicGeoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaxineiraTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/geo': {
+      id: '/api/public/geo'
+      path: '/api/public/geo'
+      fullPath: '/api/public/geo'
+      preLoaderRoute: typeof ApiPublicGeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,7 +287,18 @@ const rootRouteChildren: RootRouteChildren = {
   FaxineiraTokenRoute: FaxineiraTokenRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
+  ApiPublicGeoRoute: ApiPublicGeoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
