@@ -1,7 +1,9 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const tabs = [
   { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
@@ -15,6 +17,27 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { session, loading, signOut } = useAuth();
+  const qc = useQueryClient();
+
+  const { data: unread = 0 } = useQuery({
+    queryKey: ["alerts-unread", session?.user.id],
+    enabled: !!session?.user.id,
+    queryFn: async () => {
+      const { count } = await supabase.from("alerts").select("id", { count: "exact", head: true }).eq("is_read", false).eq("is_dismissed", false);
+      return count ?? 0;
+    },
+  });
+
+  useEffect(() => {
+    if (!session?.user.id) return;
+    const ch = supabase
+      .channel("alerts-shell")
+      .on("postgres_changes", { event: "*", schema: "public", table: "alerts", filter: `user_id=eq.${session.user.id}` }, () => {
+        qc.invalidateQueries({ queryKey: ["alerts-unread"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [session?.user.id, qc]);
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/login" as any });
@@ -30,13 +53,28 @@ export function AppShell({ children }: { children?: ReactNode }) {
         <h1 className="text-2xl font-black tracking-tight">
           Host<span style={{ color: "var(--color-accent)" }}>ly</span>
         </h1>
-        <button
-          aria-label="Sair"
-          onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
-          className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
-        >
-          <LogOut size={16} />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            to={"/alertas" as any}
+            aria-label="Alertas"
+            className="relative grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          >
+            <Bell size={16} />
+            {unread > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white grid place-items-center"
+                style={{ background: "var(--color-destructive, #ef4444)" }}>
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </Link>
+          <button
+            aria-label="Sair"
+            onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
+            className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 px-4 pt-4 pb-28">

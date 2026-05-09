@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      alerts: {
+        Row: {
+          action_label: string | null
+          action_url: string | null
+          cleaning_job_id: string | null
+          created_at: string
+          guest_id: string | null
+          id: string
+          is_dismissed: boolean
+          is_read: boolean
+          message: string
+          priority: string
+          property_id: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_label?: string | null
+          action_url?: string | null
+          cleaning_job_id?: string | null
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          is_dismissed?: boolean
+          is_read?: boolean
+          message: string
+          priority?: string
+          property_id?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          action_label?: string | null
+          action_url?: string | null
+          cleaning_job_id?: string | null
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          is_dismissed?: boolean
+          is_read?: boolean
+          message?: string
+          priority?: string
+          property_id?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           color: string | null
@@ -506,7 +560,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_alert: {
+        Args: {
+          p_action_label?: string
+          p_action_url?: string
+          p_cleaning_id?: string
+          p_guest_id?: string
+          p_message: string
+          p_priority?: string
+          p_property_id?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
