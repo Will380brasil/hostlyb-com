@@ -40,7 +40,8 @@ function SubscribePage() {
     })();
   }, [navigate]);
 
-  const plan = PRICE_BY_CURRENCY[currency] || PRICE_BY_CURRENCY.BRL;
+  const priceId = PRICE_ID_BY_CURRENCY[currency] ?? PRICE_ID_BY_CURRENCY.BRL;
+  const priceLabel = `${formatPrice(currency, lang)}${currency === "USD" ? "/mo" : "/mês"}`;
 
   const openPortal = async () => {
     if (!orgId) return;
