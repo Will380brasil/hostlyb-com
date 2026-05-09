@@ -321,6 +321,46 @@ function SocialProof() {
   );
 }
 
+function ObjectionBreaker() {
+  const items = [
+    { q: "“Não tenho tempo de aprender outro app.”", a: "Setup em 5 minutos. Se você usa WhatsApp, sabe usar o Hostly." },
+    { q: "“Minha faxineira não é boa com tecnologia.”", a: "Ela só clica num link. Sem instalar app, sem criar conta, sem senha." },
+    { q: "“Já tenho planilha funcionando.”", a: "Planilha não te avisa de checkout. Não tira foto. Não fala com a faxineira." },
+    { q: "“É caro?”", a: "R$ 59,90/mês. Menos que uma diária. Cancela em 1 clique se não gostar." },
+  ];
+  return (
+    <section style={{ padding: "72px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.coral, fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
+          Quebrando as objeções
+        </p>
+        <h2 data-reveal className="reveal" style={{
+          fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800,
+          marginBottom: 40, letterSpacing: "-0.02em", lineHeight: 1.1,
+          fontSize: "clamp(26px, 3.8vw, 38px)",
+        }}>
+          Você já pensou em usar — e travou aqui.
+        </h2>
+        <div className="obj-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+          {items.map((it) => (
+            <div key={it.q} data-reveal className="reveal" style={{
+              background: C.g50, borderRadius: 18, padding: "22px 24px",
+              border: `1px solid ${C.g100}`,
+            }}>
+              <p style={{ color: C.g800, fontWeight: 700, fontSize: 16, marginBottom: 8, fontStyle: "italic" }}>{it.q}</p>
+              <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.55, display: "flex", gap: 8, alignItems: "flex-start" }}>
+                <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} />
+                <span>{it.a}</span>
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <style>{`@media (max-width: 768px) { .obj-grid { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
+
 function Features() {
   const features = [
     { icon: "🧹", title: "Limpezas", desc: "Checklist e fotos." },
@@ -651,6 +691,7 @@ function LandingPage() {
       <Navbar />
       <Hero />
       <SocialProof />
+      <ObjectionBreaker />
       <ProblemSolution />
       <Features />
       <HowItWorks />
