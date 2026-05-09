@@ -314,6 +314,7 @@ function Hero() {
         }
       `}</style>
     </section>
+    </>
   );
 }
 
