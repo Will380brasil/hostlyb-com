@@ -19,7 +19,7 @@ const PRICE_ID_BY_CURRENCY = {
 
 function SubscribePage() {
   const navigate = useNavigate();
-  const { currency } = useLocale();
+  const { currency, lang } = useLocale();
   const [orgId, setOrgId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
