@@ -19,6 +19,7 @@ function PropertiesPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const [filterDate, setFilterDate] = useState("");
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
@@ -27,6 +28,31 @@ function PropertiesPage() {
       return data ?? [];
     },
   });
+  const { data: guestsOnDate = [] } = useQuery({
+    queryKey: ["guests-on-date", filterDate],
+    enabled: !!filterDate,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("guests").select("property_id, checkin_date, checkout_date")
+        .lte("checkin_date", filterDate).gt("checkout_date", filterDate);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const { data: cleaningsOnDate = [] } = useQuery({
+    queryKey: ["cleanings-on-date", filterDate],
+    enabled: !!filterDate,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("cleaning_jobs").select("property_id, status")
+        .eq("scheduled_date", filterDate).neq("status", "concluido");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const statusForDate = (pid: string): "ocupado" | "limpeza" | "livre" => {
+    if (guestsOnDate.some((g: any) => g.property_id === pid)) return "ocupado";
+    if (cleaningsOnDate.some((c: any) => c.property_id === pid)) return "limpeza";
+    return "livre";
+  };
 
   return (
     <AppShell>
@@ -43,6 +69,19 @@ function PropertiesPage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome, endereço, cidade..."
             className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-card border border-card-border text-sm" />
+        </div>
+      )}
+
+      {properties.length > 0 && (
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
+            className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" title="Ver disponibilidade na data" />
+          {filterDate && (
+            <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">Limpar</button>
+          )}
+          <span className="text-xs text-muted-foreground">
+            {filterDate ? `Status em ${new Date(filterDate).toLocaleDateString()}` : "Filtrar disponibilidade por data"}
+          </span>
         </div>
       )}
 
@@ -72,7 +111,7 @@ function PropertiesPage() {
                           <h3 className="font-semibold truncate">{p.name}</h3>
                           <p className="text-xs text-muted-foreground truncate">{p.address}{p.city ? `, ${p.city}` : ""}{p.state ? ` - ${p.state}` : ""}</p>
                         </div>
-                        <StatusBadge status={p.status} />
+                        <StatusBadge status={filterDate ? statusForDate(p.id) : p.status} />
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
