@@ -1,71 +1,76 @@
-## Fase 1 — Bugs críticos (uso travado)
 
-1. **Cadastro de faxineira fecha ao digitar e-mail**
-   - Causa provável: o sheet/modal está dentro de um `<form>` pai ou o input dispara submit. Vou isolar o form e usar `onSubmit` com `preventDefault` correto.
-2. **Inputs numéricos com "0" fixo que não apaga** (valor por limpeza, agendar limpeza, novo hóspede, valor total)
-   - Trocar `value={form.x}` (number=0) por string controlada (`""` quando vazio) e `parse` só no submit. Aplicar em `equipe.tsx`, `limpezas.tsx`, `hospedes.tsx`, `imoveis.$id.tsx`.
-3. **Upload de objeto esquecido dá erro**
-   - Verificar bucket `forgotten-items` (existe) + RLS de `storage.objects` para INSERT do faxineiro via token. Provável falta de policy pública de upload nesse bucket. Corrigir policy e tratamento de erro no client.
-4. **Botões de mapa (Google/Waze/Apple) dão erro**
-   - Bug está em `AddressActions.tsx`: o componente recebe só `address` (string) sem cidade/estado. Várias chamadas passam objeto. Vou tipar corretamente e usar `fullAddress(p)` no encode.
+Esta entrega é grande. Proponho dividir em **7 frentes** e executar em sequência. Confirme antes que eu siga.
 
-## Fase 2 — Internacionalização de pagamento + checklist
+## 1. Landing — Seção "Comece em 4 passos"
+- Nova seção destacada na landing (`src/routes/index.tsx`) com 4 cards numerados:
+  1. Cadastrar imóvel → `/imoveis`
+  2. Agendar limpeza → `/limpezas`
+  3. Registrar hóspede → `/hospedes`
+  4. Sincronizar calendário → `/calendario`
+- Cada card é um `<Link>` direto.
+- Substituir o atual "Ver demo" por essa seção + manter um link discreto para a demo de dashboard.
 
-5. **Pagamento por país** (substituir "PIX" fixo)
-   - Adicionar coluna `payment_method` (`pix|iban|mbway|sepa|zelle|venmo|paypal|other`) e `payment_details` (text) em `cleaners`.
-   - UI: select de método baseado no país do usuário (default por `useLocale`), com opção "Outro" livre.
-6. **Checklist com cômodos por país + customizáveis**
-   - Lista base ampliada (sala/salão/living room, suíte/master bedroom, lavabo/casa de banho/restroom, quintal/jardim/patio/garden, varanda/balcony/terrasse, copa/dispensa/pantry, área de serviço/laundry/lavanderia, escritório/home office, garagem etc).
-   - Botão "+ Adicionar item" para o usuário criar próprios; persistir por usuário em uma tabela `checklist_templates` (user_id, label).
-7. **Plataforma de hospedagem extensível**
-   - Lista ampliada (Airbnb, Booking, Vrbo, Expedia, Agoda, Hotels.com, Direto, Trivago, TripAdvisor) + opção "Adicionar plataforma" com armazenamento em `platforms` por usuário.
+## 2. Provas sociais dinâmicas
+- Carrossel de depoimentos (8–10 itens fictícios realistas) que troca a cada **2s** com transição suave.
+- Mantém badges de números (X imóveis gerenciados, etc.).
 
-## Fase 3 — Calendário estilo Google + Exportação
+## 3. PWA na tela principal
+- Banner/CTA "Instalar app" no topo da landing usando `beforeinstallprompt`.
+- Botão "Adicionar à tela inicial" que dispara o prompt nativo (Chrome/Android) e mostra instruções iOS quando não disponível.
 
-8. **Vista do dia ao clicar numa data** (lista cronológica de eventos do dia, igual Google Calendar) com modal de detalhes do evento + botão "Editar" (se for limpeza/hóspede, abre o registro real).
-9. **Seletor rápido de mês/ano** clicando no título (popover com ano e meses).
-10. **Próximos eventos clicáveis** + menu de compartilhamento (WhatsApp, Email, Telegram, SMS via `navigator.share` quando disponível, fallback links).
-11. **Exportar como Excel (.xlsx) com logo Hostlyb** usando SheetJS no client; manter `.ics` opcional como secundário.
+## 4. Convite — página de status
+- Refatorar `src/routes/convite/$token.tsx` para mostrar 3 estados claros:
+  - **Aceito** ✓ → CTA "Ir ao painel"
+  - **Expirado** → CTA "Pedir novo convite ao admin" (envia alerta in-app ao admin) + mostra e-mail de quem convidou
+  - **Erro** → CTA "Reenviar diagnóstico ao suporte"
+- Adicionar RPC `request_new_invite(p_token)` que cria um registro em `alerts` para o admin da org.
 
-## Fase 4 — Alertas, CRM e busca
+## 5. Diagnóstico → enviar ao suporte
+- Em `/diagnostico` e `/auth/callback` (estado de erro), botão **"Enviar diagnóstico ao suporte"**.
+- Cria server function `submitDiagnostic` que grava em nova tabela `support_tickets` (subject, body, user_id, email, logs jsonb, url, user_agent).
+- Admin vê em `/admin` em uma nova aba "Suporte".
 
-12. **Alertas com modal de detalhe** (foto, descrição, contexto), botões "Marcar lido", "Dispensar", "Arquivar". Adicionar coluna `archived_at` em `alerts`.
-13. **Cards clicáveis em Hóspedes e Imóveis** + barra de busca (filtro client-side por nome/imóvel/cidade).
-14. **Histórico tipo CRM**:
-    - Imóvel: aba/seção "Histórico" listando hóspedes (qual quarto, datas, valor, plataforma) e limpezas (data, faxineira, status, valor).
-    - Hóspede: detalhe com histórico de estadias.
+## 6. Links públicos canônicos
+- Auditar e trocar TODOS os `window.location.origin` em geração de links públicos por `publicUrl()` de `src/lib/public-url.ts`. Já parcialmente feito; cobrir resíduos em:
+  - convites (`equipe.tsx`)
+  - links da faxineira (`limpezas.tsx`, `imoveis.$id.tsx`)
+  - emails (edge function `send-forgotten-items-email`)
+  - meta tags `og:url` no `__root.tsx`
 
-## Fase 5 — Admin e Segurança
+## 7. **Modo Demo com dados fictícios** (grande)
+Substituir o "Ver demo" por um **modo demo navegável** usando dados em memória, sem tocar no banco:
+- Novo helper `src/lib/demo-data.ts` com seeds ricos: 6 imóveis, 30 hóspedes (passados/atuais/futuros), 40 limpezas, eventos de calendário, alertas, transações financeiras.
+- Rotas `/demo`, `/demo/imoveis`, `/demo/limpezas`, `/demo/hospedes`, `/demo/calendario`, `/demo/financeiro` que renderizam as mesmas telas mas lendo de um `DemoProvider` (context) em vez do Supabase.
+- Banner persistente "Você está no modo demo — criar conta".
 
-15. **Admin simplificado**: apenas
-    - quantos usuários adquiriram (total cadastros)
-    - quantos pagantes ativos (subscriptions live)
-    - tabela com email, telefone (de `profiles` + auth metadata)
-    - Remover métricas live/online complexas pedidas anteriormente.
-16. **Tornar `brasgold1@gmail.com` admin geral**
-    - Atualizar secret `HOSTLY_ADMIN_EMAIL=brasgold1@gmail.com` e adicionar tabela `admin_users` (com `user_id`) para suportar múltiplos admins no futuro. Bloquear acesso normal de usuário se for admin (redirect para /admin).
-17. **Auditoria RLS / vazamento de dados**
-    - Rodar `supabase--linter` e revisar todas policies. Garantir que nenhum SELECT cruze `user_id`. Confirmar que `properties`, `guests`, `cleaning_jobs`, `cleaners`, `forgotten_items`, `alerts` filtram só pelo `auth.uid()`.
-
----
-
-## Detalhes técnicos
-
-- `cleaners` migration: `ALTER TABLE cleaners ADD COLUMN payment_method TEXT DEFAULT 'pix', ADD COLUMN payment_details TEXT;` (mantém `pix_key` por compatibilidade).
-- `alerts`: `ALTER TABLE alerts ADD COLUMN archived_at TIMESTAMPTZ;`.
-- Novas tabelas: `checklist_templates(user_id, label)`, `user_platforms(user_id, key, label)`, `admin_users(user_id, email)`.
-- Storage: revisar policies do bucket `forgotten-items` para permitir INSERT autenticado pelo dono OU pelo token de faxineira via RPC (`cleaner_upload_forgotten_photo`).
-- Excel: `bun add xlsx` + função `exportCalendarToXlsx(events, logoUrl)`.
-- Calendário "vista do dia": componente `<DayEventsSheet date={...} events={...} />`.
+## 8. **Módulo Financeiro** (grande, requer banco)
+Nova área `/financeiro` apenas para **owners/admins** da organização, com:
+- Tabela `financial_transactions` (id, organization_id, user_id, type [receita|despesa], category, amount, currency, date, description, source [reserva|limpeza|manual], source_id, created_by). RLS: select/insert/update/delete por membros owner+admin via `has_org_role`.
+- **Geração automática**: triggers que criam transação ao inserir `guests` (receita = `total_value`) e `cleaning_jobs` quando `payment_status='pago'` (despesa = `payment_amount`). Permite edição/exclusão depois.
+- Tela `/financeiro` com:
+  - Filtros (período, imóvel, categoria, tipo)
+  - Tabela editável (modal de edição)
+  - Resumo (receitas, despesas, lucro, por imóvel)
+  - **Relatório**: exportação **CSV e PDF** (mês, ano, custom). Usar `jsPDF` (já leve) ou tabela HTML imprimível.
+- **Permissões**: novo enum `org_permission` (`view_finance`, `edit_finance`, `view_reports`). Tabela `member_permissions(member_id, permission)`. UI em `/equipe` para o owner liberar acessos por usuário. Owner sempre tem tudo.
 
 ---
 
-## Confirmação antes de executar
+## Sequenciamento sugerido (3 fases para não estourar)
 
-Esse pacote é **grande** (5 fases, ~15 arquivos modificados, 3 migrations). Posso:
+**Fase A (esta resposta):** 1, 2, 3, 6 — landing, provas sociais, PWA, links canônicos. Mudanças puramente frontend, baixo risco.
 
-**(A)** Fazer tudo de uma vez (várias mensagens longas, demora bem mais).  
-**(B)** Ir por fase, parando para você validar cada uma (recomendado).  
-**(C)** Você escolhe quais fases entrar agora.
+**Fase B:** 4, 5 — convite + diagnóstico ao suporte. Inclui migração (1 tabela `support_tickets` + 1 RPC).
 
-Me diga **A, B ou C** (e se C, quais fases) que eu começo imediatamente.
+**Fase C:** 7 — modo demo (frontend pesado, sem banco).
+
+**Fase D:** 8 — módulo financeiro + permissões. Inclui migração grande (tabela, triggers, enum, RLS).
+
+## Perguntas rápidas
+
+1. **Modo demo**: navegação separada em `/demo/*` (recomendado) ou um toggle dentro da app que substitui dados? Recomendo `/demo/*` para não confundir usuários reais.
+2. **Relatório financeiro**: CSV + PDF é suficiente, ou também Excel (.xlsx)?
+3. **Triggers automáticos no financeiro**: criar transação ao registrar hóspede (receita) e limpeza paga (despesa)? Ou apenas manual?
+4. **Permissões**: criar sistema de permissões granulares agora (Fase D), ou simplificar para "owner/admin veem financeiro, staff não vê"?
+
+Confirme as respostas (ou diga "segue tudo, decida você") e eu começo pela **Fase A** já nesta sessão.
