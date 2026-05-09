@@ -400,6 +400,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
 }
 
 function NewJobSheet({ onClose }: { onClose: () => void }) {
+  const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
   const { data: properties = [] } = useQuery({ queryKey: ["properties-min"], queryFn: async () => (await supabase.from("properties").select("id, name").eq("archived", false)).data ?? [] });
