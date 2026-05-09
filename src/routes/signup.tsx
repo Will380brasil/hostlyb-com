@@ -71,8 +71,22 @@ function SignupPage() {
         <button
           type="button"
           onClick={async () => {
-            const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app" });
-            if (r.error) toast.error(t("signup.googleFail"));
+            try {
+              const r = await lovable.auth.signInWithOAuth("google", {
+                redirect_uri: window.location.origin + "/app",
+              });
+              if (r.redirected) return; // navegador vai para o Google
+              if (r.error) {
+                console.error("[google-oauth signup]", r.error);
+                toast.error(`${t("signup.googleFail")}: ${(r.error as any)?.message ?? r.error}`);
+                return;
+              }
+              // tokens recebidos sem redirect → já autenticado
+              window.location.assign("/app");
+            } catch (err: any) {
+              console.error("[google-oauth signup] threw", err);
+              toast.error(`${t("signup.googleFail")}: ${err?.message ?? "erro desconhecido"}`);
+            }
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-card-border bg-card hover:bg-muted transition font-semibold"
         >
