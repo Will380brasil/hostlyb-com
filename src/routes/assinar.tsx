@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useLocale } from "@/lib/i18n";
+import { useLocale, formatPrice } from "@/lib/i18n";
 import { useSubscription } from "@/hooks/useSubscription";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/assinar")({ component: SubscribePage });
 
-const PRICE_BY_CURRENCY = {
-  BRL: { id: "hostly_pro_brl", label: "R$ 59,90/mês" },
-  EUR: { id: "hostly_pro_eur", label: "€ 19,90/mês" },
-  USD: { id: "hostly_pro_usd", label: "$ 39/mês" },
+const PRICE_ID_BY_CURRENCY = {
+  BRL: "hostly_pro_brl",
+  EUR: "hostly_pro_eur",
+  USD: "hostly_pro_usd",
 } as const;
 
 function SubscribePage() {
