@@ -6,7 +6,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { fullAddress, formatBRL } from "@/lib/format";
+import { fullAddress, formatMoney } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, Calendar, RefreshCw, Trash2, Plus } from "lucide-react";
 
