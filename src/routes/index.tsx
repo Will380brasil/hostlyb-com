@@ -8,15 +8,22 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 
-const FAQ_ITEMS = [
-  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial." },
-  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim. O Hostly importa reservas do Airbnb, Booking.com e VRBO via sincronização de calendário iCal. Cole o link iCal nas configurações do imóvel e as reservas aparecem automaticamente." },
-  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. A profissional recebe um link único por WhatsApp e acessa o checklist diretamente pelo navegador do celular, sem criar conta nem instalar nada." },
-  { q: "Como funciona o controle de objetos esquecidos?", a: "A faxineira fotografa e registra o objeto pelo portal dela. Você recebe alerta imediato com foto e descrição. O registro fica salvo no histórico permanente até ser resolvido." },
-  { q: "Posso cancelar quando quiser?", a: "Sim. Sem contrato, sem multa, sem fidelidade. Cancele com 1 clique nas configurações da conta. O acesso continua até o fim do período pago." },
-  { q: "Quantos usuários e imóveis posso ter?", a: "Você + até 4 funcionários (5 no total) através de link de convite, e imóveis ilimitados — tudo no plano Pro." },
-  { q: "Como o Hostly se integra com o Google Calendar?", a: "Exporte checkins, checkouts e limpezas em formato .ics e importe no Google Calendar, Apple Calendar ou qualquer app de agenda." },
-  { q: "Meus dados e fotos estão seguros?", a: "Sim. Todos os dados são criptografados em repouso e em trânsito (HTTPS). Fotos ficam em armazenamento privado — só você tem acesso." },
+const FAQ_KEYS = [
+  ["faq.q1", "faq.a1"],
+  ["faq.q2", "faq.a2"],
+  ["faq.q3", "faq.a3"],
+  ["faq.q4", "faq.a4"],
+  ["faq.q5", "faq.a5"],
+  ["faq.q6", "faq.a6"],
+  ["faq.q7", "faq.a7"],
+  ["faq.q8", "faq.a8"],
+] as const;
+// Static FAQ items for JSON-LD (SEO crawler reads PT)
+const FAQ_ITEMS_SEO = [
+  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão." },
+  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim, via sincronização iCal." },
+  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. Recebe um link único e acessa direto pelo navegador." },
+  { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
 
 const JSON_LD = {
@@ -48,7 +55,7 @@ const JSON_LD = {
     },
     {
       "@type": "FAQPage",
-      "mainEntity": FAQ_ITEMS.map((it) => ({
+      "mainEntity": FAQ_ITEMS_SEO.map((it) => ({
         "@type": "Question",
         "name": it.q,
         "acceptedAnswer": { "@type": "Answer", "text": it.a },
@@ -170,16 +177,16 @@ function Navbar() {
       transition: "all .2s ease",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="#top" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
           Host<span style={{ color: C.coral }}>ly</span>
-        </a>
+        </Link>
 
         <nav className="nav-desktop" style={{ display: "flex", gap: 32 }}>
           <a href="#features" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.features")}</a>
-          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>Como funciona</a>
+          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.howItWorks")}</a>
           <a href="#precos" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.pricing")}</a>
           <a href="#faq" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.faq")}</a>
         </nav>
@@ -271,7 +278,7 @@ function Hero() {
           }} />
           <img
             src={heroWoman}
-            alt="Anfitriã usando o Hostly no celular"
+            alt={t("hero.imageAlt")}
             width={1024}
             height={1024}
             style={{
@@ -511,25 +518,26 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 function FAQ() {
+  const t = useT();
   return (
     <section id="faq" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 32, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          Perguntas frequentes
+          {t("faq.title")}
         </h2>
         <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: "8px 24px", border: `1px solid ${C.g100}` }}>
-          {FAQ_ITEMS.map((it) => (
-            <details key={it.q} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
+          {FAQ_KEYS.map(([qk, ak]) => (
+            <details key={qk} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
               <summary style={{
                 listStyle: "none", cursor: "pointer", padding: "20px 0",
                 display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16,
                 fontWeight: 700, color: C.g800, fontSize: 16,
               }}>
-                <span>{it.q}</span>
+                <span>{t(qk)}</span>
                 <Plus size={20} color={C.g600} className="faq-icon-closed" />
                 <Minus size={20} color={C.coral} className="faq-icon-open" />
               </summary>
-              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{it.a}</p>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{t(ak)}</p>
             </details>
           ))}
         </div>
@@ -650,12 +658,12 @@ function Footer() {
   return (
     <footer style={{ background: C.black, color: C.g300, padding: "48px 24px 32px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, alignItems: "center", textAlign: "center" }}>
-        <a href="#top" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 700, color: "#fff" }}>
+        <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 700, color: "#fff" }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
           Host<span style={{ color: C.coral }}>ly</span>
-        </a>
+        </Link>
         <LanguageSelector />
         <p style={{ fontSize: 13, color: C.g400 }}>{t("footer.rights")}</p>
       </div>
