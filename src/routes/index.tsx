@@ -620,7 +620,9 @@ function LandingPage() {
       <Navbar />
       <Hero />
       <SocialProof />
+      <ProblemSolution />
       <Features />
+      <HowItWorks />
       <Pricing />
       <Testimonials />
       <FAQ />
