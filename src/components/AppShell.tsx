@@ -55,6 +55,13 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </h1>
         <div className="flex items-center gap-2">
           <Link
+            to={"/equipe" as any}
+            aria-label="Equipe"
+            className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          >
+            <UsersRound size={16} />
+          </Link>
+          <Link
             to={"/alertas" as any}
             aria-label="Alertas"
             className="relative grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
