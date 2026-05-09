@@ -15,6 +15,7 @@ import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as CalendarioRouteImport } from './routes/calendario'
+import { Route as AssinarRouteImport } from './routes/assinar'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
@@ -54,6 +55,11 @@ const EquipeRoute = EquipeRouteImport.update({
 const CalendarioRoute = CalendarioRouteImport.update({
   id: '/calendario',
   path: '/calendario',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssinarRoute = AssinarRouteImport.update({
+  id: '/assinar',
+  path: '/assinar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
+  '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
+  '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
+  '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
   '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alertas'
     | '/app'
+    | '/assinar'
     | '/calendario'
     | '/equipe'
     | '/hospedes'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alertas'
     | '/app'
+    | '/assinar'
     | '/calendario'
     | '/equipe'
     | '/hospedes'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alertas'
     | '/app'
+    | '/assinar'
     | '/calendario'
     | '/equipe'
     | '/hospedes'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertasRoute: typeof AlertasRoute
   AppRoute: typeof AppRoute
+  AssinarRoute: typeof AssinarRoute
   CalendarioRoute: typeof CalendarioRoute
   EquipeRoute: typeof EquipeRoute
   HospedesRoute: typeof HospedesRoute
@@ -281,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/calendario'
       fullPath: '/calendario'
       preLoaderRoute: typeof CalendarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assinar': {
+      id: '/assinar'
+      path: '/assinar'
+      fullPath: '/assinar'
+      preLoaderRoute: typeof AssinarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertasRoute: AlertasRoute,
   AppRoute: AppRoute,
+  AssinarRoute: AssinarRoute,
   CalendarioRoute: CalendarioRoute,
   EquipeRoute: EquipeRoute,
   HospedesRoute: HospedesRoute,
@@ -377,3 +398,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
