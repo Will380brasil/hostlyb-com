@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Copy, Mail, Trash2, UserPlus, Crown, Shield, User as UserIcon } from "lucide-react";
+import { publicUrl } from "@/lib/public-url";
 
 export const Route = createFileRoute("/equipe")({
   head: () => ({ meta: [{ title: "Equipe — Hostlyb" }] }),
