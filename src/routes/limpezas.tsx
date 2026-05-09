@@ -9,6 +9,7 @@ import { formatMoney, currencySymbol } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
+import { publicUrl } from "@/lib/public-url";
 
 export const Route = createFileRoute("/limpezas")({
   head: () => ({ meta: [{ title: "Limpezas — Hostlyb" }, { name: "description", content: "Agenda de limpezas." }] }),
@@ -340,7 +341,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
               <h4 className="font-bold text-sm mb-2 inline-flex items-center gap-2"><Link2 size={14} /> Link da faxineira</h4>
               <p className="text-xs text-muted-foreground mb-2">Compartilhe este link para a faxineira preencher o checklist sem login.</p>
               {(() => {
-                const url = `https://hostlyb.com/faxineira/${(job as any).access_token}`;
+                const url = publicUrl(`/faxineira/${(job as any).access_token}`);
                 const wppMsg = encodeURIComponent(`Olá! Aqui está o link da limpeza: ${url}`);
                 return (
                   <div className="flex flex-col gap-2">
