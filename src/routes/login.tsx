@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
+import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+  const t = useT();
   const navigate = useNavigate();
   const { session } = useAuth();
   const [email, setEmail] = useState("");
@@ -24,38 +26,40 @@ function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(t("login.fail"));
     else navigate({ to: "/app" as any });
   };
 
   return (
     <div className="min-h-screen grid place-items-center px-5 bg-background">
       <div className="w-full max-w-sm">
-        <h1 className="text-3xl font-black mb-1">Host<span style={{ color: "var(--color-accent)" }}>ly</span></h1>
-        <p className="text-sm text-muted-foreground mb-6">Entre na sua conta</p>
+        <Link to="/" className="block mb-1">
+          <h1 className="text-3xl font-black">Host<span style={{ color: "var(--color-accent)" }}>ly</span></h1>
+        </Link>
+        <p className="text-sm text-muted-foreground mb-6">{t("login.title")}</p>
         <form onSubmit={submit} className="flex flex-col gap-3">
-          <input type="email" required placeholder="E-mail" value={email}
+          <input type="email" required placeholder={t("login.email")} value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="px-4 py-3 rounded-xl bg-card border border-card-border" />
-          <input type="password" required placeholder="Senha" value={password}
+          <input type="password" required placeholder={t("login.password")} value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="px-4 py-3 rounded-xl bg-card border border-card-border" />
           <button disabled={loading} className="btn-primary justify-center">
-            {loading ? "Entrando..." : "Entrar"}
+            {loading ? t("login.submitting") : t("login.submit")}
           </button>
         </form>
         <button
           type="button"
           onClick={async () => {
             const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app" });
-            if (r.error) toast.error("Falha no login com Google");
+            if (r.error) toast.error(t("login.googleFail"));
           }}
           className="btn-secondary justify-center w-full mt-3"
         >
-          Continuar com Google
+          {t("login.google")}
         </button>
         <p className="text-sm text-muted-foreground mt-5 text-center">
-          Não tem conta? <Link to={"/signup" as any} style={{ color: "var(--color-accent)" }}>Criar conta</Link>
+          {t("login.noAccount")} <Link to={"/signup" as any} style={{ color: "var(--color-accent)" }}>{t("login.signup")}</Link>
         </p>
       </div>
     </div>
