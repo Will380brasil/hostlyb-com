@@ -7,14 +7,75 @@ import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 
+const FAQ_ITEMS = [
+  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial." },
+  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim. O Hostly importa reservas do Airbnb, Booking.com e VRBO via sincronização de calendário iCal. Cole o link iCal nas configurações do imóvel e as reservas aparecem automaticamente." },
+  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. A profissional recebe um link único por WhatsApp e acessa o checklist diretamente pelo navegador do celular, sem criar conta nem instalar nada." },
+  { q: "Como funciona o controle de objetos esquecidos?", a: "A faxineira fotografa e registra o objeto pelo portal dela. Você recebe alerta imediato com foto e descrição. O registro fica salvo no histórico permanente até ser resolvido." },
+  { q: "Posso cancelar quando quiser?", a: "Sim. Sem contrato, sem multa, sem fidelidade. Cancele com 1 clique nas configurações da conta. O acesso continua até o fim do período pago." },
+  { q: "Quantos usuários e imóveis posso ter?", a: "Você + até 4 funcionários (5 no total) através de link de convite, e imóveis ilimitados — tudo no plano Pro." },
+  { q: "Como o Hostly se integra com o Google Calendar?", a: "Exporte checkins, checkouts e limpezas em formato .ics e importe no Google Calendar, Apple Calendar ou qualquer app de agenda." },
+  { q: "Meus dados e fotos estão seguros?", a: "Sim. Todos os dados são criptografados em repouso e em trânsito (HTTPS). Fotos ficam em armazenamento privado — só você tem acesso." },
+];
+
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Hostly",
+      "description": "App de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": { "@type": "Offer", "price": "59.90", "priceCurrency": "BRL" },
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "847", "bestRating": "5", "worstRating": "1" },
+      "featureList": [
+        "Checklist de limpeza com fotos por cômodo",
+        "Controle de hóspedes com histórico",
+        "Cadastro de profissionais de limpeza",
+        "Registro de objetos esquecidos com fotos",
+        "Calendário integrado com Google Calendar",
+        "Sincronização via iCal com Airbnb e Booking",
+        "Portal para faxineira sem necessidade de login",
+        "Dashboard em tempo real",
+      ],
+    },
+    {
+      "@type": "Organization",
+      "name": "Hostly",
+      "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "availableLanguage": ["Portuguese", "English", "Spanish", "French", "Italian", "German"] },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": FAQ_ITEMS.map((it) => ({
+        "@type": "Question",
+        "name": it.q,
+        "acceptedAnswer": { "@type": "Answer", "text": it.a },
+      })),
+    },
+  ],
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hostly — Gestão de Airbnb Simplificada" },
-      { name: "description", content: "Controle limpezas, hóspedes e profissionais dos seus imóveis. 7 dias grátis." },
+      { title: "Hostly — Gestão de Airbnb Simplificada | Controle Limpezas e Hóspedes" },
+      { name: "description", content: "Hostly é o app de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário. 7 dias grátis. R$ 59,90/mês." },
+      { name: "keywords", content: "gestão airbnb, app anfitrião, controle limpeza airbnb, software airbnb brasil, gerenciar aluguel por temporada, checklist limpeza airbnb, gestão hóspedes" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
       { name: "theme-color", content: "#FF6B6B" },
+      { property: "og:type", content: "website" },
       { property: "og:title", content: "Hostly — Gestão de Airbnb Simplificada" },
-      { property: "og:description", content: "Pare de gerenciar pelo WhatsApp. O Hostly centraliza tudo. 7 dias grátis." },
+      { property: "og:description", content: "Pare de gerenciar seu Airbnb pelo WhatsApp. Controle limpezas com checklist e fotos, hóspedes e profissionais. 7 dias grátis, sem cartão." },
+      { property: "og:locale", content: "pt_BR" },
+      { property: "og:locale:alternate", content: "en_US" },
+      { property: "og:site_name", content: "Hostly" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Hostly — Gestão de Airbnb Simplificada" },
+      { name: "twitter:description", content: "Controle limpezas com checklist, gerencie hóspedes e profissionais. 7 dias grátis." },
+    ],
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(JSON_LD) },
     ],
   }),
   component: LandingPage,
