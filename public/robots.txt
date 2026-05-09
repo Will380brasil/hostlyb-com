@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /api/
+Disallow: /faxineira/
+Disallow: /convite/
+Disallow: /checkout/
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
