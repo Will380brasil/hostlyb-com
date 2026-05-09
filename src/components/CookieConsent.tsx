@@ -37,7 +37,7 @@ export function CookieConsent() {
         position: "fixed",
         left: 16,
         right: 16,
-        bottom: 16,
+        bottom: 88,
         zIndex: 1000,
         maxWidth: 720,
         margin: "0 auto",
