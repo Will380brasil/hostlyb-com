@@ -447,18 +447,28 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     const storedLang = (localStorage.getItem(STORAGE_LANG) as Lang | null);
     const storedCurr = (localStorage.getItem(STORAGE_CURRENCY) as Currency | null);
 
+    // Apply stored preferences immediately so UI doesn't flash in another language
+    if (storedLang) setLangState(storedLang);
+    if (storedCurr) setCurrencyState(storedCurr);
+
+    // Skip geo lookup entirely if user already chose both
+    if (storedLang && storedCurr) {
+      setLoading(false);
+      return;
+    }
+
     fetch("/api/public/geo")
       .then((r) => r.json())
       .then((d: { country: string; currency: Currency; language: Lang }) => {
         setCountry(d.country || "BR");
-        setLangState(storedLang || (d.language as Lang) || "pt");
-        setCurrencyState(storedCurr || d.currency || "BRL");
+        if (!storedLang) setLangState((d.language as Lang) || "pt");
+        if (!storedCurr) setCurrencyState(d.currency || "BRL");
       })
       .catch(() => {
         const nav = (navigator.language || "pt").slice(0, 2).toLowerCase() as Lang;
         const isLang = (["pt","en","es","fr","it","de"] as Lang[]).includes(nav);
-        setLangState(storedLang || (isLang ? nav : "en"));
-        setCurrencyState(storedCurr || "USD");
+        if (!storedLang) setLangState(isLang ? nav : "en");
+        if (!storedCurr) setCurrencyState("USD");
       })
       .finally(() => setLoading(false));
   }, []);
