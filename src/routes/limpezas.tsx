@@ -102,6 +102,7 @@ function CleaningsPage() {
 
 function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
   const { currency, lang } = useLocale();
+  const [filterDate, setFilterDate] = useState<string>("");
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["cleaning_jobs"],
     queryFn: async () => {
@@ -112,49 +113,69 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
     },
   });
 
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando…</p>;
-  if (jobs.length === 0) return <p className="text-sm text-muted-foreground text-center py-10">Nenhuma limpeza ainda. Toque em “Agendar”.</p>;
+  const filtered = filterDate ? jobs.filter((j: any) => j.scheduled_date === filterDate) : jobs;
 
   return (
-    <ul className="flex flex-col gap-3">
-      {jobs.map((j: any) => {
-        const cl = (j.checklist ?? []) as { item: string; done: boolean }[];
-        const done = cl.filter((c) => c.done).length;
-        const pct = cl.length ? Math.round((done / cl.length) * 100) : 0;
-        return (
-          <li key={j.id}>
-            <button onClick={() => onOpen(j.id)} className="hostly-card !p-4 w-full text-left flex flex-col gap-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-semibold truncate">{j.properties?.name ?? "—"}</p>
-                  <p className="text-xs text-muted-foreground">{j.cleaners?.name ?? "Sem profissional"}</p>
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <StatusBadge status={j.status} />
-                  {j.has_forgotten_items && (
-                    <span className="text-[10px] inline-flex items-center gap-1" style={{ color: "var(--color-warning)" }}>
-                      <AlertTriangle size={10} /> esquecidos
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><Clock size={12} /> {j.scheduled_date} · {j.scheduled_time?.slice(0,5)}</span>
-                <span className="font-mono">{formatMoney(Number(j.payment_amount ?? 0), currency, lang)}</span>
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
-                  <span>Checklist</span><span>{done}/{cl.length}</span>
-                </div>
-                <div className="w-full h-1.5 rounded-full" style={{ background: "var(--color-card-border)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--color-success)" }} />
-                </div>
-              </div>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
+          className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" title="Filtrar por data" />
+        {filterDate && (
+          <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">Limpar</button>
+        )}
+        <span className="text-xs text-muted-foreground">
+          {filterDate ? `${filtered.length} limpeza(s) em ${new Date(filterDate).toLocaleDateString()}` : "Todas as limpezas"}
+        </span>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Carregando…</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-10">
+          {filterDate ? "Nenhuma limpeza nesta data." : "Nenhuma limpeza ainda. Toque em \u201cAgendar\u201d."}
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {filtered.map((j: any) => {
+            const cl = (j.checklist ?? []) as { item: string; done: boolean }[];
+            const done = cl.filter((c) => c.done).length;
+            const pct = cl.length ? Math.round((done / cl.length) * 100) : 0;
+            return (
+              <li key={j.id}>
+                <button onClick={() => onOpen(j.id)} className="hostly-card !p-4 w-full text-left flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold truncate">{j.properties?.name ?? "—"}</p>
+                      <p className="text-xs text-muted-foreground">{j.cleaners?.name ?? "Sem profissional"}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <StatusBadge status={j.status} />
+                      {j.has_forgotten_items && (
+                        <span className="text-[10px] inline-flex items-center gap-1" style={{ color: "var(--color-warning)" }}>
+                          <AlertTriangle size={10} /> esquecidos
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1"><Clock size={12} /> {j.scheduled_date} · {j.scheduled_time?.slice(0,5)}</span>
+                    <span className="font-mono">{formatMoney(Number(j.payment_amount ?? 0), currency, lang)}</span>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
+                      <span>Checklist</span><span>{done}/{cl.length}</span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full" style={{ background: "var(--color-card-border)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--color-success)" }} />
+                    </div>
+                  </div>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </>
   );
 }
 
