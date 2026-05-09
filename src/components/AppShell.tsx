@@ -12,6 +12,7 @@ const tabs = [
   { to: "/limpezas",   label: "Limpezas",   icon: Sparkles },
   { to: "/hospedes",   label: "Hóspedes",   icon: Users },
   { to: "/calendario", label: "Calendário", icon: Calendar },
+  { to: "/financeiro", label: "Financeiro", icon: DollarSign },
 ] as const;
 
 export function AppShell({ children }: { children?: ReactNode }) {
