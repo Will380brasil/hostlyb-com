@@ -17,6 +17,7 @@ export const Route = createFileRoute("/imoveis/$id")({
 });
 
 function PropertyDetail() {
+  const { currency, lang } = useLocale();
   const { id } = Route.useParams();
   const navigate = useNavigate();
 
