@@ -442,7 +442,7 @@ function NewJobSheet({ onClose }: { onClose: () => void }) {
             <Field label="Data"><input type="date" required value={form.scheduled_date} onChange={(e) => setForm({ ...form, scheduled_date: e.target.value })} className={inp} /></Field>
             <Field label="Horário"><input type="time" required value={form.scheduled_time} onChange={(e) => setForm({ ...form, scheduled_time: e.target.value })} className={inp} /></Field>
           </div>
-          <Field label="Valor (R$)"><input type="number" step="0.01" min={0} value={form.payment_amount} onChange={(e) => setForm({ ...form, payment_amount: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor (${currencySymbol(currency)})`}><input type="number" step="0.01" min={0} value={form.payment_amount} onChange={(e) => setForm({ ...form, payment_amount: Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
           <button disabled={!form.property_id || m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Agendar"}</button>
         </form>
