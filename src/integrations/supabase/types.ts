@@ -338,6 +338,7 @@ export type Database = {
           last_synced_at: string | null
           platform: string
           property_id: string
+          sync_frequency: string
           updated_at: string
           url: string
           user_id: string
@@ -349,6 +350,7 @@ export type Database = {
           last_synced_at?: string | null
           platform?: string
           property_id: string
+          sync_frequency?: string
           updated_at?: string
           url: string
           user_id: string
@@ -360,6 +362,7 @@ export type Database = {
           last_synced_at?: string | null
           platform?: string
           property_id?: string
+          sync_frequency?: string
           updated_at?: string
           url?: string
           user_id?: string
