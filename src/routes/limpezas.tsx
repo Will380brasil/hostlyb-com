@@ -452,6 +452,7 @@ function NewJobSheet({ onClose }: { onClose: () => void }) {
 }
 
 function NewCleanerSheet({ onClose }: { onClose: () => void }) {
+  const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [form, setForm] = useState({ name: "", phone: "", email: "", pix_key: "", price_per_cleaning: 0, notes: "" });
