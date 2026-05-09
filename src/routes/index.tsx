@@ -55,7 +55,7 @@ const JSON_LD = {
     },
     {
       "@type": "FAQPage",
-      "mainEntity": FAQ_ITEMS.map((it) => ({
+      "mainEntity": FAQ_ITEMS_SEO.map((it) => ({
         "@type": "Question",
         "name": it.q,
         "acceptedAnswer": { "@type": "Answer", "text": it.a },
