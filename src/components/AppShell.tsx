@@ -1,9 +1,10 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound, Shield } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { TrialBanner, TrialGate } from "@/components/TrialGate";
 
 const tabs = [
   { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
@@ -28,6 +29,15 @@ export function AppShell({ children }: { children?: ReactNode }) {
     },
   });
 
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin", session?.user.id],
+    enabled: !!session?.user.id,
+    queryFn: async () => {
+      const { data } = await supabase.from("admin_users").select("user_id").eq("user_id", session!.user.id).maybeSingle();
+      return !!data;
+    },
+  });
+
   useEffect(() => {
     if (!session?.user.id) return;
     const ch = supabase
@@ -49,6 +59,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full max-w-[480px] md:max-w-6xl bg-background">
+      <TrialBanner />
       <header className="sticky top-0 z-30 flex items-center justify-between px-5 h-14 bg-background/90 backdrop-blur border-b border-card-border">
         <Link to="/" className="text-2xl font-black tracking-tight">
           Host<span style={{ color: "var(--color-accent)" }}>lyb</span>
@@ -73,6 +84,17 @@ export function AppShell({ children }: { children?: ReactNode }) {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Link
+              to={"/admin" as any}
+              aria-label="Admin"
+              title="Painel Admin"
+              className="grid place-items-center w-10 h-10 rounded-full border"
+              style={{ background: "#FFF1F1", borderColor: "#FFCCCC", color: "#FF6B6B" }}
+            >
+              <Shield size={16} />
+            </Link>
+          )}
           <Link
             to={"/equipe" as any}
             aria-label="Equipe"
@@ -104,7 +126,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       </header>
 
       <main className="flex-1 px-4 md:px-8 pt-4 pb-28 md:pb-12">
-        {children ?? <Outlet />}
+        <TrialGate>{children ?? <Outlet />}</TrialGate>
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 mx-auto max-w-[480px] border-t border-card-border bg-card/95 backdrop-blur">

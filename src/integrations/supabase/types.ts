@@ -283,6 +283,33 @@ export type Database = {
           },
         ]
       }
+      demo_leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          phone: string
+          source: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          phone: string
+          source?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          phone?: string
+          source?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       forgotten_items: {
         Row: {
           cleaning_job_id: string

@@ -8,6 +8,7 @@ import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
+import { DemoLeadModal } from "@/components/DemoLeadModal";
 
 const FAQ_KEYS = [
   ["faq.q1", "faq.a1"],
@@ -225,7 +226,10 @@ function Navbar() {
 
 function Hero() {
   const t = useT();
+  const [demoOpen, setDemoOpen] = useState(false);
   return (
+    <>
+    <DemoLeadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     <section id="top" style={{ padding: "48px 24px 64px", background: "#fff" }}>
       <div className="hero-grid" style={{
         maxWidth: 1200, margin: "0 auto",
@@ -253,17 +257,18 @@ function Hero() {
 
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
             <CoralButton big href="/signup">{t("hero.cta")} <ArrowRight size={18} /></CoralButton>
-            <Link
-              to={"/app" as any}
+            <button
+              type="button"
+              onClick={() => setDemoOpen(true)}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 10,
                 padding: "16px 28px", borderRadius: 999, fontSize: 16, fontWeight: 700,
                 background: "#fff", color: C.coral, border: `2px solid ${C.coral}`,
-                boxShadow: `0 4px 20px ${C.coralGlow}`,
+                boxShadow: `0 4px 20px ${C.coralGlow}`, cursor: "pointer", fontFamily: "inherit",
               }}
             >
               <Play size={18} fill={C.coral} /> {t("hero.demo")}
-            </Link>
+            </button>
           </div>
 
           <div style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: C.coralLight }}>
@@ -310,6 +315,7 @@ function Hero() {
         }
       `}</style>
     </section>
+    </>
   );
 }
 

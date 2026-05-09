@@ -23,6 +23,15 @@ function AdminPage() {
   });
   const [q, setQ] = useState("");
 
+  const { data: leads = [] } = useQuery({
+    queryKey: ["demo-leads"],
+    queryFn: async () => {
+      const { data } = await supabase.from("demo_leads").select("*").order("created_at", { ascending: false }).limit(200);
+      return data ?? [];
+    },
+    refetchInterval: 60_000,
+  });
+
   const filtered = useMemo(() => {
     if (!data?.users) return [];
     const t = q.trim().toLowerCase();
@@ -94,6 +103,35 @@ function AdminPage() {
                 ))}
                 {!filtered.length && (
                   <tr><td colSpan={5} style={{ ...td, textAlign: "center", color: "#9E9E9E" }}>Sem resultados.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section style={{ background: "#fff", borderRadius: 16, padding: 20, border: "1px solid #EFEFEF", marginTop: 20 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12 }}>Leads da Demo ({leads.length})</h2>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#F7F7F7", textAlign: "left" }}>
+                  <th style={th}>Email</th>
+                  <th style={th}>Telefone</th>
+                  <th style={th}>Origem</th>
+                  <th style={th}>Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leads.map((l: any) => (
+                  <tr key={l.id} style={{ borderBottom: "1px solid #EFEFEF" }}>
+                    <td style={td}>{l.email}</td>
+                    <td style={td}>{l.phone}</td>
+                    <td style={{ ...td, color: "#616161" }}>{l.source}</td>
+                    <td style={{ ...td, color: "#616161" }}>{new Date(l.created_at).toLocaleString("pt-BR")}</td>
+                  </tr>
+                ))}
+                {!leads.length && (
+                  <tr><td colSpan={4} style={{ ...td, textAlign: "center", color: "#9E9E9E" }}>Nenhum lead ainda.</td></tr>
                 )}
               </tbody>
             </table>
