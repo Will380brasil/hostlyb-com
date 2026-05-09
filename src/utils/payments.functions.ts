@@ -70,14 +70,13 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
     const customerId = await resolveOrCreateCustomer(stripe, { email, userId });
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       line_items: [{ price: stripePrice.id, quantity: 1 }],
       mode: "subscription",
       ui_mode: "embedded_page",
       return_url: data.returnUrl,
       customer: customerId,
-      // managed_payments isn't typed in this SDK version yet — pass via cast
-      ...({ managed_payments: { enabled: true } } as Record<string, unknown>),
+      managed_payments: { enabled: true },
       metadata: {
         userId,
         organizationId: data.organizationId,
@@ -85,12 +84,11 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       },
       subscription_data: {
         trial_period_days: 7,
-        metadata: {
-          userId,
-          organizationId: data.organizationId,
-        },
+        metadata: { userId, organizationId: data.organizationId },
       },
-    });
+    } as unknown as Parameters<typeof stripe.checkout.sessions.create>[0];
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return session.client_secret;
   });
