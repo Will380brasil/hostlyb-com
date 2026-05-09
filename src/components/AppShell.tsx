@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound, Shield } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound, Shield, DollarSign } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,6 +12,7 @@ const tabs = [
   { to: "/limpezas",   label: "Limpezas",   icon: Sparkles },
   { to: "/hospedes",   label: "Hóspedes",   icon: Users },
   { to: "/calendario", label: "Calendário", icon: Calendar },
+  { to: "/financeiro", label: "Financeiro", icon: DollarSign },
 ] as const;
 
 export function AppShell({ children }: { children?: ReactNode }) {
