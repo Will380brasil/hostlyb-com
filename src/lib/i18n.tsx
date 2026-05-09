@@ -302,6 +302,24 @@ const en: Dict = {
   "signup.success": "Account created!",
   "signup.googleFail": "Google sign-in failed",
   "signup.or": "or",
+  "signup.phoneInvalid": "Invalid phone. Use digits only (8-15).",
+
+  "login.title": "Sign in to your account",
+  "login.email": "Email",
+  "login.password": "Password",
+  "login.submit": "Sign in",
+  "login.submitting": "Signing in...",
+  "login.google": "Continue with Google",
+  "login.googleFail": "Google sign-in failed",
+  "login.noAccount": "No account?",
+  "login.signup": "Create account",
+  "login.fail": "Invalid email or password",
+
+  "cookies.title": "🍪 Your privacy",
+  "cookies.body": "We use cookies to understand how you use Hostly and improve your experience.",
+  "cookies.more": "Learn more",
+  "cookies.accept": "Accept",
+  "cookies.deny": "Decline",
 };
 
 const es: Dict = {
