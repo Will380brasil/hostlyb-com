@@ -89,6 +89,29 @@ function SignupPage() {
         <Link to="/" className="block mb-1">
           <h1 className="text-3xl font-black">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
         </Link>
+        {sentTo ? (
+          <div className="mt-6 text-center">
+            <div className="mx-auto mb-4 grid place-items-center w-14 h-14 rounded-2xl text-2xl"
+              style={{ background: "var(--color-accent-soft, #ffe4e0)", color: "var(--color-accent)" }}>📧</div>
+            <h2 className="text-xl font-bold mb-2">Confirme seu e-mail</h2>
+            <p className="text-sm text-muted-foreground mb-1">
+              Enviamos um link de confirmação para <strong>{sentTo}</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground mb-5">
+              Não recebeu? Verifique a caixa de spam ou reenvie abaixo.
+            </p>
+            <button onClick={resend} disabled={resending} className="btn-primary justify-center w-full mb-2">
+              {resending ? "Reenviando…" : "Reenviar e-mail"}
+            </button>
+            <button onClick={() => setSentTo(null)} className="text-xs text-muted-foreground">
+              Usar outro e-mail
+            </button>
+            <p className="mt-5 text-xs text-muted-foreground">
+              Problemas? Abra o <Link to={"/diagnostico" as any} style={{ color: "var(--color-accent)" }}>diagnóstico</Link>.
+            </p>
+          </div>
+        ) : (
+        <>
         <p className="text-sm text-muted-foreground mb-6">{t("signup.title")}</p>
 
         <button
@@ -163,6 +186,8 @@ function SignupPage() {
         <p className="text-sm text-muted-foreground mt-5 text-center">
           {t("signup.have")} <Link to={"/login" as any} style={{ color: "var(--color-accent)" }}>{t("signup.signin")}</Link>
         </p>
+        </>
+        )}
       </div>
     </div>
   );
