@@ -20,8 +20,8 @@ const FAQ_KEYS = [
 ] as const;
 // Static FAQ items for JSON-LD (SEO crawler reads PT)
 const FAQ_ITEMS_SEO = [
-  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão." },
-  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim, via sincronização iCal." },
+  { q: "Preciso de cartão de crédito para testar o Hostlyb?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão." },
+  { q: "O Hostlyb funciona para Booking.com e VRBO também?", a: "Sim, via sincronização iCal." },
   { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. Recebe um link único e acessa direto pelo navegador." },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
@@ -31,7 +31,7 @@ const JSON_LD = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "Hostly",
+      "name": "Hostlyb",
       "description": "App de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário.",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web, iOS, Android",
@@ -50,7 +50,7 @@ const JSON_LD = {
     },
     {
       "@type": "Organization",
-      "name": "Hostly",
+      "name": "Hostlyb",
       "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "availableLanguage": ["Portuguese", "English", "Spanish", "French", "Italian", "German"] },
     },
     {
@@ -67,19 +67,19 @@ const JSON_LD = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hostly — Gestão de Airbnb Simplificada | Controle Limpezas e Hóspedes" },
-      { name: "description", content: "Hostly é o app de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário. 7 dias grátis. R$ 59,90/mês." },
+      { title: "Hostlyb — Gestão de Airbnb Simplificada | Controle Limpezas e Hóspedes" },
+      { name: "description", content: "Hostlyb é o app de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário. 7 dias grátis. R$ 59,90/mês." },
       { name: "keywords", content: "gestão airbnb, app anfitrião, controle limpeza airbnb, software airbnb brasil, gerenciar aluguel por temporada, checklist limpeza airbnb, gestão hóspedes" },
       { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
       { name: "theme-color", content: "#FF6B6B" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Hostly — Gestão de Airbnb Simplificada" },
+      { property: "og:title", content: "Hostlyb — Gestão de Airbnb Simplificada" },
       { property: "og:description", content: "Pare de gerenciar seu Airbnb pelo WhatsApp. Controle limpezas com checklist e fotos, hóspedes e profissionais. 7 dias grátis, sem cartão." },
       { property: "og:locale", content: "pt_BR" },
       { property: "og:locale:alternate", content: "en_US" },
-      { property: "og:site_name", content: "Hostly" },
+      { property: "og:site_name", content: "Hostlyb" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Hostly — Gestão de Airbnb Simplificada" },
+      { name: "twitter:title", content: "Hostlyb — Gestão de Airbnb Simplificada" },
       { name: "twitter:description", content: "Controle limpezas com checklist, gerencie hóspedes e profissionais. 7 dias grátis." },
     ],
     scripts: [
@@ -468,7 +468,7 @@ function Testimonials() {
   const items = [
     { stars: 5, text: "Antes eu controlava tudo por WhatsApp e planilha. Agora em 5 minutos já sei o status de todos os imóveis.", name: "Mariana S.", meta: "4 imóveis · São Paulo", color: C.coral, ini: "MS" },
     { stars: 5, text: "The cleaning checklist feature is a game changer. My cleaner completes it on her phone and I get the photos instantly.", name: "James T.", meta: "2 properties · Miami", color: "#4A9EFF", ini: "JT" },
-    { stars: 5, text: "Hostly fait tout ce dont j'ai besoin à un prix imbattable.", name: "Sophie L.", meta: "2 propriétés · Paris", color: C.emerald, ini: "SL" },
+    { stars: 5, text: "Hostlyb fait tout ce dont j'ai besoin à un prix imbattable.", name: "Sophie L.", meta: "2 propriétés · Paris", color: C.emerald, ini: "SL" },
   ];
   return (
     <section style={{ padding: "96px 24px", background: "#fff" }}>
@@ -551,7 +551,7 @@ function FAQ() {
 function ProblemSolution() {
   const t = useT();
   const without = [t("ps.w1"), t("ps.w2"), t("ps.w3"), t("ps.w4"), t("ps.w5")];
-  const withHostly = [t("ps.h1"), t("ps.h2"), t("ps.h3"), t("ps.h4"), t("ps.h5")];
+  const withHostlyb = [t("ps.h1"), t("ps.h2"), t("ps.h3"), t("ps.h4"), t("ps.h5")];
   return (
     <section id="problema" style={{ padding: "96px 24px", background: C.g50 }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -572,7 +572,7 @@ function ProblemSolution() {
           <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `2px solid ${C.emerald}33` }}>
             <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ {t("ps.with")}</h3>
             <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {withHostly.map((tx) => (
+              {withHostlyb.map((tx) => (
                 <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
                   <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
                 </li>

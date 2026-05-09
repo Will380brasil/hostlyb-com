@@ -7,7 +7,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Entrar — Hostly" }, { name: "description", content: "Acesse sua conta Hostly." }] }),
+  head: () => ({ meta: [{ title: "Entrar — Hostlyb" }, { name: "description", content: "Acesse sua conta Hostlyb." }] }),
   component: LoginPage,
 });
 

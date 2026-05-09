@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/convite/$token")({
-  head: () => ({ meta: [{ title: "Convite — Hostly" }] }),
+  head: () => ({ meta: [{ title: "Convite — Hostlyb" }] }),
   component: ConvitePage,
 });
 

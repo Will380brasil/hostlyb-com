@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Plus, Phone, MessageCircle, Search, X, Calendar, History } from "lucide-react";
 
 export const Route = createFileRoute("/hospedes")({
-  head: () => ({ meta: [{ title: "Hóspedes — Hostly" }, { name: "description", content: "Gerencie seus hóspedes." }] }),
+  head: () => ({ meta: [{ title: "Hóspedes — Hostlyb" }, { name: "description", content: "Gerencie seus hóspedes." }] }),
   component: GuestsPage,
 });
 

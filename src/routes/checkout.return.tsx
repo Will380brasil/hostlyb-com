@@ -14,7 +14,7 @@ function CheckoutReturn() {
       <div className="max-w-md text-center space-y-4">
         <h1 className="text-2xl font-bold">Pagamento concluído 🎉</h1>
         <p className="text-muted-foreground">
-          Sua assinatura Hostly Pro está ativa. Os 7 dias grátis começaram agora.
+          Sua assinatura Hostlyb Pro está ativa. Os 7 dias grátis começaram agora.
         </p>
         {session_id && <p className="text-xs text-muted-foreground break-all">Sessão: {session_id}</p>}
         <a href="/app" className="inline-block bg-primary text-primary-foreground rounded-md px-4 py-2">

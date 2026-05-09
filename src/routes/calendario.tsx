@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
 export const Route = createFileRoute("/calendario")({
-  head: () => ({ meta: [{ title: "Calendário — Hostly" }, { name: "description", content: "Veja check-ins, check-outs e limpezas." }] }),
+  head: () => ({ meta: [{ title: "Calendário — Hostlyb" }, { name: "description", content: "Veja check-ins, check-outs e limpezas." }] }),
   component: CalendarPage,
 });
 
@@ -26,13 +26,13 @@ type Ev = {
 const TYPE_LABEL: Record<string, string> = { checkin: "Check-in", checkout: "Check-out", cleaning: "Limpeza" };
 
 function downloadIcs(events: Ev[]) {
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Hostly//PT", "CALSCALE:GREGORIAN"];
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Hostlyb//PT", "CALSCALE:GREGORIAN"];
   events.forEach((e) => {
     const d = e.date.replace(/-/g, "");
     const t = e.time.replace(":", "") + "00";
     lines.push(
       "BEGIN:VEVENT",
-      `UID:${e.id}@hostly.app`,
+      `UID:${e.id}@hostlyb.com`,
       `DTSTART:${d}T${t}`,
       `DTEND:${d}T${t}`,
       `SUMMARY:${e.label}`,
@@ -43,13 +43,13 @@ function downloadIcs(events: Ev[]) {
   lines.push("END:VCALENDAR");
   const blob = new Blob([lines.join("\r\n")], { type: "text/calendar" });
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "hostly.ics"; a.click();
+  a.href = URL.createObjectURL(blob); a.download = "hostlyb.ics"; a.click();
   URL.revokeObjectURL(a.href);
 }
 
 function downloadXlsx(events: Ev[]) {
   const rows = [
-    ["Hostly — Agenda exportada"],
+    ["Hostlyb — Agenda exportada"],
     [`Gerado em ${new Date().toLocaleString()}`],
     [],
     ["Data", "Horário", "Tipo", "Imóvel", "Descrição"],
@@ -59,14 +59,14 @@ function downloadXlsx(events: Ev[]) {
   ws["!cols"] = [{ wch: 12 }, { wch: 9 }, { wch: 12 }, { wch: 28 }, { wch: 40 }];
   ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }];
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Agenda Hostly");
-  XLSX.writeFile(wb, `hostly-agenda-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, ws, "Agenda Hostlyb");
+  XLSX.writeFile(wb, `hostlyb-agenda-${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
 async function shareEvent(e: Ev) {
   const text = `${TYPE_LABEL[e.type]} — ${e.property}\n📅 ${e.date} às ${e.time}\n${e.label}`;
   if (navigator.share) {
-    try { await navigator.share({ title: "Hostly", text }); return; } catch { /* cancelled */ }
+    try { await navigator.share({ title: "Hostlyb", text }); return; } catch { /* cancelled */ }
   }
   try { await navigator.clipboard.writeText(text); toast.success("Copiado"); } catch { toast.error("Falha ao compartilhar"); }
 }

@@ -7,7 +7,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/signup")({
-  head: () => ({ meta: [{ title: "Criar conta — Hostly" }, { name: "description", content: "Crie sua conta Hostly grátis." }] }),
+  head: () => ({ meta: [{ title: "Criar conta — Hostlyb" }, { name: "description", content: "Crie sua conta Hostlyb grátis." }] }),
   component: SignupPage,
 });
 

@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${lovableKey}` },
           body: JSON.stringify({
             to: adminEmail,
-            subject: `[Hostly] Objetos esquecidos — ${propName}`,
+            subject: `[Hostlyb] Objetos esquecidos — ${propName}`,
             html,
           }),
         });

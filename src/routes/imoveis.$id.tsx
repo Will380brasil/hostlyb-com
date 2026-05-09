@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, Calendar, RefreshCw, Trash2, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/imoveis/$id")({
-  head: () => ({ meta: [{ title: "Imóvel — Hostly" }, { name: "description", content: "Detalhes do imóvel." }] }),
+  head: () => ({ meta: [{ title: "Imóvel — Hostlyb" }, { name: "description", content: "Detalhes do imóvel." }] }),
   component: PropertyDetail,
 });
 
