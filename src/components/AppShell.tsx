@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,6 +54,13 @@ export function AppShell({ children }: { children?: ReactNode }) {
           Host<span style={{ color: "var(--color-accent)" }}>ly</span>
         </h1>
         <div className="flex items-center gap-2">
+          <Link
+            to={"/equipe" as any}
+            aria-label="Equipe"
+            className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          >
+            <UsersRound size={16} />
+          </Link>
           <Link
             to={"/alertas" as any}
             aria-label="Alertas"

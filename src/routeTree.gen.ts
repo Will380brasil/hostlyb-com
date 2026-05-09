@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
+import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AlertasRouteImport } from './routes/alertas'
@@ -20,6 +21,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
+import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
 
 const SignupRoute = SignupRouteImport.update({
@@ -40,6 +42,11 @@ const LimpezasRoute = LimpezasRouteImport.update({
 const HospedesRoute = HospedesRouteImport.update({
   id: '/hospedes',
   path: '/hospedes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipeRoute = EquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -77,6 +84,11 @@ const FaxineiraTokenRoute = FaxineiraTokenRouteImport.update({
   path: '/faxineira/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConviteTokenRoute = ConviteTokenRouteImport.update({
+  id: '/convite/$token',
+  path: '/convite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGeoRoute = ApiPublicGeoRouteImport.update({
   id: '/api/public/geo',
   path: '/api/public/geo',
@@ -88,10 +100,12 @@ export interface FileRoutesByFullPath {
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/calendario': typeof CalendarioRoute
+  '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
@@ -102,10 +116,12 @@ export interface FileRoutesByTo {
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/calendario': typeof CalendarioRoute
+  '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
@@ -117,10 +133,12 @@ export interface FileRoutesById {
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/calendario': typeof CalendarioRoute
+  '/equipe': typeof EquipeRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
@@ -133,10 +151,12 @@ export interface FileRouteTypes {
     | '/alertas'
     | '/app'
     | '/calendario'
+    | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
@@ -147,10 +167,12 @@ export interface FileRouteTypes {
     | '/alertas'
     | '/app'
     | '/calendario'
+    | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis'
@@ -161,10 +183,12 @@ export interface FileRouteTypes {
     | '/alertas'
     | '/app'
     | '/calendario'
+    | '/equipe'
     | '/hospedes'
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
@@ -176,10 +200,12 @@ export interface RootRouteChildren {
   AlertasRoute: typeof AlertasRoute
   AppRoute: typeof AppRoute
   CalendarioRoute: typeof CalendarioRoute
+  EquipeRoute: typeof EquipeRoute
   HospedesRoute: typeof HospedesRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ConviteTokenRoute: typeof ConviteTokenRoute
   FaxineiraTokenRoute: typeof FaxineiraTokenRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
@@ -214,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/hospedes'
       fullPath: '/hospedes'
       preLoaderRoute: typeof HospedesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipe': {
+      id: '/equipe'
+      path: '/equipe'
+      fullPath: '/equipe'
+      preLoaderRoute: typeof EquipeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -265,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaxineiraTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/convite/$token': {
+      id: '/convite/$token'
+      path: '/convite/$token'
+      fullPath: '/convite/$token'
+      preLoaderRoute: typeof ConviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/geo': {
       id: '/api/public/geo'
       path: '/api/public/geo'
@@ -280,10 +320,12 @@ const rootRouteChildren: RootRouteChildren = {
   AlertasRoute: AlertasRoute,
   AppRoute: AppRoute,
   CalendarioRoute: CalendarioRoute,
+  EquipeRoute: EquipeRoute,
   HospedesRoute: HospedesRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ConviteTokenRoute: ConviteTokenRoute,
   FaxineiraTokenRoute: FaxineiraTokenRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
