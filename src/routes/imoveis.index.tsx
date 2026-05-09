@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Plus, ChevronRight, BedDouble, Bath, Users, X } from "lucide-react";
+import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search } from "lucide-react";
 
 export const Route = createFileRoute("/imoveis/")({
   head: () => ({ meta: [{ title: "Imóveis — Hostly" }, { name: "description", content: "Gerencie seus imóveis." }] }),
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/imoveis/")({
 function PropertiesPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
@@ -37,40 +38,60 @@ function PropertiesPage() {
         <button className="btn-primary !py-2 !px-3" onClick={() => setOpen(true)}><Plus size={16} /> Novo</button>
       </header>
 
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando…</p>
-      ) : properties.length === 0 ? (
-        <div className="hostly-card text-center text-sm text-muted-foreground">
-          <p className="mb-2">Você ainda não cadastrou imóveis.</p>
-          <button className="btn-primary mx-auto" onClick={() => setOpen(true)}><Plus size={14} /> Cadastrar imóvel</button>
+      {properties.length > 0 && (
+        <div className="relative mb-3">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome, endereço, cidade..."
+            className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-card border border-card-border text-sm" />
         </div>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {properties.map((p: any) => (
-            <li key={p.id}>
-              <Link to="/imoveis/$id" params={{ id: p.id }} className="hostly-card !p-4 flex flex-col gap-3 active:scale-[0.99] transition">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="font-semibold truncate">{p.name}</h3>
-                    <p className="text-xs text-muted-foreground truncate">{p.address}{p.city ? `, ${p.city}` : ""}{p.state ? ` - ${p.state}` : ""}</p>
-                  </div>
-                  <StatusBadge status={p.status} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><BedDouble size={13} />{p.bedrooms ?? 0}</span>
-                    <span className="inline-flex items-center gap-1"><Bath size={13} />{p.bathrooms ?? 0}</span>
-                    <span className="inline-flex items-center gap-1"><Users size={13} />{p.max_guests ?? 0}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm font-mono" style={{ color: "var(--color-success)" }}>
-                    {formatMoney(Number(p.income_monthly ?? 0), currency, lang)} <ChevronRight size={14} className="text-muted-foreground" />
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
       )}
+
+      {(() => {
+        const term = q.trim().toLowerCase();
+        const filtered = term
+          ? properties.filter((p: any) => [p.name, p.address, p.city, p.state, p.zip_code].some((v) => (v ?? "").toString().toLowerCase().includes(term)))
+          : properties;
+        return (
+          <>
+            {isLoading ? (
+              <p className="text-sm text-muted-foreground">Carregando…</p>
+            ) : properties.length === 0 ? (
+              <div className="hostly-card text-center text-sm text-muted-foreground">
+                <p className="mb-2">Você ainda não cadastrou imóveis.</p>
+                <button className="btn-primary mx-auto" onClick={() => setOpen(true)}><Plus size={14} /> Cadastrar imóvel</button>
+              </div>
+            ) : filtered.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">Nenhum imóvel encontrado para "{q}".</p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {filtered.map((p: any) => (
+                  <li key={p.id}>
+                    <Link to="/imoveis/$id" params={{ id: p.id }} className="hostly-card !p-4 flex flex-col gap-3 active:scale-[0.99] transition">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold truncate">{p.name}</h3>
+                          <p className="text-xs text-muted-foreground truncate">{p.address}{p.city ? `, ${p.city}` : ""}{p.state ? ` - ${p.state}` : ""}</p>
+                        </div>
+                        <StatusBadge status={p.status} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="inline-flex items-center gap-1"><BedDouble size={13} />{p.bedrooms ?? 0}</span>
+                          <span className="inline-flex items-center gap-1"><Bath size={13} />{p.bathrooms ?? 0}</span>
+                          <span className="inline-flex items-center gap-1"><Users size={13} />{p.max_guests ?? 0}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm font-mono" style={{ color: "var(--color-success)" }}>
+                          {formatMoney(Number(p.income_monthly ?? 0), currency, lang)} <ChevronRight size={14} className="text-muted-foreground" />
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        );
+      })()}
 
       {open && <NewPropertySheet onClose={() => setOpen(false)} />}
     </AppShell>

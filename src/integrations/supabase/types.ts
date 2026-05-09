@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           action_label: string | null
           action_url: string | null
+          archived_at: string | null
           cleaning_job_id: string | null
           created_at: string
           guest_id: string | null
@@ -35,6 +36,7 @@ export type Database = {
         Insert: {
           action_label?: string | null
           action_url?: string | null
+          archived_at?: string | null
           cleaning_job_id?: string | null
           created_at?: string
           guest_id?: string | null
@@ -52,6 +54,7 @@ export type Database = {
         Update: {
           action_label?: string | null
           action_url?: string | null
+          archived_at?: string | null
           cleaning_job_id?: string | null
           created_at?: string
           guest_id?: string | null
