@@ -81,13 +81,13 @@ function SubscribePage() {
             <p>Apenas o proprietário da conta pode gerenciar a assinatura.</p>
           </div>
         ) : showCheckout ? (
-          <StripeEmbeddedCheckout priceId={plan.id} organizationId={orgId} />
+          <StripeEmbeddedCheckout priceId={priceId} organizationId={orgId} />
         ) : (
           <div className="rounded-lg border p-6 space-y-4">
             <div>
               <div className="text-sm uppercase tracking-wide text-muted-foreground">Plano</div>
               <div className="text-2xl font-bold">Hostly Pro</div>
-              <div className="text-3xl font-bold mt-2">{plan.label}</div>
+              <div className="text-3xl font-bold mt-2">{priceLabel}</div>
               <div className="text-sm text-muted-foreground mt-1">7 dias grátis · até 5 usuários · apartamentos ilimitados</div>
             </div>
             <ul className="text-sm space-y-1 text-muted-foreground">
