@@ -21,6 +21,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
+import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
 
 const SignupRoute = SignupRouteImport.update({
@@ -83,6 +84,11 @@ const FaxineiraTokenRoute = FaxineiraTokenRouteImport.update({
   path: '/faxineira/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConviteTokenRoute = ConviteTokenRouteImport.update({
+  id: '/convite/$token',
+  path: '/convite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGeoRoute = ApiPublicGeoRouteImport.update({
   id: '/api/public/geo',
   path: '/api/public/geo',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ConviteTokenRoute: typeof ConviteTokenRoute
   FaxineiraTokenRoute: typeof FaxineiraTokenRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaxineiraTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/convite/$token': {
+      id: '/convite/$token'
+      path: '/convite/$token'
+      fullPath: '/convite/$token'
+      preLoaderRoute: typeof ConviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/geo': {
       id: '/api/public/geo'
       path: '/api/public/geo'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ConviteTokenRoute: ConviteTokenRoute,
   FaxineiraTokenRoute: FaxineiraTokenRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
