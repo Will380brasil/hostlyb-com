@@ -313,28 +313,258 @@ function Hero() {
   );
 }
 
+const ROTATING_TESTIMONIALS = [
+  { ini: "MS", color: "#FF6B6B", name: "Mariana S.", meta: "4 imóveis · São Paulo", text: "Em 5 minutos sei o status de todos os imóveis. Antes era WhatsApp e planilha." },
+  { ini: "JT", color: "#4A9EFF", name: "James T.", meta: "2 properties · Miami", text: "The cleaning checklist with photos is a game changer for me." },
+  { ini: "SL", color: "#00C896", name: "Sophie L.", meta: "2 propriétés · Paris", text: "Hostlyb fait tout ce dont j'ai besoin à un prix imbattable." },
+  { ini: "RG", color: "#FFB347", name: "Rafael G.", meta: "6 imóveis · Florianópolis", text: "O link da faxineira sem login resolveu meu maior problema operacional." },
+  { ini: "AC", color: "#A78BFA", name: "Ana C.", meta: "3 imóveis · Rio de Janeiro", text: "Os alertas de checkout e objetos esquecidos me salvaram várias vezes." },
+  { ini: "LP", color: "#06B6D4", name: "Luca P.", meta: "5 appartamenti · Milano", text: "Sincronizzazione iCal con Airbnb e Booking funziona perfettamente." },
+  { ini: "EM", color: "#F472B6", name: "Elena M.", meta: "3 propiedades · Madrid", text: "Mis huéspedes y limpiezas en un solo lugar. Por fin." },
+  { ini: "DK", color: "#34D399", name: "Daniel K.", meta: "4 properties · Lisbon", text: "I cancelled three other tools after trying Hostlyb for a week." },
+  { ini: "PB", color: "#F59E0B", name: "Patrícia B.", meta: "7 imóveis · Salvador", text: "Relatório de receita por imóvel me deu clareza que eu nunca tive." },
+  { ini: "OM", color: "#8B5CF6", name: "Olivier M.", meta: "2 logements · Lyon", text: "Mon équipe a adopté l'app sans aucune formation." },
+];
+
 function SocialProof() {
   const t = useT();
-  const initials = ["MS", "JT", "SL", "RG", "AC"];
-  const colors = [C.coral, "#4A9EFF", C.emerald, "#FFB347", "#A78BFA"];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setIdx((i) => (i + 1) % ROTATING_TESTIMONIALS.length), 2000);
+    return () => clearInterval(id);
+  }, []);
+  const visible = [0, 1, 2].map((o) => ROTATING_TESTIMONIALS[(idx + o) % ROTATING_TESTIMONIALS.length]);
+  const initials = ROTATING_TESTIMONIALS.slice(0, 5);
+
   return (
-    <section style={{ background: C.g50, padding: "32px 24px" }}>
-      <div style={{ maxWidth: 1000, margin: "0 auto", textAlign: "center" }}>
-        <p style={{ color: C.g400, fontSize: 13, marginBottom: 16 }}>{t("social.proof")}</p>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
+    <section style={{ background: C.g50, padding: "40px 24px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", justifyContent: "center", marginBottom: 22 }}>
           <div style={{ display: "flex" }}>
-            {initials.map((ini, i) => (
-              <div key={ini} style={{
-                width: 36, height: 36, borderRadius: 999, background: colors[i],
+            {initials.map((it, i) => (
+              <div key={it.ini} style={{
+                width: 36, height: 36, borderRadius: 999, background: it.color,
                 color: "#fff", fontSize: 12, fontWeight: 700, display: "grid", placeItems: "center",
                 marginLeft: i === 0 ? 0 : -10, border: "2px solid #fff",
-              }}>{ini}</div>
+              }}>{it.ini}</div>
             ))}
           </div>
-          <p style={{ color: C.g600, fontSize: 14, fontWeight: 600 }}>★★★★★ 4.9 / 847</p>
+          <p style={{ color: C.g600, fontSize: 14, fontWeight: 600, margin: 0 }}>★★★★★ 4.9 / 847 · {t("social.proof")}</p>
+        </div>
+
+        <div className="proofs-row" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+          {visible.map((tt, i) => (
+            <div
+              key={`${idx}-${i}-${tt.ini}`}
+              style={{
+                background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 14,
+                padding: "14px 16px", display: "flex", gap: 12, alignItems: "center",
+                animation: "proofIn .5s ease both",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+              }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: 999, background: tt.color,
+                color: "#fff", fontWeight: 700, fontSize: 12, display: "grid", placeItems: "center", flexShrink: 0,
+              }}>{tt.ini}</div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: 13, color: C.g800, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                  "{tt.text}"
+                </p>
+                <p style={{ margin: "4px 0 0", fontSize: 11, color: C.g400, fontWeight: 600 }}>{tt.name} · {tt.meta}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+      <style>{`
+        @keyframes proofIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @media (max-width: 900px) { .proofs-row { grid-template-columns: 1fr !important; } .proofs-row > div:nth-child(n+2) { display: none; } }
+      `}</style>
     </section>
+  );
+}
+
+function StartInFourSteps() {
+  const steps = [
+    { n: 1, icon: Building2, title: "Cadastre seu imóvel", desc: "Endereço, fotos, regras de check-in.", to: "/imoveis", cta: "Ir para Imóveis" },
+    { n: 2, icon: Sparkles, title: "Agende uma limpeza", desc: "Checklist + link único para a faxineira, sem login.", to: "/limpezas", cta: "Ir para Limpezas" },
+    { n: 3, icon: Users, title: "Registre hóspedes", desc: "Quem chega, valor e objetos esquecidos.", to: "/hospedes", cta: "Ir para Hóspedes" },
+    { n: 4, icon: CalendarDays, title: "Sincronize calendários", desc: "iCal do Airbnb e Booking em um só lugar.", to: "/calendario", cta: "Ir para Calendário" },
+  ];
+  return (
+    <section id="comece" style={{ padding: "96px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.coral, fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
+          Onboarding em minutos
+        </p>
+        <h2 data-reveal className="reveal section-title" style={{
+          fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800,
+          marginBottom: 14, letterSpacing: "-0.02em", lineHeight: 1.1, fontSize: "clamp(28px, 4vw, 44px)",
+        }}>
+          Comece em 4 passos
+        </h2>
+        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.g600, fontSize: 17, marginBottom: 40, maxWidth: 560, marginLeft: "auto", marginRight: "auto" }}>
+          Configure sua operação completa em menos de 10 minutos. Sem treinamento, sem complicação.
+        </p>
+        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
+          {steps.map((s) => {
+            const Icon = s.icon;
+            return (
+              <Link
+                key={s.n}
+                to={s.to as any}
+                data-reveal
+                className="reveal step-card"
+                style={{
+                  display: "flex", flexDirection: "column", gap: 10,
+                  padding: 24, borderRadius: 20, background: "#fff",
+                  border: `1px solid ${C.g100}`, transition: "all .2s ease",
+                  textDecoration: "none", color: C.g800, position: "relative",
+                }}
+              >
+                <span style={{
+                  position: "absolute", top: 16, right: 16,
+                  width: 28, height: 28, borderRadius: 999, background: C.coralLight,
+                  color: C.coral, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 13,
+                  fontFamily: displayFont,
+                }}>{s.n}</span>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 14, background: C.coralLight,
+                  color: C.coral, display: "grid", placeItems: "center",
+                }}>
+                  <Icon size={22} />
+                </div>
+                <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 17, color: C.black, margin: "6px 0 0" }}>{s.title}</h3>
+                <p style={{ color: C.g600, fontSize: 13.5, lineHeight: 1.5, margin: 0, flex: 1 }}>{s.desc}</p>
+                <span style={{ marginTop: 6, color: C.coral, fontWeight: 700, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  {s.cta} <ArrowRight size={14} />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 32 }}>
+          <CoralButton big href="/signup">Começar grátis agora <ArrowRight size={18} /></CoralButton>
+        </div>
+      </div>
+      <style>{`
+        .step-card:hover { transform: translateY(-3px); border-color: ${C.coral}; box-shadow: 0 16px 36px ${C.coralGlow}; }
+        @media (max-width: 980px) { .steps-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 520px) { .steps-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
+    </section>
+  );
+}
+
+function PwaInstallBanner() {
+  const [deferred, setDeferred] = useState<any>(null);
+  const [installed, setInstalled] = useState(false);
+  const [showIos, setShowIos] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("pwa_install_dismissed")) setDismissed(true);
+    const standalone = window.matchMedia?.("(display-mode: standalone)").matches || (window.navigator as any).standalone;
+    if (standalone) setInstalled(true);
+    const onPrompt = (e: any) => { e.preventDefault(); setDeferred(e); };
+    const onInstalled = () => setInstalled(true);
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
+  if (installed || dismissed) return null;
+
+  const isIos = typeof navigator !== "undefined" && /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const dismiss = () => { localStorage.setItem("pwa_install_dismissed", "1"); setDismissed(true); };
+  const install = async () => {
+    if (deferred) {
+      deferred.prompt();
+      const choice = await deferred.userChoice.catch(() => null);
+      if (choice?.outcome === "accepted") setInstalled(true);
+      setDeferred(null);
+    } else if (isIos) {
+      setShowIos(true);
+    } else {
+      setShowIos(true);
+    }
+  };
+
+  return (
+    <>
+      <section style={{ padding: "16px 24px 0" }}>
+        <div style={{
+          maxWidth: 1100, margin: "0 auto",
+          background: "linear-gradient(135deg, #111 0%, #2a2a2a 100%)",
+          color: "#fff", borderRadius: 18, padding: "16px 20px",
+          display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
+          boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 12, background: C.coral,
+            display: "grid", placeItems: "center", color: "#fff", flexShrink: 0,
+          }}>
+            <Smartphone size={22} />
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>Instale o Hostlyb na tela inicial</p>
+            <p style={{ margin: "2px 0 0", fontSize: 13, color: "#bbb" }}>
+              Acesse mais rápido, funciona offline, ícone próprio. Grátis.
+            </p>
+          </div>
+          <button
+            onClick={install}
+            style={{
+              background: C.coral, color: "#fff", border: 0, borderRadius: 999,
+              padding: "10px 18px", fontWeight: 700, fontSize: 14,
+              display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
+            }}
+          >
+            <Download size={16} /> Instalar app
+          </button>
+          <button
+            onClick={dismiss}
+            aria-label="Dispensar"
+            style={{ background: "transparent", border: 0, color: "#888", cursor: "pointer" }}
+          >
+            <X size={18} />
+          </button>
+        </div>
+      </section>
+
+      {showIos && (
+        <div onClick={() => setShowIos(false)} style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+          display: "grid", placeItems: "center", zIndex: 100, padding: 16,
+        }}>
+          <div onClick={(e) => e.stopPropagation()} style={{
+            background: "#fff", borderRadius: 18, padding: 24, maxWidth: 380, width: "100%",
+          }}>
+            <h3 style={{ margin: "0 0 8px", fontFamily: displayFont, fontWeight: 800, color: C.black }}>
+              {isIos ? "Instalar no iPhone/iPad" : "Como instalar"}
+            </h3>
+            <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.6 }}>
+              {isIos ? (
+                <>1. Toque em <Share2 size={14} style={{ display: "inline", verticalAlign: "middle" }} /> <strong>Compartilhar</strong>.<br />
+                2. Escolha <strong>"Adicionar à Tela de Início"</strong>.<br />
+                3. Confirme com <strong>Adicionar</strong>.</>
+              ) : (
+                <>No menu do navegador, escolha <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</>
+              )}
+            </p>
+            <button onClick={() => setShowIos(false)} className="btn-coral" style={{
+              background: C.coral, color: "#fff", border: 0, borderRadius: 999,
+              padding: "12px 22px", fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 8,
+            }}>Entendi</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
