@@ -151,7 +151,9 @@ function NumInput({ label, value, onChange }: { label: string; value: number; on
   return (
     <label className="flex flex-col gap-1 text-sm">
       <span className="text-muted-foreground text-xs">{label}</span>
-      <input type="number" min={0} value={value} onChange={(e) => onChange(Number(e.target.value))}
+      <input type="number" inputMode="decimal" min={0} placeholder="0"
+        value={value === 0 ? "" : value}
+        onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
         className="px-3 py-2.5 rounded-lg bg-background border border-card-border" />
     </label>
   );
