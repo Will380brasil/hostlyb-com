@@ -511,7 +511,7 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
         if (upErr) throw upErr;
         photo_url = path;
       }
-      const { error } = await supabase.from("cleaners").insert({ ...form, user_id: user.id, photo_url });
+      const { error } = await supabase.from("cleaners").insert({ ...form, pix_key: form.payment_details, user_id: user.id, photo_url });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Profissional cadastrado"); qc.invalidateQueries({ queryKey: ["cleaners"] }); onClose(); },
