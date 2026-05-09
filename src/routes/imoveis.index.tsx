@@ -19,6 +19,7 @@ function PropertiesPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const [filterDate, setFilterDate] = useState("");
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
@@ -27,6 +28,31 @@ function PropertiesPage() {
       return data ?? [];
     },
   });
+  const { data: guestsOnDate = [] } = useQuery({
+    queryKey: ["guests-on-date", filterDate],
+    enabled: !!filterDate,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("guests").select("property_id, checkin_date, checkout_date")
+        .lte("checkin_date", filterDate).gt("checkout_date", filterDate);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const { data: cleaningsOnDate = [] } = useQuery({
+    queryKey: ["cleanings-on-date", filterDate],
+    enabled: !!filterDate,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("cleaning_jobs").select("property_id, status")
+        .eq("scheduled_date", filterDate).neq("status", "concluido");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const statusForDate = (pid: string): "ocupado" | "limpeza" | "livre" => {
+    if (guestsOnDate.some((g: any) => g.property_id === pid)) return "ocupado";
+    if (cleaningsOnDate.some((c: any) => c.property_id === pid)) return "limpeza";
+    return "livre";
+  };
 
   return (
     <AppShell>
