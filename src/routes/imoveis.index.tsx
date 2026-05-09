@@ -16,6 +16,7 @@ export const Route = createFileRoute("/imoveis/")({
 });
 
 function PropertiesPage() {
+  const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
