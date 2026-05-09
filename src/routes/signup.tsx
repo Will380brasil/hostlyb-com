@@ -36,6 +36,8 @@ function SignupPage() {
   const [country, setCountry] = useState("BR");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
 
   const dial = COUNTRIES.find((c) => c.code === country)?.dial ?? "";
   const fullPhone = phone ? `${dial}${phone.replace(/\D/g, "")}` : "";
@@ -48,14 +50,35 @@ function SignupPage() {
       return;
     }
     setLoading(true);
-    const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/app` : undefined;
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email, password,
-      options: { emailRedirectTo: redirectTo, data: { full_name: name, phone: fullPhone, country } },
+      options: {
+        emailRedirectTo: "https://hostlyb.com/auth/callback",
+        data: { full_name: name, phone: fullPhone, country },
+      },
     });
     setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    if (data.session) {
+      toast.success(t("signup.success"));
+      navigate({ to: "/app" as any });
+    } else {
+      // Awaiting email confirmation
+      setSentTo(email);
+    }
+  };
+
+  const resend = async () => {
+    if (!sentTo) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: sentTo,
+      options: { emailRedirectTo: "https://hostlyb.com/auth/callback" },
+    });
+    setResending(false);
     if (error) toast.error(error.message);
-    else { toast.success(t("signup.success")); navigate({ to: "/app" as any }); }
+    else toast.success("E-mail reenviado!");
   };
 
   const inputCls = "px-4 py-3 rounded-xl bg-card border border-card-border";
