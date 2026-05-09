@@ -8,15 +8,22 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 
-const FAQ_ITEMS = [
-  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial." },
-  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim. O Hostly importa reservas do Airbnb, Booking.com e VRBO via sincronização de calendário iCal. Cole o link iCal nas configurações do imóvel e as reservas aparecem automaticamente." },
-  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. A profissional recebe um link único por WhatsApp e acessa o checklist diretamente pelo navegador do celular, sem criar conta nem instalar nada." },
-  { q: "Como funciona o controle de objetos esquecidos?", a: "A faxineira fotografa e registra o objeto pelo portal dela. Você recebe alerta imediato com foto e descrição. O registro fica salvo no histórico permanente até ser resolvido." },
-  { q: "Posso cancelar quando quiser?", a: "Sim. Sem contrato, sem multa, sem fidelidade. Cancele com 1 clique nas configurações da conta. O acesso continua até o fim do período pago." },
-  { q: "Quantos usuários e imóveis posso ter?", a: "Você + até 4 funcionários (5 no total) através de link de convite, e imóveis ilimitados — tudo no plano Pro." },
-  { q: "Como o Hostly se integra com o Google Calendar?", a: "Exporte checkins, checkouts e limpezas em formato .ics e importe no Google Calendar, Apple Calendar ou qualquer app de agenda." },
-  { q: "Meus dados e fotos estão seguros?", a: "Sim. Todos os dados são criptografados em repouso e em trânsito (HTTPS). Fotos ficam em armazenamento privado — só você tem acesso." },
+const FAQ_KEYS = [
+  ["faq.q1", "faq.a1"],
+  ["faq.q2", "faq.a2"],
+  ["faq.q3", "faq.a3"],
+  ["faq.q4", "faq.a4"],
+  ["faq.q5", "faq.a5"],
+  ["faq.q6", "faq.a6"],
+  ["faq.q7", "faq.a7"],
+  ["faq.q8", "faq.a8"],
+] as const;
+// Static FAQ items for JSON-LD (SEO crawler reads PT)
+const FAQ_ITEMS_SEO = [
+  { q: "Preciso de cartão de crédito para testar o Hostly?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão." },
+  { q: "O Hostly funciona para Booking.com e VRBO também?", a: "Sim, via sincronização iCal." },
+  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. Recebe um link único e acessa direto pelo navegador." },
+  { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
 
 const JSON_LD = {
