@@ -22,7 +22,9 @@ import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -89,11 +91,22 @@ const ConviteTokenRoute = ConviteTokenRouteImport.update({
   path: '/convite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGeoRoute = ApiPublicGeoRouteImport.update({
   id: '/api/public/geo',
   path: '/api/public/geo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,11 +118,13 @@ export interface FileRoutesByFullPath {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -121,11 +136,13 @@ export interface FileRoutesByTo {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,11 +155,13 @@ export interface FileRoutesById {
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/imoveis/$id': typeof ImoveisIdRoute
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,11 +175,13 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/checkout/return'
     | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
     | '/api/public/geo'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,11 +193,13 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/checkout/return'
     | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis'
     | '/api/public/geo'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -188,11 +211,13 @@ export interface FileRouteTypes {
     | '/limpezas'
     | '/login'
     | '/signup'
+    | '/checkout/return'
     | '/convite/$token'
     | '/faxineira/$token'
     | '/imoveis/$id'
     | '/imoveis/'
     | '/api/public/geo'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -205,11 +230,13 @@ export interface RootRouteChildren {
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
   FaxineiraTokenRoute: typeof FaxineiraTokenRoute
   ImoveisIdRoute: typeof ImoveisIdRoute
   ImoveisIndexRoute: typeof ImoveisIndexRoute
   ApiPublicGeoRoute: typeof ApiPublicGeoRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -305,11 +332,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/geo': {
       id: '/api/public/geo'
       path: '/api/public/geo'
       fullPath: '/api/public/geo'
       preLoaderRoute: typeof ApiPublicGeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -325,11 +366,13 @@ const rootRouteChildren: RootRouteChildren = {
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  CheckoutReturnRoute: CheckoutReturnRoute,
   ConviteTokenRoute: ConviteTokenRoute,
   FaxineiraTokenRoute: FaxineiraTokenRoute,
   ImoveisIdRoute: ImoveisIdRoute,
   ImoveisIndexRoute: ImoveisIndexRoute,
   ApiPublicGeoRoute: ApiPublicGeoRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
