@@ -134,7 +134,7 @@ function PropertyDetail() {
                   </p>
                   <p className="text-xs text-muted-foreground">{g.checkin_date} → {g.checkout_date}</p>
                 </div>
-                <span className="font-mono text-xs">{formatBRL(Number(g.total_value ?? 0))}</span>
+                <span className="font-mono text-xs">{formatMoney(Number(g.total_value ?? 0), currency, lang)}</span>
               </li>
             ))}
           </ul>
