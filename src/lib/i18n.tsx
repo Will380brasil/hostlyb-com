@@ -447,6 +447,24 @@ const es: Dict = {
   "signup.success": "¡Cuenta creada!",
   "signup.googleFail": "Error al iniciar sesión con Google",
   "signup.or": "o",
+  "signup.phoneInvalid": "Teléfono inválido. Solo dígitos (8-15).",
+
+  "login.title": "Entra en tu cuenta",
+  "login.email": "Email",
+  "login.password": "Contraseña",
+  "login.submit": "Entrar",
+  "login.submitting": "Entrando...",
+  "login.google": "Continuar con Google",
+  "login.googleFail": "Error al iniciar sesión con Google",
+  "login.noAccount": "¿No tienes cuenta?",
+  "login.signup": "Crear cuenta",
+  "login.fail": "Email o contraseña inválidos",
+
+  "cookies.title": "🍪 Tu privacidad",
+  "cookies.body": "Usamos cookies para entender cómo usas Hostly y mejorar tu experiencia.",
+  "cookies.more": "Saber más",
+  "cookies.accept": "Aceptar",
+  "cookies.deny": "Rechazar",
 };
 
 const DICTS: Record<Lang, Dict> = {
