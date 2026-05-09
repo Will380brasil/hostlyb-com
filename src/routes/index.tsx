@@ -177,16 +177,16 @@ function Navbar() {
       transition: "all .2s ease",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="#top" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
           Host<span style={{ color: C.coral }}>ly</span>
-        </a>
+        </Link>
 
         <nav className="nav-desktop" style={{ display: "flex", gap: 32 }}>
           <a href="#features" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.features")}</a>
-          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>Como funciona</a>
+          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.howItWorks")}</a>
           <a href="#precos" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.pricing")}</a>
           <a href="#faq" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.faq")}</a>
         </nav>
