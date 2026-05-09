@@ -154,6 +154,7 @@ function Navbar() {
 
         <nav className="nav-desktop" style={{ display: "flex", gap: 32 }}>
           <a href="#features" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.features")}</a>
+          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>Como funciona</a>
           <a href="#precos" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.pricing")}</a>
           <a href="#faq" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.faq")}</a>
         </nav>
