@@ -181,7 +181,7 @@ function Navbar() {
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
-          Host<span style={{ color: C.coral }}>ly</span>
+          Host<span style={{ color: C.coral }}>lyb</span>
         </Link>
 
         <nav className="nav-desktop" style={{ display: "flex", gap: 32 }}>
@@ -654,7 +654,7 @@ function Footer() {
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
-          Host<span style={{ color: C.coral }}>ly</span>
+          Host<span style={{ color: C.coral }}>lyb</span>
         </Link>
         <LanguageSelector />
         <p style={{ fontSize: 13, color: C.g400 }}>{t("footer.rights")}</p>

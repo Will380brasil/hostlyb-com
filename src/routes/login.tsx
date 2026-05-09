@@ -34,7 +34,7 @@ function LoginPage() {
     <div className="min-h-screen grid place-items-center px-5 bg-background">
       <div className="w-full max-w-sm">
         <Link to="/" className="block mb-1">
-          <h1 className="text-3xl font-black">Host<span style={{ color: "var(--color-accent)" }}>ly</span></h1>
+          <h1 className="text-3xl font-black">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
         </Link>
         <p className="text-sm text-muted-foreground mb-6">{t("login.title")}</p>
         <form onSubmit={submit} className="flex flex-col gap-3">

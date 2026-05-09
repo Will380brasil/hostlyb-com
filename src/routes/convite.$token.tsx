@@ -51,7 +51,7 @@ function ConvitePage() {
   return (
     <div className="min-h-screen grid place-items-center bg-background px-5">
       <div className="hostly-card !p-6 max-w-sm w-full text-center">
-        <h1 className="text-2xl font-black tracking-tight mb-1">Host<span style={{ color: "var(--color-accent)" }}>ly</span></h1>
+        <h1 className="text-2xl font-black tracking-tight mb-1">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
         <p className="text-sm text-muted-foreground mb-5">Convite para equipe</p>
 
         {!invite && !error && <p className="text-sm">Carregando convite…</p>}

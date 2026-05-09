@@ -51,7 +51,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
     <div className="min-h-screen flex flex-col mx-auto w-full max-w-[480px] md:max-w-6xl bg-background">
       <header className="sticky top-0 z-30 flex items-center justify-between px-5 h-14 bg-background/90 backdrop-blur border-b border-card-border">
         <Link to="/" className="text-2xl font-black tracking-tight">
-          Host<span style={{ color: "var(--color-accent)" }}>ly</span>
+          Host<span style={{ color: "var(--color-accent)" }}>lyb</span>
         </Link>
         <nav className="hidden md:flex items-center gap-1">
           {tabs.map(({ to, label, icon: Icon }) => {
