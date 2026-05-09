@@ -607,6 +607,10 @@ function LandingPage() {
         .btn-coral:hover { transform: translateY(-1px); filter: brightness(1.04); }
         .nav-link { transition: color .15s ease; } .nav-link:hover { color: ${C.coral}; }
         .feature-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: ${C.coralLight}; }
+        details.faq-item summary::-webkit-details-marker { display: none; }
+        details.faq-item .faq-icon-open { display: none; }
+        details.faq-item[open] .faq-icon-closed { display: none; }
+        details.faq-item[open] .faq-icon-open { display: inline-block; }
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-mobile-btn { display: inline-flex !important; }
