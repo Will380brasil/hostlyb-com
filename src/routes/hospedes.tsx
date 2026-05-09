@@ -5,7 +5,8 @@ import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { formatBRL } from "@/lib/format";
+import { formatMoney, currencySymbol } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, Phone, MessageCircle } from "lucide-react";
 
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/hospedes")({
 const platformLabel: Record<string, string> = { airbnb: "Airbnb", booking: "Booking", direto: "Direto" };
 
 function GuestsPage() {
+  const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const { data: guests = [] } = useQuery({
     queryKey: ["guests"],
@@ -57,7 +59,7 @@ function GuestsPage() {
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-sm" style={{ color: "var(--color-success)" }}>
-                    {formatBRL(Number(g.total_value ?? 0))}
+                    {formatMoney(Number(g.total_value ?? 0), currency, lang)}
                   </span>
                   {g.phone && (
                     <>
@@ -82,6 +84,7 @@ function GuestsPage() {
 }
 
 function NewGuestSheet({ onClose }: { onClose: () => void }) {
+  const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
   const { data: properties = [] } = useQuery({
@@ -125,7 +128,7 @@ function NewGuestSheet({ onClose }: { onClose: () => void }) {
             <Field label="Check-in"><input type="date" required value={form.checkin_date} onChange={(e) => setForm({ ...form, checkin_date: e.target.value })} className={inp} /></Field>
             <Field label="Check-out"><input type="date" required value={form.checkout_date} onChange={(e) => setForm({ ...form, checkout_date: e.target.value })} className={inp} /></Field>
           </div>
-          <Field label="Valor total (R$)"><input type="number" min={0} step="0.01" value={form.total_value} onChange={(e) => setForm({ ...form, total_value: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor total (${currencySymbol(currency)})`}><input type="number" min={0} step="0.01" value={form.total_value} onChange={(e) => setForm({ ...form, total_value: Number(e.target.value) })} className={inp} /></Field>
           <Select label="Plataforma" value={form.platform} onChange={(v) => setForm({ ...form, platform: v })}
             options={[{ v: "airbnb", l: "Airbnb" }, { v: "booking", l: "Booking" }, { v: "direto", l: "Direto" }]} />
           <button disabled={m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>

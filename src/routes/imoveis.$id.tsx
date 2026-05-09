@@ -6,7 +6,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { fullAddress, formatBRL } from "@/lib/format";
+import { fullAddress, formatMoney } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, Calendar, RefreshCw, Trash2, Plus } from "lucide-react";
 
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/imoveis/$id")({
 });
 
 function PropertyDetail() {
+  const { currency, lang } = useLocale();
   const { id } = Route.useParams();
   const navigate = useNavigate();
 
@@ -132,7 +134,7 @@ function PropertyDetail() {
                   </p>
                   <p className="text-xs text-muted-foreground">{g.checkin_date} → {g.checkout_date}</p>
                 </div>
-                <span className="font-mono text-xs">{formatBRL(Number(g.total_value ?? 0))}</span>
+                <span className="font-mono text-xs">{formatMoney(Number(g.total_value ?? 0), currency, lang)}</span>
               </li>
             ))}
           </ul>

@@ -5,7 +5,8 @@ import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { formatBRL } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, ChevronRight, BedDouble, Bath, Users, X } from "lucide-react";
 
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/imoveis/")({
 });
 
 function PropertiesPage() {
+  const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
@@ -61,7 +63,7 @@ function PropertiesPage() {
                     <span className="inline-flex items-center gap-1"><Users size={13} />{p.max_guests ?? 0}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm font-mono" style={{ color: "var(--color-success)" }}>
-                    {formatBRL(Number(p.income_monthly ?? 0))} <ChevronRight size={14} className="text-muted-foreground" />
+                    {formatMoney(Number(p.income_monthly ?? 0), currency, lang)} <ChevronRight size={14} className="text-muted-foreground" />
                   </div>
                 </div>
               </Link>

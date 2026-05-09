@@ -5,7 +5,8 @@ import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { formatBRL } from "@/lib/format";
+import { formatMoney, currencySymbol } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
 
@@ -58,6 +59,7 @@ function CleaningsPage() {
 }
 
 function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
+  const { currency, lang } = useLocale();
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["cleaning_jobs"],
     queryFn: async () => {
@@ -96,7 +98,7 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1"><Clock size={12} /> {j.scheduled_date} · {j.scheduled_time?.slice(0,5)}</span>
-                <span className="font-mono">{formatBRL(Number(j.payment_amount ?? 0))}</span>
+                <span className="font-mono">{formatMoney(Number(j.payment_amount ?? 0), currency, lang)}</span>
               </div>
               <div>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
@@ -159,6 +161,7 @@ function ProfissionaisList() {
 }
 
 function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void }) {
+  const { currency, lang } = useLocale();
   const qc = useQueryClient();
   const { user } = useAuth();
   const { data: job } = useQuery({
@@ -365,7 +368,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
           <section className="hostly-card !p-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Pagamento</p>
-              <p className="font-mono">{formatBRL(Number(job.payment_amount ?? 0))}</p>
+              <p className="font-mono">{formatMoney(Number(job.payment_amount ?? 0), currency, lang)}</p>
             </div>
             {job.payment_status === "pago" ? (
               <span className="hostly-pill" style={{ color: "var(--color-success)", background: "var(--color-success-soft)" }}>Pago</span>
@@ -397,6 +400,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
 }
 
 function NewJobSheet({ onClose }: { onClose: () => void }) {
+  const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
   const { data: properties = [] } = useQuery({ queryKey: ["properties-min"], queryFn: async () => (await supabase.from("properties").select("id, name").eq("archived", false)).data ?? [] });
@@ -438,7 +442,7 @@ function NewJobSheet({ onClose }: { onClose: () => void }) {
             <Field label="Data"><input type="date" required value={form.scheduled_date} onChange={(e) => setForm({ ...form, scheduled_date: e.target.value })} className={inp} /></Field>
             <Field label="Horário"><input type="time" required value={form.scheduled_time} onChange={(e) => setForm({ ...form, scheduled_time: e.target.value })} className={inp} /></Field>
           </div>
-          <Field label="Valor (R$)"><input type="number" step="0.01" min={0} value={form.payment_amount} onChange={(e) => setForm({ ...form, payment_amount: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor (${currencySymbol(currency)})`}><input type="number" step="0.01" min={0} value={form.payment_amount} onChange={(e) => setForm({ ...form, payment_amount: Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
           <button disabled={!form.property_id || m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Agendar"}</button>
         </form>
@@ -448,6 +452,7 @@ function NewJobSheet({ onClose }: { onClose: () => void }) {
 }
 
 function NewCleanerSheet({ onClose }: { onClose: () => void }) {
+  const { currency } = useLocale();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [form, setForm] = useState({ name: "", phone: "", email: "", pix_key: "", price_per_cleaning: 0, notes: "" });
@@ -482,7 +487,7 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
           <Field label="Telefone (com DDI, ex: 5511...)"><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inp} /></Field>
           <Field label="E-mail"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inp} /></Field>
           <Field label="Chave Pix"><input value={form.pix_key} onChange={(e) => setForm({ ...form, pix_key: e.target.value })} className={inp} /></Field>
-          <Field label="Valor por limpeza (R$)"><input type="number" min={0} step="0.01" value={form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor por limpeza (${currencySymbol(currency)})`}><input type="number" min={0} step="0.01" value={form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
           <button disabled={m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>
         </form>
