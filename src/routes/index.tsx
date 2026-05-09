@@ -691,6 +691,7 @@ function LandingPage() {
       <Navbar />
       <Hero />
       <SocialProof />
+      <ObjectionBreaker />
       <ProblemSolution />
       <Features />
       <HowItWorks />
