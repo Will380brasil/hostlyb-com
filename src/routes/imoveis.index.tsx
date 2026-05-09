@@ -63,7 +63,7 @@ function PropertiesPage() {
                     <span className="inline-flex items-center gap-1"><Users size={13} />{p.max_guests ?? 0}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm font-mono" style={{ color: "var(--color-success)" }}>
-                    {formatBRL(Number(p.income_monthly ?? 0))} <ChevronRight size={14} className="text-muted-foreground" />
+                    {formatMoney(Number(p.income_monthly ?? 0), currency, lang)} <ChevronRight size={14} className="text-muted-foreground" />
                   </div>
                 </div>
               </Link>
