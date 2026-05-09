@@ -53,13 +53,28 @@ export function AppShell({ children }: { children?: ReactNode }) {
         <h1 className="text-2xl font-black tracking-tight">
           Host<span style={{ color: "var(--color-accent)" }}>ly</span>
         </h1>
-        <button
-          aria-label="Sair"
-          onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
-          className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
-        >
-          <LogOut size={16} />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            to={"/alertas" as any}
+            aria-label="Alertas"
+            className="relative grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          >
+            <Bell size={16} />
+            {unread > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white grid place-items-center"
+                style={{ background: "var(--color-destructive, #ef4444)" }}>
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </Link>
+          <button
+            aria-label="Sair"
+            onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
+            className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 px-4 pt-4 pb-28">
