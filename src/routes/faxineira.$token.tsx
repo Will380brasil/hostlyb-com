@@ -65,10 +65,10 @@ function CleanerPortal() {
     mutationFn: async (payload: { checklist?: any; notes?: string; status?: string; photos?: any }) => {
       const { error } = await supabase.rpc("cleaner_update_job", {
         p_token: token,
-        p_checklist: payload.checklist ?? null,
-        p_notes: payload.notes ?? null,
-        p_status: payload.status ?? null,
-        p_photos: payload.photos ?? null,
+        p_checklist: payload.checklist ?? undefined,
+        p_notes: payload.notes ?? undefined,
+        p_status: payload.status ?? undefined,
+        p_photos: payload.photos ?? undefined,
       });
       if (error) throw error;
     },
