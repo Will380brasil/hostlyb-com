@@ -340,14 +340,14 @@ function ObjectionBreaker() {
     <section style={{ padding: "72px 24px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p data-reveal className="reveal" style={{ textAlign: "center", color: C.coral, fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
-          Quebrando as objeções
+          {t("obj.eyebrow")}
         </p>
         <h2 data-reveal className="reveal" style={{
           fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800,
           marginBottom: 40, letterSpacing: "-0.02em", lineHeight: 1.1,
           fontSize: "clamp(26px, 3.8vw, 38px)",
         }}>
-          Você já pensou em usar — e travou aqui.
+          {t("obj.title")}
         </h2>
         <div className="obj-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {items.map((it) => (
