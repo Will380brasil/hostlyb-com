@@ -329,11 +329,12 @@ function SocialProof() {
 }
 
 function ObjectionBreaker() {
+  const t = useT();
   const items = [
-    { q: "“Não tenho tempo de aprender outro app.”", a: "Setup em 5 minutos. Se você usa WhatsApp, sabe usar o Hostly." },
-    { q: "“Minha faxineira não é boa com tecnologia.”", a: "Ela só clica num link. Sem instalar app, sem criar conta, sem senha." },
-    { q: "“Já tenho planilha funcionando.”", a: "Planilha não te avisa de checkout. Não tira foto. Não fala com a faxineira." },
-    { q: "“É caro?”", a: "R$ 59,90/mês. Menos que uma diária. Cancela em 1 clique se não gostar." },
+    { q: t("obj.q1"), a: t("obj.a1") },
+    { q: t("obj.q2"), a: t("obj.a2") },
+    { q: t("obj.q3"), a: t("obj.a3") },
+    { q: t("obj.q4"), a: t("obj.a4") },
   ];
   return (
     <section style={{ padding: "72px 24px", background: "#fff" }}>
