@@ -442,9 +442,9 @@ function NewJobSheet({ onClose }: { onClose: () => void }) {
             <Field label="Data"><input type="date" required value={form.scheduled_date} onChange={(e) => setForm({ ...form, scheduled_date: e.target.value })} className={inp} /></Field>
             <Field label="Horário"><input type="time" required value={form.scheduled_time} onChange={(e) => setForm({ ...form, scheduled_time: e.target.value })} className={inp} /></Field>
           </div>
-          <Field label={`Valor (${currencySymbol(currency)})`}><input type="number" step="0.01" min={0} value={form.payment_amount} onChange={(e) => setForm({ ...form, payment_amount: Number(e.target.value) })} className={inp} /></Field>
+          <Field label={`Valor (${currencySymbol(currency)})`}><input type="number" inputMode="decimal" step="0.01" min={0} placeholder="0,00" value={form.payment_amount === 0 ? "" : form.payment_amount} onChange={(e) => setForm({ ...form, payment_amount: e.target.value === "" ? 0 : Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
-          <button disabled={!form.property_id || m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Agendar"}</button>
+          <button type="submit" disabled={!form.property_id || m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Agendar"}</button>
         </form>
       </div>
     </div>
@@ -479,17 +479,17 @@ function NewCleanerSheet({ onClose }: { onClose: () => void }) {
       <div className="bg-card border-t border-card-border w-full max-w-[480px] mx-auto rounded-t-2xl p-5 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-lg">Novo profissional</h3>
-          <button onClick={onClose}><X size={20} /></button>
+          <button type="button" onClick={onClose}><X size={20} /></button>
         </div>
-        <form onSubmit={(e) => { e.preventDefault(); m.mutate(); }} className="flex flex-col gap-3 text-sm">
-          <Field label="Nome"><input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inp} /></Field>
+        <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); m.mutate(); }} noValidate className="flex flex-col gap-3 text-sm">
+          <Field label="Nome"><input required autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inp} /></Field>
           <Field label="Foto (opcional)"><input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="text-xs text-muted-foreground" /></Field>
-          <Field label="Telefone (com DDI, ex: 5511...)"><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inp} /></Field>
-          <Field label="E-mail"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inp} /></Field>
-          <Field label="Chave Pix"><input value={form.pix_key} onChange={(e) => setForm({ ...form, pix_key: e.target.value })} className={inp} /></Field>
-          <Field label={`Valor por limpeza (${currencySymbol(currency)})`}><input type="number" min={0} step="0.01" value={form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: Number(e.target.value) })} className={inp} /></Field>
+          <Field label="Telefone (com DDI, ex: 5511...)"><input autoComplete="tel" inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inp} /></Field>
+          <Field label="E-mail"><input type="email" autoComplete="email" inputMode="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inp} /></Field>
+          <Field label="Chave Pix / IBAN / MBWAY / Outro"><input autoComplete="off" placeholder="Ex: IBAN, MBWAY, PayPal, Zelle..." value={form.pix_key} onChange={(e) => setForm({ ...form, pix_key: e.target.value })} className={inp} /></Field>
+          <Field label={`Valor por limpeza (${currencySymbol(currency)})`}><input type="number" inputMode="decimal" min={0} step="0.01" placeholder="0,00" value={form.price_per_cleaning === 0 ? "" : form.price_per_cleaning} onChange={(e) => setForm({ ...form, price_per_cleaning: e.target.value === "" ? 0 : Number(e.target.value) })} className={inp} /></Field>
           <Field label="Notas"><input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inp} /></Field>
-          <button disabled={m.isPending} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>
+          <button type="submit" disabled={m.isPending || !form.name} className="btn-primary justify-center mt-2">{m.isPending ? "Salvando..." : "Salvar"}</button>
         </form>
       </div>
     </div>
