@@ -9,6 +9,8 @@ import { formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search } from "lucide-react";
+import { usePropertyLimit } from "@/hooks/usePropertyLimit";
+import { UpgradeModal } from "@/components/UpgradeModal";
 
 export const Route = createFileRoute("/imoveis/")({
   head: () => ({ meta: [{ title: "Imóveis — Hostlyb" }, { name: "description", content: "Gerencie seus imóveis." }] }),
@@ -18,8 +20,11 @@ export const Route = createFileRoute("/imoveis/")({
 function PropertiesPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [q, setQ] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const limit = usePropertyLimit();
+  const tryAdd = () => { if (limit.canAdd) setOpen(true); else setShowUpgrade(true); };
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
@@ -59,9 +64,11 @@ function PropertiesPage() {
       <header className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold">Imóveis</h2>
-          <p className="text-sm text-muted-foreground">{properties.length} cadastrados</p>
+          <p className="text-sm text-muted-foreground">
+            {properties.length} cadastrados {!limit.inTrial && `· limite ${limit.tier === 999 ? "∞" : limit.tier}`}
+          </p>
         </div>
-        <button className="btn-primary !py-2 !px-3" onClick={() => setOpen(true)}><Plus size={16} /> Novo</button>
+        <button className="btn-primary !py-2 !px-3" onClick={tryAdd}><Plus size={16} /> Novo</button>
       </header>
 
       {properties.length > 0 && (
@@ -97,7 +104,7 @@ function PropertiesPage() {
             ) : properties.length === 0 ? (
               <div className="hostly-card text-center text-sm text-muted-foreground">
                 <p className="mb-2">Você ainda não cadastrou imóveis.</p>
-                <button className="btn-primary mx-auto" onClick={() => setOpen(true)}><Plus size={14} /> Cadastrar imóvel</button>
+                <button className="btn-primary mx-auto" onClick={tryAdd}><Plus size={14} /> Cadastrar imóvel</button>
               </div>
             ) : filtered.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">Nenhum imóvel encontrado para "{q}".</p>
@@ -133,6 +140,12 @@ function PropertiesPage() {
       })()}
 
       {open && <NewPropertySheet onClose={() => setOpen(false)} />}
+      <UpgradeModal
+        open={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        currentTier={limit.tier}
+        nextTier={limit.nextTier}
+      />
     </AppShell>
   );
 }
