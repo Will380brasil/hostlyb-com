@@ -592,26 +592,38 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          billing_currency: string
+          billing_interval: string
           created_at: string
+          current_property_count: number
           display_name: string | null
           email: string | null
           id: string
+          property_tier: number
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          billing_currency?: string
+          billing_interval?: string
           created_at?: string
+          current_property_count?: number
           display_name?: string | null
           email?: string | null
           id: string
+          property_tier?: number
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          billing_currency?: string
+          billing_interval?: string
           created_at?: string
+          current_property_count?: number
           display_name?: string | null
           email?: string | null
           id?: string
+          property_tier?: number
           updated_at?: string
         }
         Relationships: []
@@ -843,6 +855,7 @@ export type Database = {
     }
     Functions: {
       accept_invite: { Args: { p_token: string }; Returns: Json }
+      can_add_property: { Args: { _user: string }; Returns: boolean }
       cleaner_add_forgotten_item: {
         Args: {
           p_description: string
