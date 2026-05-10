@@ -1,27 +1,25 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useLocale, formatPrice } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n";
 import { useSubscription } from "@/hooks/useSubscription";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { createPortalSession } from "@/utils/payments.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { Button } from "@/components/ui/button";
+import { PRICING, pricingT, formatTierPrice, pricePerDay, getStripePriceId, type Tier, type BillingInterval } from "@/lib/pricing";
 
 export const Route = createFileRoute("/assinar")({ component: SubscribePage });
-
-const PRICE_ID_BY_CURRENCY = {
-  BRL: "hostly_pro_brl",
-  EUR: "hostly_pro_eur",
-  USD: "hostly_pro_usd",
-} as const;
 
 function SubscribePage() {
   const navigate = useNavigate();
   const { currency, lang } = useLocale();
+  const t = pricingT(lang);
   const [orgId, setOrgId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
+  const [tier, setTier] = useState<Tier>(5);
+  const [billing, setBilling] = useState<BillingInterval>("monthly");
   const [showCheckout, setShowCheckout] = useState(false);
   const { subscription, isActive, loading } = useSubscription(orgId);
 
@@ -32,16 +30,22 @@ function SubscribePage() {
       const { data: m } = await supabase
         .from("organization_members")
         .select("organization_id, role")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
+        .eq("user_id", user.id).order("created_at", { ascending: true }).limit(1).maybeSingle();
       if (m) { setOrgId(m.organization_id); setRole(m.role); }
+      const { data: p } = await supabase
+        .from("profiles").select("property_tier, current_property_count").eq("id", user.id).maybeSingle();
+      if (p?.property_tier) {
+        // Suggest the smallest tier that fits current count
+        const cnt = (p as any).current_property_count ?? 0;
+        const sug: Tier = cnt > 50 ? 999 : cnt > 20 ? 50 : cnt > 10 ? 20 : cnt > 5 ? 10 : 5;
+        setTier(sug);
+      }
     })();
   }, [navigate]);
 
-  const priceId = PRICE_ID_BY_CURRENCY[currency] ?? PRICE_ID_BY_CURRENCY.BRL;
-  const priceLabel = `${formatPrice(currency, lang)}${currency === "USD" ? "/mo" : "/mês"}`;
+  const tiers = PRICING[currency];
+  const selected = tiers.find((x) => x.tier === tier);
+  const priceId = selected && !selected.custom ? getStripePriceId(currency, tier, billing) : null;
 
   const openPortal = async () => {
     if (!orgId) return;
@@ -54,9 +58,9 @@ function SubscribePage() {
   return (
     <div className="min-h-screen bg-background">
       <PaymentTestModeBanner />
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <div className="max-w-3xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Assinatura</h1>
+          <h1 className="text-2xl font-bold">{t.headline}</h1>
           <Link to="/app" className="text-sm text-muted-foreground hover:underline">Voltar</Link>
         </div>
 
@@ -72,33 +76,59 @@ function SubscribePage() {
                 <> · Próxima cobrança: {new Date(subscription.current_period_end).toLocaleDateString()}</>
               )}
             </div>
-            {role === "owner" && (
-              <Button onClick={openPortal}>Gerenciar assinatura</Button>
-            )}
+            {role === "owner" && <Button onClick={openPortal}>Gerenciar assinatura</Button>}
           </div>
         ) : role !== "owner" ? (
-          <div className="rounded-lg border p-6">
-            <p>Apenas o proprietário da conta pode gerenciar a assinatura.</p>
+          <div className="rounded-lg border p-6"><p>Apenas o proprietário pode gerenciar a assinatura.</p></div>
+        ) : showCheckout && priceId ? (
+          <div className="space-y-3">
+            <button className="text-sm text-muted-foreground hover:underline" onClick={() => setShowCheckout(false)}>← Mudar plano</button>
+            <StripeEmbeddedCheckout priceId={priceId} organizationId={orgId} />
           </div>
-        ) : showCheckout ? (
-          <StripeEmbeddedCheckout priceId={priceId} organizationId={orgId} />
         ) : (
-          <div className="rounded-lg border p-6 space-y-4">
-            <div>
-              <div className="text-sm uppercase tracking-wide text-muted-foreground">Plano</div>
-              <div className="text-2xl font-bold">Hostlyb Pro</div>
-              <div className="text-3xl font-bold mt-2">{priceLabel}</div>
-              <div className="text-sm text-muted-foreground mt-1">7 dias grátis · até 5 usuários · apartamentos ilimitados</div>
+          <div className="space-y-5">
+            {/* Billing toggle */}
+            <div className="inline-flex bg-muted rounded-full p-1">
+              <button onClick={() => setBilling("monthly")} className={`px-4 py-2 rounded-full text-sm font-semibold ${billing === "monthly" ? "bg-background shadow" : ""}`}>{t.monthly}</button>
+              <button onClick={() => setBilling("yearly")} className={`px-4 py-2 rounded-full text-sm font-semibold ${billing === "yearly" ? "bg-background shadow" : ""}`}>{t.yearly} · {t.saveBadge}</button>
             </div>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>✓ Imóveis ilimitados</li>
-              <li>✓ Até 5 usuários (1 master + 4 funcionários por convite)</li>
-              <li>✓ Gestão de hóspedes, limpezas e alertas</li>
-              <li>✓ Cancele quando quiser</li>
-            </ul>
-            <Button size="lg" className="w-full" onClick={() => setShowCheckout(true)}>
-              Começar 7 dias grátis
-            </Button>
+
+            {/* Tier grid */}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {tiers.map((x) => {
+                const isSel = x.tier === tier;
+                const cents = billing === "yearly" ? x.yearlyMonthlyCents : x.monthlyCents;
+                return (
+                  <button
+                    key={x.tier}
+                    onClick={() => !x.custom && setTier(x.tier)}
+                    className={`text-left rounded-xl p-4 border-2 transition ${isSel ? "border-primary bg-primary/5" : "border-card-border bg-card hover:border-primary/40"}`}
+                  >
+                    <div className="text-xs font-bold text-muted-foreground mb-2">
+                      {x.custom ? t.customLabel : `${t.upTo} ${x.tier} ${t.properties}`}
+                    </div>
+                    {x.custom ? (
+                      <div className="text-lg font-bold">{t.customPrice}</div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{formatTierPrice(cents, currency, lang)}<span className="text-xs text-muted-foreground">{t.perMonth}</span></div>
+                        <div className="text-xs text-muted-foreground">≈ {pricePerDay(cents, currency, lang)}{t.perDay}</div>
+                      </>
+                    )}
+                    {x.popular && <div className="mt-2 inline-block text-[10px] font-bold text-primary">★ POPULAR</div>}
+                  </button>
+                );
+              })}
+            </div>
+
+            {selected?.custom ? (
+              <a href="mailto:hello@hostlyb.app" className="btn-primary w-full justify-center">{t.contactUs}</a>
+            ) : (
+              <Button size="lg" className="w-full" disabled={!priceId} onClick={() => setShowCheckout(true)}>
+                {t.startFree}
+              </Button>
+            )}
+            <p className="text-xs text-center text-muted-foreground">🎁 {t.trial} · {t.noCard} · {t.cancel}</p>
           </div>
         )}
       </div>

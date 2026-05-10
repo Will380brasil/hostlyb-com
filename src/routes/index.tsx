@@ -649,61 +649,113 @@ function Features() {
 }
 
 function Pricing() {
-  const t = useT();
-  const { lang, currency, loading } = useLocale();
-  const priceLabel = loading ? "—" : formatPrice(currency, lang);
-  const suffix = currency === "USD" ? "/mo" : "/mês";
-  const features = ["pricing.plan.f1","pricing.plan.f2","pricing.plan.f3","pricing.plan.f4","pricing.plan.f5","pricing.plan.f6","pricing.plan.f7"];
+  const { lang, currency } = useLocale();
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  // Lazy import to avoid circulars
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { PRICING, pricingT, formatTierPrice, pricePerDay } = require("@/lib/pricing") as typeof import("@/lib/pricing");
+  const t = pricingT(lang);
+  const tiers = PRICING[currency];
 
   return (
     <section id="precos" style={{ padding: "96px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, color: C.black, fontWeight: 800, marginBottom: 12, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("pricing.title.a")}<br />{t("pricing.title.b")}
+      <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+        <h2 className="reveal section-title" style={{ fontFamily: displayFont, color: C.black, fontWeight: 800, marginBottom: 12, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          {t.headline}
         </h2>
-        <p data-reveal className="reveal" style={{ color: C.g600, fontSize: 18, marginBottom: 36 }}>
-          {t("pricing.subtitle")}
-        </p>
+        <p className="reveal" style={{ color: C.g600, fontSize: 18, marginBottom: 28 }}>{t.subtitle}</p>
 
-        <div data-reveal className="reveal" style={{
-          position: "relative", background: "#fff", borderRadius: 28, padding: 36,
-          border: `2px solid ${C.coral}`,
-          boxShadow: `0 24px 60px ${C.coralGlow}`, textAlign: "left",
+        {/* Billing toggle */}
+        <div style={{ display: "inline-flex", background: "#F4F4F5", padding: 4, borderRadius: 999, marginBottom: 28 }}>
+          <button onClick={() => setBilling("monthly")} style={{
+            padding: "10px 18px", borderRadius: 999, border: 0, fontSize: 13, fontWeight: 700, cursor: "pointer",
+            background: billing === "monthly" ? "#fff" : "transparent", color: C.black,
+            boxShadow: billing === "monthly" ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
+          }}>{t.monthly}</button>
+          <button onClick={() => setBilling("yearly")} style={{
+            padding: "10px 18px", borderRadius: 999, border: 0, fontSize: 13, fontWeight: 700, cursor: "pointer",
+            background: billing === "yearly" ? "#fff" : "transparent", color: C.black,
+            boxShadow: billing === "yearly" ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
+          }}>{t.yearly} <span style={{ color: C.coral }}>· {t.saveBadge} 🎁</span></button>
+        </div>
+
+        {/* All-inclusive banner */}
+        <div className="reveal" style={{
+          background: "linear-gradient(135deg, #FFF7F4, #FFF)", border: "1px solid #FFE5DC",
+          borderRadius: 18, padding: "16px 20px", marginBottom: 28, textAlign: "left",
         }}>
-          <div style={{
-            position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-            background: C.coral, color: "#fff", padding: "4px 14px", borderRadius: 999,
-            fontSize: 12, fontWeight: 700, letterSpacing: 0.3,
-          }}>
-            {t("pricing.plan.tag")}
+          <div style={{ fontSize: 11, fontWeight: 800, color: C.coral, letterSpacing: 1, marginBottom: 6 }}>
+            ✦ {t.allInclude}
           </div>
-          <p style={{ color: C.g400, fontWeight: 700, fontSize: 12, letterSpacing: 1, textTransform: "uppercase" }}>
-            {t("pricing.plan.name")}
-          </p>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 12 }}>
-            <span style={{ fontFamily: displayFont, fontSize: 52, fontWeight: 800, color: C.black, lineHeight: 1 }}>
-              {priceLabel}
-            </span>
-            <span style={{ color: C.g400, fontSize: 15 }}>{suffix}</span>
-          </div>
-          <p style={{ color: C.g600, marginTop: 8, fontWeight: 600 }}>{t("pricing.plan.users")}</p>
+          <div style={{ fontSize: 13, color: C.g600, lineHeight: 1.5 }}>{t.featuresList}</div>
+        </div>
 
-          <ul style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10 }}>
-            {features.map((k) => (
-              <li key={k} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14 }}>
-                <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} />
-                <span>{t(k)}</span>
-              </li>
-            ))}
-          </ul>
+        {/* Tier cards */}
+        <div style={{
+          display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        }}>
+          {tiers.map((tier) => {
+            const cents = billing === "yearly" ? tier.yearlyMonthlyCents : tier.monthlyCents;
+            const isCustom = tier.custom;
+            return (
+              <div key={tier.tier} style={{
+                background: "#fff", border: tier.popular ? `2px solid ${C.coral}` : "1px solid #EFEFEF",
+                borderRadius: 18, padding: "22px 18px", position: "relative", textAlign: "left",
+                boxShadow: tier.popular ? `0 16px 40px ${C.coralGlow}` : "0 4px 14px rgba(0,0,0,0.04)",
+              }}>
+                {tier.popular && (
+                  <div style={{
+                    position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
+                    background: C.coral, color: "#fff", padding: "3px 10px", borderRadius: 999,
+                    fontSize: 10, fontWeight: 800, letterSpacing: 0.5,
+                  }}>★ POPULAR</div>
+                )}
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.g600, marginBottom: 10 }}>
+                  {isCustom ? t.customLabel : `${t.upTo} ${tier.tier} ${t.properties}`}
+                </div>
+                {isCustom ? (
+                  <>
+                    <div style={{ fontFamily: displayFont, fontSize: 28, fontWeight: 800, color: C.black, marginBottom: 18 }}>
+                      {t.customPrice}
+                    </div>
+                    <a href="mailto:hello@hostlyb.app" style={{
+                      display: "block", textAlign: "center", padding: "10px 14px", borderRadius: 999,
+                      background: C.black, color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 13,
+                    }}>{t.contactUs}</a>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
+                      <span style={{ fontFamily: displayFont, fontSize: 30, fontWeight: 800, color: C.black, lineHeight: 1 }}>
+                        {formatTierPrice(cents, currency, lang)}
+                      </span>
+                      <span style={{ color: C.g400, fontSize: 12 }}>{t.perMonth}</span>
+                    </div>
+                    <div style={{ color: C.g400, fontSize: 11, marginBottom: 14 }}>
+                      ≈ {pricePerDay(cents, currency, lang)}{t.perDay}
+                    </div>
+                    <Link to={"/signup" as any} onClick={() => trackEvent("pricing_cta", { tier: tier.tier, currency, billing })} style={{
+                      display: "block", textAlign: "center", padding: "10px 14px", borderRadius: 999,
+                      background: tier.popular ? C.coral : "#F4F4F5",
+                      color: tier.popular ? "#fff" : C.black,
+                      textDecoration: "none", fontWeight: 700, fontSize: 13,
+                    }}>🎁 {t.startFree}</Link>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-          <div style={{ marginTop: 26 }}>
-            <CoralButton big href="/signup">{t("pricing.cta")} <ArrowRight size={18} /></CoralButton>
-          </div>
-
-          <p style={{ marginTop: 14, color: C.g400, fontSize: 12 }}>
-            {t("pricing.note")}
-          </p>
+        <p style={{ marginTop: 22, color: C.g400, fontSize: 13 }}>
+          🎁 {t.trial} · {t.noCard} · {t.cancel}
+        </p>
+        <div style={{
+          marginTop: 24, padding: 16, background: "#FAFAFA", borderRadius: 14,
+          maxWidth: 560, margin: "24px auto 0", border: "1px solid #EFEFEF",
+        }}>
+          <div style={{ fontWeight: 800, color: C.black, fontSize: 14, marginBottom: 4 }}>{t.insightTitle}</div>
+          <div style={{ color: C.g600, fontSize: 13 }}>{t.insightBody}</div>
         </div>
       </div>
     </section>
