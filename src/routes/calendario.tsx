@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, Download, Share2, X, FileSpreadsheet, Calendar as CalIcon, Clock, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { DayStatusPanel } from "@/components/DayStatusPanel";
 
 export const Route = createFileRoute("/calendario")({
   head: () => ({ meta: [{ title: "Calendário — Hostlyb" }, { name: "description", content: "Veja check-ins, check-outs e limpezas." }] }),
@@ -81,6 +82,7 @@ function CalendarPage() {
   const [selectedDay, setSelectedDay] = useState<string>(today.toISOString().slice(0, 10));
   const [pickerOpen, setPickerOpen] = useState(false);
   const [shareEv, setShareEv] = useState<Ev | null>(null);
+  const [panelDate, setPanelDate] = useState<string | null>(null);
 
   const { data: guests = [] } = useQuery({
     queryKey: ["guests-cal"],
@@ -157,7 +159,7 @@ function CalendarPage() {
               const isToday = today.toDateString() === new Date(year, month, d).toDateString();
               const isSel = iso === selectedDay;
               return (
-                <button key={i} onClick={() => { setSelectedDay(iso); setView("dia"); }}
+                <button key={i} onClick={() => { setSelectedDay(iso); setPanelDate(iso); }}
                   className="aspect-square rounded-lg p-1 text-[11px] flex flex-col items-stretch text-left"
                   style={{ background: isSel ? "var(--color-accent-soft)" : "var(--color-secondary)", border: isToday ? "1px solid var(--color-accent)" : "1px solid transparent" }}>
                   <span className="font-semibold">{d}</span>
@@ -235,6 +237,7 @@ function CalendarPage() {
       )}
 
       {shareEv && <ShareSheet ev={shareEv} onClose={() => setShareEv(null)} />}
+      <DayStatusPanel date={panelDate} onClose={() => setPanelDate(null)} />
     </AppShell>
   );
 }
