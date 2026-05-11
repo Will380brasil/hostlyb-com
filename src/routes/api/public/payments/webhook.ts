@@ -38,6 +38,22 @@ async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
 
   const sb = admin();
   await sb.from("subscriptions").upsert(row, { onConflict: "stripe_subscription_id" });
+
+  // Sync property_tier / billing_currency / billing_interval onto profile
+  // Pattern: hostly_tier_{tier}_{currency}_{interval}
+  if (userId && priceId) {
+    const m = /^hostly_tier_(\d+)_(eur|brl|usd)_(monthly|yearly)$/i.exec(priceId);
+    if (m) {
+      const isActive = ["active", "trialing", "past_due"].includes(sub.status);
+      const tier = isActive ? parseInt(m[1], 10) : 5;
+      await sb.from("profiles").update({
+        property_tier: tier,
+        billing_currency: m[2].toUpperCase(),
+        billing_interval: m[3].toLowerCase(),
+        updated_at: new Date().toISOString(),
+      }).eq("id", userId);
+    }
+  }
 }
 
 export const Route = createFileRoute("/api/public/payments/webhook")({
