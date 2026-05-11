@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { PasswordField } from "@/components/PasswordField";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useT } from "@/lib/i18n";
@@ -32,7 +32,7 @@ function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
+  // password visibility now handled inside PasswordField
   const [country, setCountry] = useState("BR");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -159,24 +159,15 @@ function SignupPage() {
             <input type="tel" inputMode="numeric" placeholder={t("signup.phone")} value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls + " flex-1"} />
           </div>
 
-          <div className="relative">
-            <input
-              type={showPass ? "text" : "password"}
-              required minLength={6}
-              placeholder={t("signup.password")}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputCls + " w-full pr-12"}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPass((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label={showPass ? t("signup.hide") : t("signup.show")}
-            >
-              {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
+          <PasswordField
+            value={password}
+            onChange={setPassword}
+            placeholder={t("signup.password")}
+            required
+            minLength={6}
+            showStrength
+            className={inputCls + " w-full"}
+          />
 
           <button disabled={loading} className="btn-primary justify-center">
             {loading ? t("signup.submitting") : t("signup.submit")}
