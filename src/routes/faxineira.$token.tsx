@@ -216,7 +216,7 @@ function CleanerPortal() {
           </div>
           {data.photos?.length ? (
             <div className="grid grid-cols-3 gap-2">
-              {data.photos.map((p, i) => <img key={i} src={p} alt="" className="aspect-square object-cover rounded-lg" />)}
+              {data.photos.map((p, i) => <SignedImage key={i} bucket="cleaning-photos" path={p} alt="" className="aspect-square object-cover rounded-lg w-full" />)}
             </div>
           ) : <p className="text-xs text-muted-foreground">Nenhuma foto enviada.</p>}
         </section>
