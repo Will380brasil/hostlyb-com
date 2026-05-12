@@ -220,7 +220,7 @@ function ProfissionaisList() {
             )}
           </div>
         </li>
-      );})}
+      ))}
     </ul>
   );
 }
