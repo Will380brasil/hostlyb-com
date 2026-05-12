@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
 import { publicUrl } from "@/lib/public-url";
 import { SignedImage } from "@/components/SignedImage";
-import { extractPath } from "@/lib/storage";
 
 export const Route = createFileRoute("/limpezas")({
   head: () => ({ meta: [{ title: "Limpezas — Hostlyb" }, { name: "description", content: "Agenda de limpezas." }] }),
