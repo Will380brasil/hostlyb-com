@@ -30,8 +30,21 @@ Deno.serve(async (req) => {
     const propName = (job as any).properties?.name ?? "—";
     const cleanerName = (job as any).cleaners?.name ?? "—";
 
-    const itemsHtml = (items ?? []).map((it: any) =>
-      `<li><strong>${it.description}</strong> — status: ${it.status}${it.photo_url ? ` (foto: ${it.photo_url})` : ""}</li>`
+    // Sign URLs (private bucket) — válido por 7 dias
+    const itemsWithUrl = await Promise.all((items ?? []).map(async (it: any) => {
+      let signed: string | null = null;
+      if (it.photo_url) {
+        // strip legacy public URL prefix if present
+        const m = String(it.photo_url).match(/\/object\/(?:public|sign|authenticated)\/forgotten-items\/([^?]+)/);
+        const path = m ? decodeURIComponent(m[1]) : it.photo_url;
+        const { data: s } = await supabase.storage.from("forgotten-items").createSignedUrl(path, 60 * 60 * 24 * 7);
+        signed = s?.signedUrl ?? null;
+      }
+      return { ...it, signed_url: signed };
+    }));
+
+    const itemsHtml = itemsWithUrl.map((it: any) =>
+      `<li><strong>${it.description}</strong> — status: ${it.status}${it.signed_url ? ` — <a href="${it.signed_url}">ver foto</a>` : ""}</li>`
     ).join("");
 
     const html = `

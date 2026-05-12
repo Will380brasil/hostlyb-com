@@ -10,6 +10,7 @@ import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
 import { publicUrl } from "@/lib/public-url";
+import { SignedImage } from "@/components/SignedImage";
 
 export const Route = createFileRoute("/limpezas")({
   head: () => ({ meta: [{ title: "Limpezas — Hostlyb" }, { name: "description", content: "Agenda de limpezas." }] }),
@@ -187,18 +188,20 @@ function ProfissionaisList() {
   if (cleaners.length === 0) return <p className="text-sm text-muted-foreground text-center py-10">Nenhum profissional cadastrado.</p>;
   return (
     <ul className="flex flex-col gap-3">
-      {cleaners.map((c: any) => {
-        const avatar = c.photo_url ? supabase.storage.from("cleaner-avatars").getPublicUrl(c.photo_url).data.publicUrl : null;
-        return (
+      {cleaners.map((c: any) => (
         <li key={c.id} className="hostly-card !p-4 flex items-center gap-3">
-          {avatar ? (
-            <img src={avatar} alt={c.name} className="w-12 h-12 rounded-full object-cover" />
-          ) : (
-            <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
-              style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
-              {c.name.charAt(0)}
-            </div>
-          )}
+          <SignedImage
+            bucket="cleaner-avatars"
+            path={c.photo_url}
+            alt={c.name}
+            className="w-12 h-12 rounded-full object-cover"
+            fallback={
+              <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
+                style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
+                {c.name.charAt(0)}
+              </div>
+            }
+          />
           <div className="flex-1 min-w-0">
             <p className="font-semibold truncate">{c.name}</p>
             <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
@@ -218,7 +221,7 @@ function ProfissionaisList() {
             )}
           </div>
         </li>
-      );})}
+      ))}
     </ul>
   );
 }
@@ -306,7 +309,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
           .from("forgotten-items")
           .upload(path, forgFile, { upsert: true, contentType: forgFile.type || "image/jpeg" });
         if (upErr) throw upErr;
-        photo_url = supabase.storage.from("forgotten-items").getPublicUrl(path).data.publicUrl;
+        photo_url = path;
       }
       const { error } = await supabase.from("forgotten_items").insert({
         user_id: user.id, cleaning_job_id: jobId, property_id: job.property_id,

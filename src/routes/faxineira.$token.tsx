@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Sparkles, MapPin, Wifi, AlertTriangle, Camera, Loader2, BedDouble, Bath } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SignedImage } from "@/components/SignedImage";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/faxineira/$token")({
@@ -97,8 +98,7 @@ function CleanerPortal() {
     const path = `${token}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false });
     if (error) throw error;
-    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
+    return path;
   }
 
   async function onAddPhoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -216,7 +216,7 @@ function CleanerPortal() {
           </div>
           {data.photos?.length ? (
             <div className="grid grid-cols-3 gap-2">
-              {data.photos.map((p, i) => <img key={i} src={p} alt="" className="aspect-square object-cover rounded-lg" />)}
+              {data.photos.map((p, i) => <SignedImage key={i} bucket="cleaning-photos" path={p} alt="" className="aspect-square object-cover rounded-lg w-full" />)}
             </div>
           ) : <p className="text-xs text-muted-foreground">Nenhuma foto enviada.</p>}
         </section>
@@ -248,7 +248,7 @@ function CleanerPortal() {
             <ul className="space-y-2">
               {data.forgotten_items.map((it) => (
                 <li key={it.id} className="flex gap-2 p-2 rounded-lg bg-background">
-                  {it.photo_url && <img src={it.photo_url} alt="" className="w-12 h-12 rounded-md object-cover" />}
+                  {it.photo_url && <SignedImage bucket="forgotten-items" path={it.photo_url} alt="" className="w-12 h-12 rounded-md object-cover" />}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{it.description}</p>
                     {it.notes && <p className="text-xs text-muted-foreground truncate">{it.notes}</p>}
