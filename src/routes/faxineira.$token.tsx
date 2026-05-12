@@ -98,8 +98,7 @@ function CleanerPortal() {
     const path = `${token}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false });
     if (error) throw error;
-    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
+    return path;
   }
 
   async function onAddPhoto(e: React.ChangeEvent<HTMLInputElement>) {
