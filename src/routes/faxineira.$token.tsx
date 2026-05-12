@@ -248,7 +248,7 @@ function CleanerPortal() {
             <ul className="space-y-2">
               {data.forgotten_items.map((it) => (
                 <li key={it.id} className="flex gap-2 p-2 rounded-lg bg-background">
-                  {it.photo_url && <img src={it.photo_url} alt="" className="w-12 h-12 rounded-md object-cover" />}
+                  {it.photo_url && <SignedImage bucket="forgotten-items" path={it.photo_url} alt="" className="w-12 h-12 rounded-md object-cover" />}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{it.description}</p>
                     {it.notes && <p className="text-xs text-muted-foreground truncate">{it.notes}</p>}
