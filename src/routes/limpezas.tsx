@@ -310,7 +310,7 @@ function JobDetailSheet({ jobId, onClose }: { jobId: string; onClose: () => void
           .from("forgotten-items")
           .upload(path, forgFile, { upsert: true, contentType: forgFile.type || "image/jpeg" });
         if (upErr) throw upErr;
-        photo_url = supabase.storage.from("forgotten-items").getPublicUrl(path).data.publicUrl;
+        photo_url = path;
       }
       const { error } = await supabase.from("forgotten_items").insert({
         user_id: user.id, cleaning_job_id: jobId, property_id: job.property_id,
