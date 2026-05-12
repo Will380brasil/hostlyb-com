@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Sparkles, MapPin, Wifi, AlertTriangle, Camera, Loader2, BedDouble, Bath } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SignedImage } from "@/components/SignedImage";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/faxineira/$token")({
