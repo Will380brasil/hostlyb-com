@@ -692,7 +692,7 @@ function Pricing() {
         <div style={{
           display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
         }}>
-          {tiers.map((tier) => {
+          {tiers.map((tier: PricingTier) => {
             const cents = billing === "yearly" ? tier.yearlyMonthlyCents : tier.monthlyCents;
             const isCustom = tier.custom;
             return (
