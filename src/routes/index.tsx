@@ -9,6 +9,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { DemoLeadModal } from "@/components/DemoLeadModal";
+import { PRICING, pricingT, formatTierPrice, pricePerDay, type PricingTier } from "@/lib/pricing";
 
 const FAQ_KEYS = [
   ["faq.q1", "faq.a1"],
@@ -651,9 +652,6 @@ function Features() {
 function Pricing() {
   const { lang, currency } = useLocale();
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
-  // Lazy import to avoid circulars
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { PRICING, pricingT, formatTierPrice, pricePerDay } = require("@/lib/pricing") as typeof import("@/lib/pricing");
   const t = pricingT(lang);
   const tiers = PRICING[currency];
 
@@ -694,7 +692,7 @@ function Pricing() {
         <div style={{
           display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
         }}>
-          {tiers.map((tier) => {
+          {tiers.map((tier: PricingTier) => {
             const cents = billing === "yearly" ? tier.yearlyMonthlyCents : tier.monthlyCents;
             const isCustom = tier.custom;
             return (
