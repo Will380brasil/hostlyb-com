@@ -651,9 +651,6 @@ function Features() {
 function Pricing() {
   const { lang, currency } = useLocale();
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
-  // Lazy import to avoid circulars
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { PRICING, pricingT, formatTierPrice, pricePerDay } = require("@/lib/pricing") as typeof import("@/lib/pricing");
   const t = pricingT(lang);
   const tiers = PRICING[currency];
 
