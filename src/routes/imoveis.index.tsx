@@ -8,9 +8,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search } from "lucide-react";
+import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search, FileSpreadsheet } from "lucide-react";
 import { usePropertyLimit } from "@/hooks/usePropertyLimit";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { SpreadsheetImport } from "@/components/SpreadsheetImport";
 
 export const Route = createFileRoute("/imoveis/")({
   head: () => ({ meta: [{ title: "Imóveis — Hostlyb" }, { name: "description", content: "Gerencie seus imóveis." }] }),
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/imoveis/")({
 function PropertiesPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [q, setQ] = useState("");
   const [filterDate, setFilterDate] = useState("");
@@ -68,7 +70,10 @@ function PropertiesPage() {
             {properties.length} cadastrados {!limit.inTrial && `· limite ${limit.tier === 999 ? "∞" : limit.tier}`}
           </p>
         </div>
-        <button className="btn-primary !py-2 !px-3" onClick={tryAdd}><Plus size={16} /> Novo</button>
+        <div className="flex gap-2">
+          <button className="btn-secondary !py-2 !px-3" onClick={() => setImportOpen(true)} title="Importar planilha"><FileSpreadsheet size={16} /></button>
+          <button className="btn-primary !py-2 !px-3" onClick={tryAdd}><Plus size={16} /> Novo</button>
+        </div>
       </header>
 
       {properties.length > 0 && (
@@ -103,8 +108,11 @@ function PropertiesPage() {
               <p className="text-sm text-muted-foreground">Carregando…</p>
             ) : properties.length === 0 ? (
               <div className="hostly-card text-center text-sm text-muted-foreground">
-                <p className="mb-2">Você ainda não cadastrou imóveis.</p>
-                <button className="btn-primary mx-auto" onClick={tryAdd}><Plus size={14} /> Cadastrar imóvel</button>
+                <p className="mb-3">Você ainda não cadastrou imóveis.</p>
+                <div className="flex gap-2 justify-center">
+                  <button className="btn-secondary" onClick={() => setImportOpen(true)}><FileSpreadsheet size={14} /> Importar planilha</button>
+                  <button className="btn-primary" onClick={tryAdd}><Plus size={14} /> Cadastrar imóvel</button>
+                </div>
               </div>
             ) : filtered.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">Nenhum imóvel encontrado para "{q}".</p>
@@ -140,6 +148,7 @@ function PropertiesPage() {
       })()}
 
       {open && <NewPropertySheet onClose={() => setOpen(false)} />}
+      {importOpen && <SpreadsheetImport onClose={() => setImportOpen(false)} />}
       <UpgradeModal
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}

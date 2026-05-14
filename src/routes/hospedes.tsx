@@ -8,7 +8,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatMoney, currencySymbol } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Plus, Phone, MessageCircle, Search, X, Calendar, History } from "lucide-react";
+import { Plus, Phone, MessageCircle, Search, X, Calendar, History, FileSpreadsheet } from "lucide-react";
+import { SpreadsheetImport } from "@/components/SpreadsheetImport";
 
 export const Route = createFileRoute("/hospedes")({
   head: () => ({ meta: [{ title: "Hóspedes — Hostlyb" }, { name: "description", content: "Gerencie seus hóspedes." }] }),
@@ -33,6 +34,7 @@ const platformLabel: Record<string, string> = Object.fromEntries(PLATFORMS.map(p
 function GuestsPage() {
   const { currency, lang } = useLocale();
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [q, setQ] = useState("");
   const [detail, setDetail] = useState<any | null>(null);
   const { data: guests = [] } = useQuery({
@@ -53,7 +55,10 @@ function GuestsPage() {
     <AppShell>
       <header className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Hóspedes</h2>
-        <button className="btn-primary !py-2 !px-3" onClick={() => setOpen(true)}><Plus size={16} /> Novo</button>
+        <div className="flex gap-2">
+          <button className="btn-secondary !py-2 !px-3" onClick={() => setImportOpen(true)} title="Importar planilha"><FileSpreadsheet size={16} /></button>
+          <button className="btn-primary !py-2 !px-3" onClick={() => setOpen(true)}><Plus size={16} /> Novo</button>
+        </div>
       </header>
 
       {guests.length > 0 && (
@@ -65,7 +70,13 @@ function GuestsPage() {
       )}
 
       {guests.length === 0 ? (
-        <div className="hostly-card text-center text-sm text-muted-foreground">Nenhum hóspede ainda.</div>
+        <div className="hostly-card text-center text-sm text-muted-foreground">
+          <p className="mb-3">Nenhum hóspede ainda.</p>
+          <div className="flex gap-2 justify-center">
+            <button className="btn-secondary" onClick={() => setImportOpen(true)}><FileSpreadsheet size={14} /> Importar planilha</button>
+            <button className="btn-primary" onClick={() => setOpen(true)}><Plus size={14} /> Adicionar</button>
+          </div>
+        </div>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-6">Nenhum hóspede encontrado para "{q}".</p>
       ) : (
@@ -111,6 +122,7 @@ function GuestsPage() {
       )}
 
       {open && <NewGuestSheet onClose={() => setOpen(false)} />}
+      {importOpen && <SpreadsheetImport onClose={() => setImportOpen(false)} />}
       {detail && <GuestDetailSheet guest={detail} onClose={() => setDetail(null)} />}
     </AppShell>
   );
