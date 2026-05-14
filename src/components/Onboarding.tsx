@@ -26,7 +26,7 @@ const STEPS = [
   {
     icon: Calendar,
     title: "Sincronize seu calendário",
-    desc: "Importe iCal do Airbnb/Booking e veja tudo num só lugar.",
+    desc: "Veja reservas, limpezas e checkouts num só lugar.",
     cta: { to: "/calendario", label: "Ir para Calendário" },
   },
 ];
