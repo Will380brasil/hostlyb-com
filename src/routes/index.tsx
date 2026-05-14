@@ -24,7 +24,7 @@ const FAQ_KEYS = [
 // Static FAQ items for JSON-LD (SEO crawler reads PT)
 const FAQ_ITEMS_SEO = [
   { q: "Preciso de cartão de crédito para testar o Hostlyb?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão." },
-  { q: "O Hostlyb funciona para Booking.com e VRBO também?", a: "Sim, via sincronização iCal." },
+  { q: "Posso importar minhas reservas existentes?", a: "Sim. Importe uma planilha (Excel ou CSV) com seus hóspedes, imóveis e finanças em segundos." },
   { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. Recebe um link único e acessa direto pelo navegador." },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
@@ -46,7 +46,7 @@ const JSON_LD = {
         "Cadastro de profissionais de limpeza",
         "Registro de objetos esquecidos com fotos",
         "Calendário integrado com Google Calendar",
-        "Sincronização via iCal com Airbnb e Booking",
+        "Importação rápida de hóspedes e imóveis por planilha",
         "Portal para faxineira sem necessidade de login",
         "Dashboard em tempo real",
       ],
@@ -326,7 +326,7 @@ const ROTATING_TESTIMONIALS = [
   { ini: "SL", color: "#00C896", name: "Sophie L.", meta: "2 propriétés · Paris", text: "Hostlyb fait tout ce dont j'ai besoin à un prix imbattable." },
   { ini: "RG", color: "#FFB347", name: "Rafael G.", meta: "6 imóveis · Florianópolis", text: "O link da faxineira sem login resolveu meu maior problema operacional." },
   { ini: "AC", color: "#A78BFA", name: "Ana C.", meta: "3 imóveis · Rio de Janeiro", text: "Os alertas de checkout e objetos esquecidos me salvaram várias vezes." },
-  { ini: "LP", color: "#06B6D4", name: "Luca P.", meta: "5 appartamenti · Milano", text: "Sincronizzazione iCal con Airbnb e Booking funziona perfettamente." },
+  { ini: "LP", color: "#06B6D4", name: "Luca P.", meta: "5 appartamenti · Milano", text: "Importazione da Excel mi ha fatto risparmiare ore di lavoro." },
   { ini: "EM", color: "#F472B6", name: "Elena M.", meta: "3 propiedades · Madrid", text: "Mis huéspedes y limpiezas en un solo lugar. Por fin." },
   { ini: "DK", color: "#34D399", name: "Daniel K.", meta: "4 properties · Lisbon", text: "I cancelled three other tools after trying Hostlyb for a week." },
   { ini: "PB", color: "#F59E0B", name: "Patrícia B.", meta: "7 imóveis · Salvador", text: "Relatório de receita por imóvel me deu clareza que eu nunca tive." },
@@ -397,7 +397,7 @@ function StartInFourSteps() {
     { n: 1, icon: Building2, title: "Cadastre seu imóvel", desc: "Endereço, fotos, regras de check-in.", to: "/imoveis", cta: "Ir para Imóveis" },
     { n: 2, icon: Sparkles, title: "Agende uma limpeza", desc: "Checklist + link único para a faxineira, sem login.", to: "/limpezas", cta: "Ir para Limpezas" },
     { n: 3, icon: Users, title: "Registre hóspedes", desc: "Quem chega, valor e objetos esquecidos.", to: "/hospedes", cta: "Ir para Hóspedes" },
-    { n: 4, icon: CalendarDays, title: "Sincronize calendários", desc: "iCal do Airbnb e Booking em um só lugar.", to: "/calendario", cta: "Ir para Calendário" },
+    { n: 4, icon: CalendarDays, title: "Acompanhe pelo calendário", desc: "Reservas, limpezas e checkouts num só lugar.", to: "/calendario", cta: "Ir para Calendário" },
   ];
   return (
     <section id="comece" style={{ padding: "96px 24px", background: "#fff" }}>
