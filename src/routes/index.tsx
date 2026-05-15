@@ -9,7 +9,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { DemoLeadModal } from "@/components/DemoLeadModal";
-import { PRICING, pricingT, formatTierPrice, pricePerDay, type PricingTier } from "@/lib/pricing";
+
 
 const FAQ_KEYS = [
   ["faq.q1", "faq.a1"],
