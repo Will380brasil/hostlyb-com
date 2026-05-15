@@ -7,9 +7,10 @@ const EUR_COUNTRIES = new Set([
   "BG","CZ","DK","HU","PL","RO","SE","NO","CH","IS","LI","UK","GB",
 ]);
 
-function currencyForCountry(country: string): "BRL" | "USD" | "EUR" {
+function currencyForCountry(country: string): "BRL" | "USD" | "EUR" | "SAR" {
   const c = (country || "").toUpperCase();
   if (c === "BR") return "BRL";
+  if (c === "SA") return "SAR";
   if (EUR_COUNTRIES.has(c)) return "EUR";
   return "USD";
 }

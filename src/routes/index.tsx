@@ -9,7 +9,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { DemoLeadModal } from "@/components/DemoLeadModal";
-import { PRICING, pricingT, formatTierPrice, pricePerDay, type PricingTier } from "@/lib/pricing";
+
 
 const FAQ_KEYS = [
   ["faq.q1", "faq.a1"],
@@ -650,112 +650,117 @@ function Features() {
 }
 
 function Pricing() {
-  const { lang, currency } = useLocale();
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
-  const t = pricingT(lang);
-  const tiers = PRICING[currency];
+  const { lang, currency, country } = useLocale();
+  const t = useT();
+
+  // Display currency: SA → SAR (equivalent ~€19.90); else use detected currency.
+  const isSA = (country || "").toUpperCase() === "SA";
+  const displayCurrency = isSA ? "SAR" : currency;
+  // Premium price: 19.90 in BRL/EUR/USD; ~79.90 SAR (≈€19.90).
+  const premiumAmount = displayCurrency === "SAR" ? 79.9 : 19.9;
+  const localeMap: Record<string, string> = {
+    pt: "pt-BR", en: displayCurrency === "EUR" ? "en-GB" : "en-US",
+    es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE",
+  };
+  const formatted = (() => {
+    try {
+      return new Intl.NumberFormat(localeMap[lang] ?? "en-US", {
+        style: "currency", currency: displayCurrency, minimumFractionDigits: 2,
+      }).format(premiumAmount);
+    } catch {
+      const sym = displayCurrency === "BRL" ? "R$" : displayCurrency === "EUR" ? "€"
+        : displayCurrency === "SAR" ? "ر.س" : "$";
+      return `${sym} ${premiumAmount.toFixed(2)}`;
+    }
+  })();
+
+  const freeFeatures = [
+    t("pricing.free.f1"), t("pricing.free.f2"), t("pricing.free.f3"),
+    t("pricing.free.f4"), t("pricing.free.f5"),
+  ];
+  const premiumFeatures = [
+    t("pricing.premium.f1"), t("pricing.premium.f2"), t("pricing.premium.f3"),
+    t("pricing.premium.f4"), t("pricing.premium.f5"),
+  ];
 
   return (
     <section id="precos" style={{ padding: "96px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+      <div style={{ maxWidth: 980, margin: "0 auto", textAlign: "center" }}>
         <h2 className="reveal section-title" style={{ fontFamily: displayFont, color: C.black, fontWeight: 800, marginBottom: 12, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t.headline}
+          {t("pricing.title.a")} <span style={{ color: C.coral }}>{t("pricing.title.b")}</span>
         </h2>
-        <p className="reveal" style={{ color: C.g600, fontSize: 18, marginBottom: 28 }}>{t.subtitle}</p>
+        <p className="reveal" style={{ color: C.g600, fontSize: 18, marginBottom: 36 }}>{t("pricing.subtitle")}</p>
 
-        {/* Billing toggle */}
-        <div style={{ display: "inline-flex", background: "#F4F4F5", padding: 4, borderRadius: 999, marginBottom: 28 }}>
-          <button onClick={() => setBilling("monthly")} style={{
-            padding: "10px 18px", borderRadius: 999, border: 0, fontSize: 13, fontWeight: 700, cursor: "pointer",
-            background: billing === "monthly" ? "#fff" : "transparent", color: C.black,
-            boxShadow: billing === "monthly" ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
-          }}>{t.monthly}</button>
-          <button onClick={() => setBilling("yearly")} style={{
-            padding: "10px 18px", borderRadius: 999, border: 0, fontSize: 13, fontWeight: 700, cursor: "pointer",
-            background: billing === "yearly" ? "#fff" : "transparent", color: C.black,
-            boxShadow: billing === "yearly" ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
-          }}>{t.yearly} <span style={{ color: C.coral }}>· {t.saveBadge} 🎁</span></button>
-        </div>
-
-        {/* All-inclusive banner */}
-        <div className="reveal" style={{
-          background: "linear-gradient(135deg, #FFF7F4, #FFF)", border: "1px solid #FFE5DC",
-          borderRadius: 18, padding: "16px 20px", marginBottom: 28, textAlign: "left",
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 800, color: C.coral, letterSpacing: 1, marginBottom: 6 }}>
-            ✦ {t.allInclude}
+        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          {/* FREE */}
+          <div className="reveal" style={{
+            background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 22,
+            padding: "28px 24px", textAlign: "left", boxShadow: "0 4px 14px rgba(0,0,0,0.04)",
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: C.g600, letterSpacing: 1, marginBottom: 8 }}>
+              {t("pricing.free.tag").toUpperCase()}
+            </div>
+            <div style={{ fontFamily: displayFont, fontSize: 22, fontWeight: 800, color: C.black, marginBottom: 12 }}>
+              {t("pricing.free.name")}
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 18 }}>
+              <span style={{ fontFamily: displayFont, fontSize: 40, fontWeight: 800, color: C.black, lineHeight: 1 }}>
+                {t("pricing.free.price")}
+              </span>
+            </div>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 22px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {freeFeatures.map((f) => (
+                <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14 }}>
+                  <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} /><span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Link to={"/signup" as any} onClick={() => trackEvent("pricing_cta", { plan: "free", currency: displayCurrency })} style={{
+              display: "block", textAlign: "center", padding: "12px 16px", borderRadius: 999,
+              background: "#F4F4F5", color: C.black, textDecoration: "none", fontWeight: 700, fontSize: 14,
+            }}>{t("pricing.free.cta")}</Link>
           </div>
-          <div style={{ fontSize: 13, color: C.g600, lineHeight: 1.5 }}>{t.featuresList}</div>
+
+          {/* PREMIUM */}
+          <div className="reveal" style={{
+            background: "#fff", border: `2px solid ${C.coral}`, borderRadius: 22,
+            padding: "28px 24px", textAlign: "left", position: "relative",
+            boxShadow: `0 16px 40px ${C.coralGlow}`,
+          }}>
+            <div style={{
+              position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
+              background: C.coral, color: "#fff", padding: "4px 12px", borderRadius: 999,
+              fontSize: 11, fontWeight: 800, letterSpacing: 0.5, whiteSpace: "nowrap",
+            }}>{t("pricing.popular")}</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: C.coral, letterSpacing: 1, marginBottom: 8 }}>
+              {t("pricing.premium.tag").toUpperCase()}
+            </div>
+            <div style={{ fontFamily: displayFont, fontSize: 22, fontWeight: 800, color: C.black, marginBottom: 12 }}>
+              {t("pricing.premium.name")}
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 18 }}>
+              <span style={{ fontFamily: displayFont, fontSize: 40, fontWeight: 800, color: C.black, lineHeight: 1 }}>
+                {formatted}
+              </span>
+              <span style={{ color: C.g400, fontSize: 13 }}>{t("pricing.suffix")}</span>
+            </div>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 22px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {premiumFeatures.map((f) => (
+                <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14 }}>
+                  <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} /><span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Link to={"/signup" as any} onClick={() => trackEvent("pricing_cta", { plan: "premium", currency: displayCurrency })} style={{
+              display: "block", textAlign: "center", padding: "12px 16px", borderRadius: 999,
+              background: C.coral, color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 14,
+            }}>🎁 {t("pricing.cta")}</Link>
+          </div>
         </div>
 
-        {/* Tier cards */}
-        <div style={{
-          display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-        }}>
-          {tiers.map((tier: PricingTier) => {
-            const cents = billing === "yearly" ? tier.yearlyMonthlyCents : tier.monthlyCents;
-            const isCustom = tier.custom;
-            return (
-              <div key={tier.tier} style={{
-                background: "#fff", border: tier.popular ? `2px solid ${C.coral}` : "1px solid #EFEFEF",
-                borderRadius: 18, padding: "22px 18px", position: "relative", textAlign: "left",
-                boxShadow: tier.popular ? `0 16px 40px ${C.coralGlow}` : "0 4px 14px rgba(0,0,0,0.04)",
-              }}>
-                {tier.popular && (
-                  <div style={{
-                    position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
-                    background: C.coral, color: "#fff", padding: "3px 10px", borderRadius: 999,
-                    fontSize: 10, fontWeight: 800, letterSpacing: 0.5,
-                  }}>★ POPULAR</div>
-                )}
-                <div style={{ fontSize: 13, fontWeight: 700, color: C.g600, marginBottom: 10 }}>
-                  {isCustom ? t.customLabel : `${t.upTo} ${tier.tier} ${t.properties}`}
-                </div>
-                {isCustom ? (
-                  <>
-                    <div style={{ fontFamily: displayFont, fontSize: 28, fontWeight: 800, color: C.black, marginBottom: 18 }}>
-                      {t.customPrice}
-                    </div>
-                    <a href="mailto:hello@hostlyb.app" style={{
-                      display: "block", textAlign: "center", padding: "10px 14px", borderRadius: 999,
-                      background: C.black, color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 13,
-                    }}>{t.contactUs}</a>
-                  </>
-                ) : (
-                  <>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontFamily: displayFont, fontSize: 30, fontWeight: 800, color: C.black, lineHeight: 1 }}>
-                        {formatTierPrice(cents, currency, lang)}
-                      </span>
-                      <span style={{ color: C.g400, fontSize: 12 }}>{t.perMonth}</span>
-                    </div>
-                    <div style={{ color: C.g400, fontSize: 11, marginBottom: 14 }}>
-                      ≈ {pricePerDay(cents, currency, lang)}{t.perDay}
-                    </div>
-                    <Link to={"/signup" as any} onClick={() => trackEvent("pricing_cta", { tier: tier.tier, currency, billing })} style={{
-                      display: "block", textAlign: "center", padding: "10px 14px", borderRadius: 999,
-                      background: tier.popular ? C.coral : "#F4F4F5",
-                      color: tier.popular ? "#fff" : C.black,
-                      textDecoration: "none", fontWeight: 700, fontSize: 13,
-                    }}>🎁 {t.startFree}</Link>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        <p style={{ marginTop: 22, color: C.g400, fontSize: 13 }}>
-          🎁 {t.trial} · {t.noCard} · {t.cancel}
-        </p>
-        <div style={{
-          marginTop: 24, padding: 16, background: "#FAFAFA", borderRadius: 14,
-          maxWidth: 560, margin: "24px auto 0", border: "1px solid #EFEFEF",
-        }}>
-          <div style={{ fontWeight: 800, color: C.black, fontSize: 14, marginBottom: 4 }}>{t.insightTitle}</div>
-          <div style={{ color: C.g600, fontSize: 13 }}>{t.insightBody}</div>
-        </div>
+        <p style={{ marginTop: 24, color: C.g400, fontSize: 13 }}>{t("pricing.note")}</p>
       </div>
+      <style>{`@media (max-width: 720px) { .pricing-grid { grid-template-columns: 1fr !important; } }`}</style>
     </section>
   );
 }
