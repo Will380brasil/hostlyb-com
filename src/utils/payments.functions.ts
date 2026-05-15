@@ -2,7 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
 
-const ALLOWED_PRICES = new Set(["hostly_pro_brl", "hostly_pro_eur", "hostly_pro_usd"]);
+const ALLOWED_PRICES = new Set([
+  "premium_monthly_brl",
+  "premium_monthly_eur",
+  "premium_monthly_usd",
+  // Legacy (kept temporarily for in-flight checkouts)
+  "hostly_pro_brl", "hostly_pro_eur", "hostly_pro_usd",
+]);
 
 async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
