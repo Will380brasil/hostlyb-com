@@ -35,6 +35,13 @@ export const PRICING: Record<Currency, PricingTier[]> = {
     { tier: 50,  monthlyCents: 7499,  yearlyMonthlyCents: 5999 },
     { tier: 999, monthlyCents: 0,     yearlyMonthlyCents: 0, custom: true },
   ],
+  GBP: [
+    { tier: 5,   monthlyCents: 1499,  yearlyMonthlyCents: 1199, popular: true },
+    { tier: 10,  monthlyCents: 2499,  yearlyMonthlyCents: 1999 },
+    { tier: 20,  monthlyCents: 4499,  yearlyMonthlyCents: 3599 },
+    { tier: 50,  monthlyCents: 7499,  yearlyMonthlyCents: 5999 },
+    { tier: 999, monthlyCents: 0,     yearlyMonthlyCents: 0, custom: true },
+  ],
 };
 
 export function getStripePriceId(currency: Currency, tier: Tier, interval: BillingInterval): string | null {
