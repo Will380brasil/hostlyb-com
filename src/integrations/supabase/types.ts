@@ -700,6 +700,7 @@ export type Database = {
           environment: string
           id: string
           organization_id: string | null
+          plan_tier: string
           price_id: string | null
           product_id: string | null
           status: string
@@ -717,6 +718,7 @@ export type Database = {
           environment?: string
           id?: string
           organization_id?: string | null
+          plan_tier?: string
           price_id?: string | null
           product_id?: string | null
           status: string
@@ -734,6 +736,7 @@ export type Database = {
           environment?: string
           id?: string
           organization_id?: string | null
+          plan_tier?: string
           price_id?: string | null
           product_id?: string | null
           status?: string
@@ -764,6 +767,7 @@ export type Database = {
           guest_id: string | null
           id: string
           notes: string | null
+          origin: string
           payment_method: string | null
           property_id: string | null
           status: string
@@ -781,6 +785,7 @@ export type Database = {
           guest_id?: string | null
           id?: string
           notes?: string | null
+          origin?: string
           payment_method?: string | null
           property_id?: string | null
           status?: string
@@ -798,6 +803,7 @@ export type Database = {
           guest_id?: string | null
           id?: string
           notes?: string | null
+          origin?: string
           payment_method?: string | null
           property_id?: string | null
           status?: string
