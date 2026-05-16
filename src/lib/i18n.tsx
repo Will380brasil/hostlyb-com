@@ -373,10 +373,9 @@ const es: Dict = {
   "hero.title.c": "— en 2 minutos al día.",
   "hero.subtitle": "Limpiadora que no responde. Huésped llegando a un piso sucio. Objeto olvidado que descubres semanas después. Hostlyb lo resuelve todo — desde tu móvil.",
   "hero.cta": "Quiero acabar con el caos →",
-  "hero.demo": "O prueba la demo →",
-  "hero.bullet1": "✓ 7 días gratis",
-  "hero.bullet2": "✓ Sin tarjeta",
-  "hero.bullet3": "✓ Cancela en 1 clic",
+  "hero.bullet1": "✓ Plan gratis para siempre",
+  "hero.bullet2": "✓ Listo en 5 minutos",
+  "hero.bullet3": "✓ Cancela cuando quieras",
   "hero.imageAlt": "Anfitriona usando Hostlyb en el móvil",
 
   "social.proof": "Usado por +2.400 anfitriones en Brasil, EE.UU. y Europa",
