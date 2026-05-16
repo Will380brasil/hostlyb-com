@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Lang = "pt" | "en" | "es" | "fr" | "it" | "de";
-export type Currency = "BRL" | "USD" | "EUR";
+export type Currency = "BRL" | "USD" | "EUR" | "GBP";
 
 export const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "pt", label: "Português", flag: "🇧🇷" },
@@ -12,21 +12,22 @@ export const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "de", label: "Deutsch",   flag: "🇩🇪" },
 ];
 
-export const PLAN_PRICE: Record<Currency, { amount: number; symbol: string; suffix: string }> = {
-  BRL: { amount: 59.90, symbol: "R$",  suffix: "/mês" },
-  EUR: { amount: 19.90, symbol: "€",   suffix: "/mês" },
-  USD: { amount: 39.00, symbol: "US$", suffix: "/mo"  },
+// Permanent 3-tier pricing (per month). Currency selected per visitor locale.
+export const PLAN_PRICE: Record<"pro" | "premium", Record<Currency, number>> = {
+  pro:     { BRL: 27.90, EUR: 9,    USD: 19,    GBP: 9 },
+  premium: { BRL: 54.90, EUR: 19,   USD: 39,    GBP: 19 },
 };
 
-export function formatPrice(currency: Currency, lang: Lang): string {
-  const p = PLAN_PRICE[currency];
-  const localeMap: Record<Lang, string> = {
-    pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE",
-  };
+export function formatPrice(currency: Currency, lang: Lang, plan: "pro" | "premium" = "premium"): string {
+  const amount = PLAN_PRICE[plan][currency];
+  const locale =
+    lang === "en" && (currency === "EUR" || currency === "GBP") ? "en-GB" :
+    ({ pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE" } as Record<Lang, string>)[lang];
   try {
-    return new Intl.NumberFormat(localeMap[lang], { style: "currency", currency }).format(p.amount);
+    return new Intl.NumberFormat(locale, { style: "currency", currency, minimumFractionDigits: currency === "BRL" ? 2 : 0 }).format(amount);
   } catch {
-    return `${p.symbol} ${p.amount.toFixed(2)}`;
+    const sym = currency === "BRL" ? "R$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : "$";
+    return `${sym} ${amount.toFixed(2)}`;
   }
 }
 
