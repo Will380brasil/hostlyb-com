@@ -210,10 +210,9 @@ const en: Dict = {
   "hero.title.c": "— in 2 minutes a day.",
   "hero.subtitle": "Cleaner who doesn't reply. Guest arriving at a dirty place. Forgotten items you find weeks later. Hostlyb fixes all of that — straight from your phone.",
   "hero.cta": "Stop the chaos →",
-  "hero.demo": "Or explore the demo →",
-  "hero.bullet1": "✓ 7 days free",
-  "hero.bullet2": "✓ No credit card",
-  "hero.bullet3": "✓ Cancel in 1 click",
+  "hero.bullet1": "✓ Free plan forever",
+  "hero.bullet2": "✓ Up and running in 5 minutes",
+  "hero.bullet3": "✓ Cancel anytime",
   "hero.imageAlt": "Host using Hostlyb on phone",
 
   "social.proof": "Trusted by 2,400+ hosts in Brazil, the US and Europe",
