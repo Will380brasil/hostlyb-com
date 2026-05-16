@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Lang = "pt" | "en" | "es" | "fr" | "it" | "de";
-export type Currency = "BRL" | "USD" | "EUR";
+export type Currency = "BRL" | "USD" | "EUR" | "GBP";
 
 export const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "pt", label: "Português", flag: "🇧🇷" },
@@ -12,21 +12,22 @@ export const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "de", label: "Deutsch",   flag: "🇩🇪" },
 ];
 
-export const PLAN_PRICE: Record<Currency, { amount: number; symbol: string; suffix: string }> = {
-  BRL: { amount: 59.90, symbol: "R$",  suffix: "/mês" },
-  EUR: { amount: 19.90, symbol: "€",   suffix: "/mês" },
-  USD: { amount: 39.00, symbol: "US$", suffix: "/mo"  },
+// Permanent 3-tier pricing (per month). Currency selected per visitor locale.
+export const PLAN_PRICE: Record<"pro" | "premium", Record<Currency, number>> = {
+  pro:     { BRL: 27.90, EUR: 9,    USD: 19,    GBP: 9 },
+  premium: { BRL: 54.90, EUR: 19,   USD: 39,    GBP: 19 },
 };
 
-export function formatPrice(currency: Currency, lang: Lang): string {
-  const p = PLAN_PRICE[currency];
-  const localeMap: Record<Lang, string> = {
-    pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE",
-  };
+export function formatPrice(currency: Currency, lang: Lang, plan: "pro" | "premium" = "premium"): string {
+  const amount = PLAN_PRICE[plan][currency];
+  const locale =
+    lang === "en" && (currency === "EUR" || currency === "GBP") ? "en-GB" :
+    ({ pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE" } as Record<Lang, string>)[lang];
   try {
-    return new Intl.NumberFormat(localeMap[lang], { style: "currency", currency }).format(p.amount);
+    return new Intl.NumberFormat(locale, { style: "currency", currency, minimumFractionDigits: currency === "BRL" ? 2 : 0 }).format(amount);
   } catch {
-    return `${p.symbol} ${p.amount.toFixed(2)}`;
+    const sym = currency === "BRL" ? "R$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : "$";
+    return `${sym} ${amount.toFixed(2)}`;
   }
 }
 
@@ -46,10 +47,9 @@ const pt: Dict = {
   "hero.title.c": "— em 2 minutos por dia.",
   "hero.subtitle": "Faxineira que não responde. Hóspede chegando num imóvel sujo. Objeto esquecido que você só descobre semanas depois. O Hostlyb resolve tudo isso — direto do seu celular.",
   "hero.cta": "Quero parar com o caos →",
-  "hero.demo": "Ou explore a demo →",
-  "hero.bullet1": "✓ 7 dias grátis",
-  "hero.bullet2": "✓ Sem cartão de crédito",
-  "hero.bullet3": "✓ Cancele em 1 clique",
+  "hero.bullet1": "✓ Plano grátis para sempre",
+  "hero.bullet2": "✓ Comece em 5 minutos",
+  "hero.bullet3": "✓ Cancele quando quiser",
   "hero.imageAlt": "Anfitriã usando o Hostlyb no celular",
 
   "social.proof": "Confiado por +2.400 anfitriões no Brasil, EUA e Europa",
@@ -101,51 +101,63 @@ const pt: Dict = {
   "hiw.s3.t": "Gerencie pelo celular",
   "hiw.s3.d": "Veja o status de tudo em tempo real e receba alertas automáticos.",
 
-  "pricing.title.a": "Caro?",
-  "pricing.title.b": "Menos que uma diária.",
-  "pricing.subtitle": "Dois planos. Sem complicação. Comece grátis e migre quando precisar de mais.",
+  "pricing.title.a": "Três planos.",
+  "pricing.title.b": "Você escolhe.",
+  "pricing.subtitle": "Comece grátis. Faça upgrade quando precisar de mais.",
+
   "pricing.free.name": "Gratuito",
   "pricing.free.tag": "Para começar",
-  "pricing.free.f1": "Até 3 imóveis",
+  "pricing.free.f1": "Até 2 imóveis",
   "pricing.free.f2": "1 usuário",
-  "pricing.free.f3": "Acesso a todas as funcionalidades",
-  "pricing.free.f4": "Checklist de limpeza com fotos",
-  "pricing.free.f5": "Importação por planilha",
+  "pricing.free.f3": "Checklist de limpeza com fotos",
+  "pricing.free.f4": "Gestão de hóspedes, calendário e objetos esquecidos",
+  "pricing.free.f5": "Marca \"Powered by Hostlyb\" no link da faxineira",
   "pricing.free.cta": "Começar grátis",
-  "pricing.premium.name": "Premium",
-  "pricing.premium.tag": "Profissional",
-  "pricing.premium.f1": "Imóveis ilimitados",
-  "pricing.premium.f2": "Usuários ilimitados",
-  "pricing.premium.f3": "Tudo do plano Gratuito",
-  "pricing.premium.f4": "Alertas automáticos de checkout",
-  "pricing.premium.f5": "Suporte humano por e-mail",
-  "pricing.cta": "Testar 7 dias grátis",
-  "pricing.note": "✓ 7 dias grátis  ✓ Sem cartão  ✓ Cancele quando quiser",
-  "pricing.suffix": "/mês",
   "pricing.free.price": "Grátis",
+
+  "pricing.pro.name": "Pro",
+  "pricing.pro.tag": "Profissional",
+  "pricing.pro.f1": "Imóveis ilimitados, até 5 usuários",
+  "pricing.pro.f2": "Tudo do Gratuito, sem marca no link",
+  "pricing.pro.f3": "Alertas automáticos de checkout + módulo financeiro completo",
+  "pricing.pro.f4": "Importação de hóspedes por planilha + dashboard com gráficos",
+  "pricing.pro.f5": "Score de limpeza, timer e tags de hóspedes + botão WhatsApp",
+  "pricing.pro.cta": "Assinar Pro",
+
+  "pricing.premium.name": "Premium",
+  "pricing.premium.tag": "Tudo incluso",
+  "pricing.premium.f1": "Tudo do Pro + usuários ilimitados",
+  "pricing.premium.f2": "Guia digital do imóvel (link público, sem login)",
+  "pricing.premium.f3": "Check-in digital / ficha de hóspede",
+  "pricing.premium.f4": "Registro de manutenção + relatório PDF por imóvel",
+  "pricing.premium.f5": "Suporte prioritário em até 24h",
+  "pricing.premium.cta": "Assinar Premium",
+
+  "pricing.note": "✓ Cancele quando quiser",
+  "pricing.suffix": "/mês",
   "pricing.popular": "★ MAIS POPULAR",
 
   "faq.title": "Perguntas frequentes",
-  "faq.q1": "Preciso de cartão de crédito para testar o Hostlyb?",
-  "faq.a1": "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão. Você só paga se decidir continuar após o trial.",
+  "faq.q1": "Quanto custa para começar?",
+  "faq.a1": "Nada. O plano Gratuito é permanente — até 2 imóveis e 1 usuário, com checklist, hóspedes e calendário. Faça upgrade só quando precisar.",
   "faq.q2": "Posso importar minhas reservas existentes?",
-  "faq.a2": "Sim. Importe uma planilha (Excel ou CSV) com hóspedes, imóveis e finanças em segundos.",
+  "faq.a2": "Sim, no plano Pro. Importe uma planilha (Excel ou CSV) com hóspedes, imóveis e finanças em segundos.",
   "faq.q3": "A faxineira precisa baixar algum aplicativo?",
   "faq.a3": "Não. Ela recebe um link único e acessa o checklist diretamente pelo navegador, sem criar conta nem instalar nada.",
   "faq.q4": "Como funciona o controle de objetos esquecidos?",
   "faq.a4": "A faxineira fotografa e registra o objeto. Você recebe alerta imediato com foto e descrição.",
   "faq.q5": "Posso cancelar quando quiser?",
   "faq.a5": "Sim. Sem contrato, sem multa. Cancele com 1 clique. O acesso continua até o fim do período pago.",
-  "faq.q6": "Quantos usuários e imóveis posso ter?",
-  "faq.a6": "Você + até 4 funcionários (5 no total) e imóveis ilimitados — tudo no plano Pro.",
+  "faq.q6": "Qual a diferença entre Pro e Premium?",
+  "faq.a6": "Pro: imóveis ilimitados, 5 usuários, financeiro, importação por planilha. Premium adiciona usuários ilimitados, guia digital do imóvel, check-in digital, manutenção, relatórios PDF e suporte prioritário.",
   "faq.q7": "Como o Hostlyb se integra com o Google Calendar?",
   "faq.a7": "Exporte checkins, checkouts e limpezas em formato .ics e importe em qualquer agenda.",
   "faq.q8": "Meus dados e fotos estão seguros?",
   "faq.a8": "Sim. Tudo criptografado em repouso e em trânsito. Fotos em armazenamento privado — só você acessa.",
 
   "cta.title": "Pare de apagar incêndio. Comece a gerenciar.",
-  "cta.subtitle": "7 dias grátis. Sem cartão. Sem complicação. Em 5 minutos você está rodando.",
-  "cta.btn": "Quero meus 7 dias grátis →",
+  "cta.subtitle": "Comece grátis. Faça upgrade quando precisar. Cancele quando quiser.",
+  "cta.btn": "Começar grátis →",
 
   "footer.rights": "© 2026 Hostlyb. Todos os direitos reservados.",
 
@@ -198,10 +210,9 @@ const en: Dict = {
   "hero.title.c": "— in 2 minutes a day.",
   "hero.subtitle": "Cleaner who doesn't reply. Guest arriving at a dirty place. Forgotten items you find weeks later. Hostlyb fixes all of that — straight from your phone.",
   "hero.cta": "Stop the chaos →",
-  "hero.demo": "Or explore the demo →",
-  "hero.bullet1": "✓ 7 days free",
-  "hero.bullet2": "✓ No credit card",
-  "hero.bullet3": "✓ Cancel in 1 click",
+  "hero.bullet1": "✓ Free plan forever",
+  "hero.bullet2": "✓ Up and running in 5 minutes",
+  "hero.bullet3": "✓ Cancel anytime",
   "hero.imageAlt": "Host using Hostlyb on phone",
 
   "social.proof": "Trusted by 2,400+ hosts in Brazil, the US and Europe",
@@ -253,51 +264,63 @@ const en: Dict = {
   "hiw.s3.t": "Manage from your phone",
   "hiw.s3.d": "See real-time status and get automatic alerts.",
 
-  "pricing.title.a": "Expensive?",
-  "pricing.title.b": "Less than one night.",
-  "pricing.subtitle": "Two plans. No fuss. Start free and upgrade when you need more.",
+  "pricing.title.a": "Three plans.",
+  "pricing.title.b": "You choose.",
+  "pricing.subtitle": "Start free. Upgrade when you need more.",
+
   "pricing.free.name": "Free",
-  "pricing.free.tag": "To get started",
-  "pricing.free.f1": "Up to 3 properties",
+  "pricing.free.tag": "Get started",
+  "pricing.free.f1": "Up to 2 properties",
   "pricing.free.f2": "1 user",
-  "pricing.free.f3": "Access to all features",
-  "pricing.free.f4": "Photo cleaning checklist",
-  "pricing.free.f5": "Spreadsheet import",
+  "pricing.free.f3": "Cleaning checklist with photos",
+  "pricing.free.f4": "Guests, calendar and forgotten items",
+  "pricing.free.f5": "\"Powered by Hostlyb\" tag on cleaner link",
   "pricing.free.cta": "Start free",
-  "pricing.premium.name": "Premium",
-  "pricing.premium.tag": "Professional",
-  "pricing.premium.f1": "Unlimited properties",
-  "pricing.premium.f2": "Unlimited users",
-  "pricing.premium.f3": "Everything in Free",
-  "pricing.premium.f4": "Automatic checkout alerts",
-  "pricing.premium.f5": "Human email support",
-  "pricing.cta": "Try 7 days free",
-  "pricing.note": "✓ 7 days free  ✓ No card  ✓ Cancel anytime",
-  "pricing.suffix": "/mo",
   "pricing.free.price": "Free",
+
+  "pricing.pro.name": "Pro",
+  "pricing.pro.tag": "Professional",
+  "pricing.pro.f1": "Unlimited properties, up to 5 users",
+  "pricing.pro.f2": "Everything in Free, no branding on link",
+  "pricing.pro.f3": "Automatic checkout alerts + full financial module",
+  "pricing.pro.f4": "Spreadsheet guest import + advanced dashboard with charts",
+  "pricing.pro.f5": "Cleaning score, timer, guest tags + WhatsApp button",
+  "pricing.pro.cta": "Subscribe to Pro",
+
+  "pricing.premium.name": "Premium",
+  "pricing.premium.tag": "All-inclusive",
+  "pricing.premium.f1": "Everything in Pro + unlimited users",
+  "pricing.premium.f2": "Digital property guidebook (public link, no login)",
+  "pricing.premium.f3": "Digital check-in / guest registration form",
+  "pricing.premium.f4": "Maintenance log + per-property PDF report",
+  "pricing.premium.f5": "Priority support within 24h",
+  "pricing.premium.cta": "Subscribe to Premium",
+
+  "pricing.note": "✓ Cancel anytime",
+  "pricing.suffix": "/mo",
   "pricing.popular": "★ MOST POPULAR",
 
   "faq.title": "Frequently asked questions",
-  "faq.q1": "Do I need a credit card to try Hostlyb?",
-  "faq.a1": "No. The 7-day trial is free and requires no card. You only pay if you decide to continue.",
+  "faq.q1": "How much does it cost to start?",
+  "faq.a1": "Nothing. The Free plan is permanent — up to 2 properties and 1 user, with checklist, guests and calendar. Upgrade only when you need more.",
   "faq.q2": "Can I import my existing reservations?",
-  "faq.a2": "Yes. Import a spreadsheet (Excel or CSV) with guests, properties and finances in seconds.",
+  "faq.a2": "Yes, on the Pro plan. Import a spreadsheet (Excel or CSV) with guests, properties and finances in seconds.",
   "faq.q3": "Does the cleaner need to download an app?",
   "faq.a3": "No. She gets a unique link and opens the checklist in her browser — no account, no install.",
   "faq.q4": "How does forgotten-items tracking work?",
   "faq.a4": "The cleaner photographs and logs the item. You get an instant alert with photo and description.",
   "faq.q5": "Can I cancel anytime?",
   "faq.a5": "Yes. No contract, no fee. Cancel in 1 click. Access stays until the end of the paid period.",
-  "faq.q6": "How many users and properties can I have?",
-  "faq.a6": "You + up to 4 staff (5 total) and unlimited properties — all in the Pro plan.",
+  "faq.q6": "What's the difference between Pro and Premium?",
+  "faq.a6": "Pro: unlimited properties, 5 users, financial module, spreadsheet import. Premium adds unlimited users, digital property guidebook, digital check-in, maintenance log, PDF reports and priority support.",
   "faq.q7": "How does Hostlyb integrate with Google Calendar?",
   "faq.a7": "Export check-ins, check-outs and cleanings as .ics and import to any calendar.",
   "faq.q8": "Are my data and photos safe?",
   "faq.a8": "Yes. Encrypted at rest and in transit. Photos live in private storage — only you can access.",
 
   "cta.title": "Stop firefighting. Start managing.",
-  "cta.subtitle": "7 days free. No card. No fuss. Up and running in 5 minutes.",
-  "cta.btn": "Get my 7 free days →",
+  "cta.subtitle": "Start free. Upgrade when you need. Cancel anytime.",
+  "cta.btn": "Start free →",
 
   "footer.rights": "© 2026 Hostlyb. All rights reserved.",
 
@@ -350,10 +373,9 @@ const es: Dict = {
   "hero.title.c": "— en 2 minutos al día.",
   "hero.subtitle": "Limpiadora que no responde. Huésped llegando a un piso sucio. Objeto olvidado que descubres semanas después. Hostlyb lo resuelve todo — desde tu móvil.",
   "hero.cta": "Quiero acabar con el caos →",
-  "hero.demo": "O prueba la demo →",
-  "hero.bullet1": "✓ 7 días gratis",
-  "hero.bullet2": "✓ Sin tarjeta",
-  "hero.bullet3": "✓ Cancela en 1 clic",
+  "hero.bullet1": "✓ Plan gratis para siempre",
+  "hero.bullet2": "✓ Listo en 5 minutos",
+  "hero.bullet3": "✓ Cancela cuando quieras",
   "hero.imageAlt": "Anfitriona usando Hostlyb en el móvil",
 
   "social.proof": "Usado por +2.400 anfitriones en Brasil, EE.UU. y Europa",
@@ -405,51 +427,63 @@ const es: Dict = {
   "hiw.s3.t": "Gestiona desde tu móvil",
   "hiw.s3.d": "Ve el estado en tiempo real y recibe avisos automáticos.",
 
-  "pricing.title.a": "¿Caro?",
-  "pricing.title.b": "Menos que una noche.",
-  "pricing.subtitle": "Dos planes. Sin líos. Empieza gratis y mejora cuando necesites más.",
+  "pricing.title.a": "Tres planes.",
+  "pricing.title.b": "Tú eliges.",
+  "pricing.subtitle": "Empieza gratis. Mejora cuando necesites más.",
+
   "pricing.free.name": "Gratis",
   "pricing.free.tag": "Para empezar",
-  "pricing.free.f1": "Hasta 3 propiedades",
+  "pricing.free.f1": "Hasta 2 propiedades",
   "pricing.free.f2": "1 usuario",
-  "pricing.free.f3": "Acceso a todas las funciones",
-  "pricing.free.f4": "Checklist de limpieza con fotos",
-  "pricing.free.f5": "Importación por hoja de cálculo",
+  "pricing.free.f3": "Checklist de limpieza con fotos",
+  "pricing.free.f4": "Huéspedes, calendario y objetos olvidados",
+  "pricing.free.f5": "Marca \"Powered by Hostlyb\" en el enlace",
   "pricing.free.cta": "Empezar gratis",
-  "pricing.premium.name": "Premium",
-  "pricing.premium.tag": "Profesional",
-  "pricing.premium.f1": "Propiedades ilimitadas",
-  "pricing.premium.f2": "Usuarios ilimitados",
-  "pricing.premium.f3": "Todo lo del plan Gratis",
-  "pricing.premium.f4": "Avisos automáticos de checkout",
-  "pricing.premium.f5": "Soporte humano por email",
-  "pricing.cta": "Probar 7 días gratis",
-  "pricing.note": "✓ 7 días gratis  ✓ Sin tarjeta  ✓ Cancela cuando quieras",
-  "pricing.suffix": "/mes",
   "pricing.free.price": "Gratis",
+
+  "pricing.pro.name": "Pro",
+  "pricing.pro.tag": "Profesional",
+  "pricing.pro.f1": "Propiedades ilimitadas, hasta 5 usuarios",
+  "pricing.pro.f2": "Todo lo del Gratis, sin marca en el enlace",
+  "pricing.pro.f3": "Avisos automáticos + módulo financiero completo",
+  "pricing.pro.f4": "Importación de huéspedes por hoja + dashboard con gráficos",
+  "pricing.pro.f5": "Score de limpieza, timer, tags + botón WhatsApp",
+  "pricing.pro.cta": "Suscribirse a Pro",
+
+  "pricing.premium.name": "Premium",
+  "pricing.premium.tag": "Todo incluido",
+  "pricing.premium.f1": "Todo lo del Pro + usuarios ilimitados",
+  "pricing.premium.f2": "Guía digital de la propiedad (enlace público)",
+  "pricing.premium.f3": "Check-in digital / ficha de huésped",
+  "pricing.premium.f4": "Mantenimiento + informe PDF por propiedad",
+  "pricing.premium.f5": "Soporte prioritario en 24h",
+  "pricing.premium.cta": "Suscribirse a Premium",
+
+  "pricing.note": "✓ Cancela cuando quieras",
+  "pricing.suffix": "/mes",
   "pricing.popular": "★ MÁS POPULAR",
 
   "faq.title": "Preguntas frecuentes",
-  "faq.q1": "¿Necesito tarjeta para probar Hostlyb?",
-  "faq.a1": "No. Los 7 días son gratis y no piden tarjeta. Solo pagas si decides continuar.",
+  "faq.q1": "¿Cuánto cuesta empezar?",
+  "faq.a1": "Nada. El plan Gratis es permanente — hasta 2 propiedades y 1 usuario, con checklist, huéspedes y calendario. Mejora solo si lo necesitas.",
   "faq.q2": "¿Puedo importar mis reservas existentes?",
-  "faq.a2": "Sí. Importa una hoja de cálculo (Excel o CSV) con huéspedes, propiedades y finanzas en segundos.",
+  "faq.a2": "Sí, en el plan Pro. Importa una hoja de cálculo con huéspedes, propiedades y finanzas en segundos.",
   "faq.q3": "¿La limpiadora necesita descargar alguna app?",
   "faq.a3": "No. Recibe un enlace único y abre el checklist en el navegador — sin cuenta ni instalación.",
   "faq.q4": "¿Cómo funciona el control de objetos olvidados?",
   "faq.a4": "La limpiadora fotografía y registra el objeto. Recibes un aviso inmediato con foto y descripción.",
   "faq.q5": "¿Puedo cancelar cuando quiera?",
   "faq.a5": "Sí. Sin contrato, sin penalización. Cancela en 1 clic. El acceso sigue hasta fin del periodo pagado.",
-  "faq.q6": "¿Cuántos usuarios y propiedades puedo tener?",
-  "faq.a6": "Tú + hasta 4 empleados (5 en total) y propiedades ilimitadas — todo en el plan Pro.",
+  "faq.q6": "¿Diferencia entre Pro y Premium?",
+  "faq.a6": "Pro: propiedades ilimitadas, 5 usuarios, financiero, importación. Premium añade usuarios ilimitados, guía digital, check-in, mantenimiento, informes PDF y soporte prioritario.",
   "faq.q7": "¿Cómo se integra Hostlyb con Google Calendar?",
   "faq.a7": "Exporta entradas, salidas y limpiezas en .ics e importa en cualquier calendario.",
   "faq.q8": "¿Mis datos y fotos están seguros?",
   "faq.a8": "Sí. Cifrado en reposo y en tránsito. Fotos en almacenamiento privado — solo tú accedes.",
 
   "cta.title": "Deja de apagar fuegos. Empieza a gestionar.",
-  "cta.subtitle": "7 días gratis. Sin tarjeta. Sin líos. En 5 minutos estás listo.",
-  "cta.btn": "Quiero mis 7 días gratis →",
+  "cta.subtitle": "Empieza gratis. Mejora cuando lo necesites. Cancela cuando quieras.",
+  "cta.btn": "Empezar gratis →",
 
   "footer.rights": "© 2026 Hostlyb. Todos los derechos reservados.",
 

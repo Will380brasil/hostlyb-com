@@ -4,13 +4,15 @@ import { createFileRoute } from "@tanstack/react-router";
 const EUR_COUNTRIES = new Set([
   "AT","BE","CY","DE","EE","ES","FI","FR","GR","HR","IE","IT","LT","LU","LV",
   "MT","NL","PT","SI","SK","AD","MC","SM","VA","XK","ME","BA","RS","AL","MK",
-  "BG","CZ","DK","HU","PL","RO","SE","NO","CH","IS","LI","UK","GB",
+  "BG","CZ","DK","HU","PL","RO","SE","NO","CH","IS","LI",
 ]);
+const GBP_COUNTRIES = new Set(["GB","UK","IM","JE","GG"]);
 
-function currencyForCountry(country: string): "BRL" | "USD" | "EUR" | "SAR" {
+function currencyForCountry(country: string): "BRL" | "USD" | "EUR" | "GBP" | "SAR" {
   const c = (country || "").toUpperCase();
   if (c === "BR") return "BRL";
   if (c === "SA") return "SAR";
+  if (GBP_COUNTRIES.has(c)) return "GBP";
   if (EUR_COUNTRIES.has(c)) return "EUR";
   return "USD";
 }

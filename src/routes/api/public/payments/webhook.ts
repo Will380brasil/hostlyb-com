@@ -21,6 +21,13 @@ async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
   const periodStart = (item as any)?.current_period_start ?? (sub as any).current_period_start;
   const periodEnd = (item as any)?.current_period_end ?? (sub as any).current_period_end;
 
+  // Derive plan_tier from the (stable) lookup_key-based priceId
+  const planTier: "free" | "pro" | "premium" =
+    priceId?.startsWith("premium_monthly") ? "premium"
+    : priceId?.startsWith("pro_monthly") ? "pro"
+    : priceId?.startsWith("hostly_pro") ? "premium" // legacy
+    : "free";
+
   const row = {
     user_id: userId,
     organization_id: organizationId,
@@ -30,6 +37,7 @@ async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
     status: sub.status,
     price_id: priceId,
     product_id: productId,
+    plan_tier: planTier,
     current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
     current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
     cancel_at_period_end: sub.cancel_at_period_end ?? false,
