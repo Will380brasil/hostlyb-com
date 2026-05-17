@@ -14,8 +14,8 @@ export const LANGS: { code: Lang; label: string; flag: string }[] = [
 
 // Permanent 3-tier pricing (per month). Currency selected per visitor locale.
 export const PLAN_PRICE: Record<"pro" | "premium", Record<Currency, number>> = {
-  pro:     { BRL: 27.90, EUR: 9,    USD: 19,    GBP: 9 },
-  premium: { BRL: 54.90, EUR: 19,   USD: 39,    GBP: 19 },
+  pro:     { BRL: 34.90, EUR: 14,   USD: 19,    GBP: 14 },
+  premium: { BRL: 69.90, EUR: 29,   USD: 39,    GBP: 29 },
 };
 
 export function formatPrice(currency: Currency, lang: Lang, plan: "pro" | "premium" = "premium"): string {
@@ -107,7 +107,7 @@ const pt: Dict = {
 
   "pricing.free.name": "Gratuito",
   "pricing.free.tag": "Para começar",
-  "pricing.free.f1": "Até 2 imóveis",
+  "pricing.free.f1": "1 imóvel",
   "pricing.free.f2": "1 usuário",
   "pricing.free.f3": "Checklist de limpeza com fotos",
   "pricing.free.f4": "Gestão de hóspedes, calendário e objetos esquecidos",
@@ -117,7 +117,7 @@ const pt: Dict = {
 
   "pricing.pro.name": "Pro",
   "pricing.pro.tag": "Profissional",
-  "pricing.pro.f1": "Imóveis ilimitados, até 5 usuários",
+  "pricing.pro.f1": "Até 5 imóveis, 3 usuários",
   "pricing.pro.f2": "Tudo do Gratuito, sem marca no link",
   "pricing.pro.f3": "Alertas automáticos de checkout + módulo financeiro completo",
   "pricing.pro.f4": "Importação de hóspedes por planilha + dashboard com gráficos",
@@ -270,7 +270,7 @@ const en: Dict = {
 
   "pricing.free.name": "Free",
   "pricing.free.tag": "Get started",
-  "pricing.free.f1": "Up to 2 properties",
+  "pricing.free.f1": "1 property",
   "pricing.free.f2": "1 user",
   "pricing.free.f3": "Cleaning checklist with photos",
   "pricing.free.f4": "Guests, calendar and forgotten items",
@@ -280,7 +280,7 @@ const en: Dict = {
 
   "pricing.pro.name": "Pro",
   "pricing.pro.tag": "Professional",
-  "pricing.pro.f1": "Unlimited properties, up to 5 users",
+  "pricing.pro.f1": "Up to 5 properties, 3 users",
   "pricing.pro.f2": "Everything in Free, no branding on link",
   "pricing.pro.f3": "Automatic checkout alerts + full financial module",
   "pricing.pro.f4": "Spreadsheet guest import + advanced dashboard with charts",
@@ -433,7 +433,7 @@ const es: Dict = {
 
   "pricing.free.name": "Gratis",
   "pricing.free.tag": "Para empezar",
-  "pricing.free.f1": "Hasta 2 propiedades",
+  "pricing.free.f1": "1 propiedad",
   "pricing.free.f2": "1 usuario",
   "pricing.free.f3": "Checklist de limpieza con fotos",
   "pricing.free.f4": "Huéspedes, calendario y objetos olvidados",
@@ -443,7 +443,7 @@ const es: Dict = {
 
   "pricing.pro.name": "Pro",
   "pricing.pro.tag": "Profesional",
-  "pricing.pro.f1": "Propiedades ilimitadas, hasta 5 usuarios",
+  "pricing.pro.f1": "Hasta 5 propiedades, 3 usuarios",
   "pricing.pro.f2": "Todo lo del Gratis, sin marca en el enlace",
   "pricing.pro.f3": "Avisos automáticos + módulo financiero completo",
   "pricing.pro.f4": "Importación de huéspedes por hoja + dashboard con gráficos",

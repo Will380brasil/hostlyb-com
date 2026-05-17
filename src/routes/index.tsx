@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  Home as HomeIcon, Check, X, Play, ArrowRight, Star, Menu, Plus, Minus,
+  Home as HomeIcon, Check, X, ArrowRight, Star, Menu, Plus, Minus,
   Building2, Sparkles, Users, CalendarDays, Smartphone, Download, Share2,
 } from "lucide-react";
 import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
-import { DemoLeadModal } from "@/components/DemoLeadModal";
+import { useAuth } from "@/hooks/useAuth";
 
 
 const FAQ_KEYS = [
@@ -168,8 +168,10 @@ function CoralButton({ children, href, big, asLink, onClick }: {
 
 function Navbar() {
   const t = useT();
+  const { session } = useAuth();
   const scrolled = useScrolled(40);
   const [open, setOpen] = useState(false);
+  const logoHref = session ? "/app" : "/";
   return (
     <header style={{
       position: "sticky", top: 0, zIndex: 50, height: 72,
@@ -180,7 +182,7 @@ function Navbar() {
       transition: "all .2s ease",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
+        <Link to={logoHref as any} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
@@ -227,10 +229,7 @@ function Navbar() {
 
 function Hero() {
   const t = useT();
-  const [demoOpen, setDemoOpen] = useState(false);
   return (
-    <>
-    <DemoLeadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     <section id="top" style={{ padding: "48px 24px 64px", background: "#fff" }}>
       <div className="hero-grid" style={{
         maxWidth: 1200, margin: "0 auto",
@@ -258,30 +257,10 @@ function Hero() {
 
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
             <CoralButton big href="/signup">{t("hero.cta")} <ArrowRight size={18} /></CoralButton>
-            <button
-              type="button"
-              onClick={() => setDemoOpen(true)}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                padding: "16px 28px", borderRadius: 999, fontSize: 16, fontWeight: 700,
-                background: "#fff", color: C.coral, border: `2px solid ${C.coral}`,
-                boxShadow: `0 4px 20px ${C.coralGlow}`, cursor: "pointer", fontFamily: "inherit",
-              }}
-            >
-              <Play size={18} fill={C.coral} /> {t("hero.demo")}
-            </button>
-          </div>
-
-          <div style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: C.coralLight }}>
-            <span style={{ width: 8, height: 8, borderRadius: 999, background: C.coral, boxShadow: `0 0 0 4px ${C.coralGlow}` }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: C.coral }}>
-              Demo ao vivo · sem cadastro · explore o painel completo
-            </span>
           </div>
 
           <p style={{ marginTop: 20, color: C.g400, fontSize: 13, display: "flex", gap: 18, flexWrap: "wrap" }}>
             <span>{t("hero.bullet1")}</span>
-            <span>{t("hero.bullet2")}</span>
             <span>{t("hero.bullet3")}</span>
           </p>
         </div>
@@ -316,7 +295,6 @@ function Hero() {
         }
       `}</style>
     </section>
-    </>
   );
 }
 

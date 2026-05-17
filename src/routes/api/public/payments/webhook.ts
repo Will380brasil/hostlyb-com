@@ -23,7 +23,9 @@ async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
 
   // Derive plan_tier from the (stable) lookup_key-based priceId
   const planTier: "free" | "pro" | "premium" =
-    priceId?.startsWith("premium_monthly") ? "premium"
+    priceId?.startsWith("premium_v3_monthly") ? "premium"
+    : priceId?.startsWith("pro_v3_monthly") ? "pro"
+    : priceId?.startsWith("premium_monthly") ? "premium"
     : priceId?.startsWith("pro_monthly") ? "pro"
     : priceId?.startsWith("hostly_pro") ? "premium" // legacy
     : "free";
