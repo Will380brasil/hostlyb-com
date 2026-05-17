@@ -1,90 +1,73 @@
-# Plan: Bug fixes + Pricing restructure
+# Plan — Bug fixes, Photo-by-Email, New Pricing
 
-## Part 1 — Bug fixes
+## A. Email infrastructure (Lovable Emails)
+Set up Lovable email domain on `hostlyb.com` → scaffold transactional email infra → create 3 templates:
+1. `invite-employee` — invite link + role + org name
+2. `cleaning-photo` — per-photo (subject: "📸 [Property] — [Room] — HH:MM"), attaches photo
+3. `cleaning-problem` — problem report with photo + urgency
 
-### 1. Employee invite flow
-- Audit `accept_invite` RPC + `/convite/$token` route + invite creation in `equipe.tsx`.
-- Ensure invite email is actually sent (currently only generates a link — add transactional email via the email infra; if not desired, surface the copyable link clearly with a "Copy invite link" button).
-- After accept: redirect to `/app` and confirm `organization_members` row has correct role so RLS (`is_org_member`, `has_org_role`) grants access.
-- Fix edge cases: expired token, already-accepted, signed-out user (route through `/login?redirect=/convite/<token>`).
+Note: Lovable Emails do not natively support attachments. Workaround: upload to a **temporary** Supabase bucket (`photo-outbox`), include signed URL in email, then **delete the object** in the same server function after enqueue. Net result: no persistent storage cost. Email contains the photo as embedded inline image fetched at send time by the queue worker (we'll fetch + base64-attach via `@lovable.dev/email-js` attachments field).
 
-### 2. Logo redirect based on auth
-- In `AppShell` / landing header, make the logo `<Link>` dynamic: when `useAuth()` has a session → `to="/app"` (the dashboard route), otherwise `to="/"`.
+## B. Photo flow rewrite
+- New bucket `photo-outbox` (private, lifecycle: delete after 1h as safety net).
+- Cleaner uploads photo → server fn `sendCleaningPhotoEmail({ jobId, roomName, photoBlob })`:
+  1. Upload to `photo-outbox/<uuid>`
+  2. Fetch bytes, base64
+  3. Enqueue email to host with attachment
+  4. Delete object
+  5. Insert row in `cleaning_photo_log` `{ cleaning_job_id, room_name, sent_at, photo_sent: true }`
+- Replace existing `cleaning-photos` bucket usage in `faxineira.$token.tsx` and forgotten-items flow.
+- Dashboard cleaning history shows row from `cleaning_photo_log` with label "📸 Photos sent to your email" (no thumbnails for Free/Pro).
+- Premium: also keep thumbnail in `cleaning-photos` (lifecycle delete after 30d) — separate gating.
 
-### 3. Financial module formatting + contrast
-- Create `formatMoney(amount, currency, lang)` helper using `Intl.NumberFormat` with correct locale (pt-BR, en-US, en-GB, de-DE, fr-FR, it-IT, es-ES).
-- Replace ad-hoc formatting in `routes/financeiro.tsx`.
-- Add semantic tokens in `src/styles.css`: `--finance-value` (#0f0f0f), `--finance-income` (#15803d), `--finance-expense` (#991b1b) — used via Tailwind classes.
+## C. Invite flow fix
+- Audit `accept_invite` RPC + `/convite/$token` route.
+- On invite create in `equipe.tsx`: call new server fn `sendInviteEmail` (Lovable Emails template `invite-employee`) AND show copy-link button as backup.
+- Handle: signed-out user → `/login?redirect=/convite/<token>`; expired/accepted/org-full clear errors.
+- Verify role lands in `organization_members` and RLS works post-accept.
 
-### 4. Auto-sync transactions
-- DB triggers (migration):
-  - `AFTER INSERT/UPDATE ON guests` when `status='hospedado'` or on creation with `total_value > 0` → insert into `transactions` (type='receita', category='hospedagem', guest_id, property_id, amount=total_value).
-  - `AFTER UPDATE ON cleaning_jobs` when `status='concluido'` → insert transaction (type='despesa', category='limpeza', cleaning_job_id, property_id, amount=payment_amount).
-  - Idempotency: unique partial index on `(guest_id) WHERE category='hospedagem'` and `(cleaning_job_id) WHERE category='limpeza'`.
-- Add `origin` text column to `transactions` (e.g. `'auto:guest'`, `'auto:cleaning'`, `'manual'`) for traceability — display as badge in UI.
+## D. Logo redirect
+`AppShell` + landing header: dynamic `<Link to={session ? '/app' : '/'}>`.
 
-### 5. Cleaner detail modal
-- In `routes/equipe.tsx`, add `<Dialog>` opened on cleaner card click.
-- Fetch: cleaner row, linked properties (via `property_cleaners` join), cleaning history (`cleaning_jobs` filtered by `cleaner_id`, with count + recent dates).
-- Actions: Edit (existing form), Remove (soft via `is_active=false`), toggle active.
+## E. Financial module
+- `formatMoney()` already locale-aware (done) — wire into `routes/financeiro.tsx`.
+- Add tokens `--finance-value #0f0f0f`, `--finance-income #15803d`, `--finance-expense #991b1b` in `styles.css` + use as `text-[hsl(var(--finance-*))]`.
+- Add `origin` badge column ("Reserva #abc", "Limpeza", "Manutenção", "Manual").
+- Add manual `maintenance` category to transaction form; triggers already cover guest + cleaning. Add optional `maintenance_log` table later (Premium feature) — for now, manual "despesa / manutenção" with `origin='manual'`.
 
----
+## F. Cleaner detail modal
+`routes/equipe.tsx`: clicking a cleaner card opens `<Dialog>` with:
+- Full name, email, phone, status, photo
+- Linked properties (via `property_cleaners`)
+- Last 10 cleanings + total count + total earnings
+- Edit / Toggle active / Remove (soft `is_active=false`) buttons
 
-## Part 2 — Pricing restructure
-
-### Remove trial messaging
-Grep + remove from i18n strings and JSX in: `routes/index.tsx`, `routes/assinar.tsx`, `components/TrialGate.tsx`, `components/UpgradeModal.tsx`, dashboard banners, FAQ:
-- "7 dias grátis" / "7 days free" / "free trial"
-- "sem cartão de crédito" / "no credit card"
-Keep only: "Cancele quando quiser" / "Cancel anytime".
-
-Also remove the **Demo** link/button (`DemoLeadModal` trigger, `/demo` link) from landing header + hero CTAs. Keep the `/demo` route itself for now (no harm), just unlinked.
-
-### Three permanent plans
-
+## G. Pricing — new 3 tiers (grandfather old subscribers)
+Create new Stripe prices (keep old IDs in `ALLOWED_PRICES` for grandfather):
 | Plan | BRL | EUR | USD | GBP |
 |---|---|---|---|---|
-| Free | 0 | 0 | 0 | 0 |
-| Pro | R$ 27,90 | €9 | $19 | £9 |
-| Premium | R$ 54,90 | €19 | $39 | £19 |
+| Pro | R$34,90 | €14 | $19 | £14 |
+| Premium | R$69,90 | €29 | $39 | £29 |
 
-Add GBP to `Currency` type in `src/lib/i18n.tsx` and to currency detection (en-GB → GBP). Update `currencyForCountry()` and `setLang()` mapping accordingly.
+- `payments--batch_create_product`: `hostlyb_pro` (4 prices), `hostlyb_premium` (4 prices) at new amounts.
+- Update `ALLOWED_PRICES` (add new, keep old).
+- Webhook `plan_tier` derivation handles both old + new price ids.
+- `can_add_property`: Free = **1** (not 2), Pro = 5, Premium = unlimited. Update existing migration.
+- Add `max_org_members` enforcement: Free=1, Pro=3, Premium=999.
 
-### Stripe products
-Create 6 prices via `payments--batch_create_product`:
-- `pro_monthly_brl` (2790), `pro_monthly_eur` (900), `pro_monthly_usd` (1900), `pro_monthly_gbp` (900)
-- `premium_monthly_brl` (5490 — replaces old), `premium_monthly_eur` (1900 — replaces old), `premium_monthly_usd` (3900 — replaces old), `premium_monthly_gbp` (1900)
+## H. Landing + checkout UI
+- `routes/index.tsx` — rebuild `Pricing` with 3 cards (Free 1 prop, Pro 5 prop €14, Premium unlimited €29). Remove Demo button from header + hero. Remove all "7 dias grátis / no credit card" copy in i18n.
+- `routes/assinar.tsx` — already 3-plan; update prices to new values, drop SAR special-case (keep simple EUR for non-listed countries).
+- `TrialGate.tsx` / `useTrialStatus` — gut trial banner + lockout; Free is permanent and gated only by feature/property limits via `UpgradeModal`.
 
-Update `ALLOWED_PRICES` in `src/utils/payments.functions.ts`.
+## I. Files affected
+- migrations: bucket + lifecycle + `cleaning_photo_log` + update `can_add_property` to 1 + `max_org_members` enforcement function
+- new: `src/lib/email-templates/{invite-employee,cleaning-photo,cleaning-problem}.tsx`, `src/lib/email-templates/registry.ts`
+- new server fns: `src/lib/email/send.ts`, `src/utils/photo-email.functions.ts`, `src/utils/invite-email.functions.ts`
+- edited: `assinar.tsx`, `index.tsx` (Pricing), `equipe.tsx` (modal + email), `financeiro.tsx` (format + colors + origin), `faxineira.$token.tsx` (photo flow), `AppShell.tsx` (logo), `TrialGate.tsx` (gut), `i18n.tsx` (strings), `payments.functions.ts` (new prices)
 
-### Subscription tier enforcement
-Add `plan_tier` ('free'|'pro'|'premium') to `subscriptions` derived from `price_id` in webhook (`api/public/payments/webhook.ts`).
-Update `can_add_property` and `user_can_access_app` DB functions:
-- Free tier: max 2 properties, 1 user always allowed (no expiry).
-- Pro: unlimited properties, max 5 org members.
-- Premium: unlimited everything.
-Remove the 7-day grace-period branch from both functions.
+## Open
+- "Powered by Hostlyb" on cleaner public link — add for Free, hide for Pro/Premium (gated on org's plan_tier).
+- Premium-only features (guidebook, check-in, maintenance log, PDF report, AIMA): scaffold as "Coming soon" stubs to ship pricing now; full build in follow-up.
 
-### Landing page `Pricing` component (`routes/index.tsx`)
-Rebuild with 3 cards. Feature lists per spec above. CTAs: "Começar grátis" (Free → signup), "Assinar Pro" / "Assinar Premium" (→ `/assinar?plan=pro|premium`).
-
-### `/assinar` page
-- Show 3 plans (Free shown as current if applicable).
-- `priceIdFor(currency, plan)` → returns correct Stripe price id.
-- Saudi Arabia: keep SAR display, billed in EUR.
-- Pass selected plan via query param or state.
-
-### Feature gating (basic)
-Gate the following UI behind `plan_tier`:
-- Pro+: full financial module, spreadsheet guest import, advanced dashboard, "Powered by Hostlyb" removed from cleaner public link.
-- Premium+: digital guidebook, check-in form, maintenance log, PDF reports (placeholder routes if not yet built).
-
-This plan ships gating + removes branding; building Premium-only features (guidebook, check-in form, maintenance log, PDF report) is scaffolded as empty routes with "Coming soon" unless you want full implementations now — let me know.
-
----
-
-## Open questions before I start
-
-1. **Premium features** — do you want me to fully build the digital guidebook, digital check-in form, maintenance log, and per-property PDF report in this same pass, or scaffold them as "coming soon" pages and ship the bugfix + pricing now?
-2. **Invite emails** — do you want real email delivery (I'd set up transactional email via Resend or similar), or is a copyable invite link enough for now?
-3. **Existing subscribers** on the old `hostly_pro_*` / pre-existing `premium_monthly_*` prices — keep them grandfathered (no change) or migrate via Stripe portal? I recommend grandfather + keep legacy price IDs in `ALLOWED_PRICES`.
+Approve and I'll execute in order: email infra → DB migration → email templates + server fns → photo flow rewrite → invite fix → pricing/landing/checkout → financial UI → cleaner modal → logo.
