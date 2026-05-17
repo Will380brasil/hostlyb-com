@@ -295,7 +295,7 @@ function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }
           <div className="space-y-2 mb-4 text-sm">
             {cleaner.email && <p><span className="text-muted-foreground">Email:</span> {cleaner.email}</p>}
             {cleaner.phone && <p><span className="text-muted-foreground">Telefone:</span> +{cleaner.phone}</p>}
-            {cleaner.price_per_cleaning > 0 && <p><span className="text-muted-foreground">Valor/limpeza:</span> R$ {Number(cleaner.price_per_cleaning).toFixed(2)}</p>}
+            {cleaner.price_per_cleaning != null && Number(cleaner.price_per_cleaning) > 0 && <p><span className="text-muted-foreground">Valor/limpeza:</span> R$ {Number(cleaner.price_per_cleaning).toFixed(2)}</p>}
           </div>
 
           <div className="mb-4">
