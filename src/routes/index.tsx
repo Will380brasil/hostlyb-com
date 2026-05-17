@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  Home as HomeIcon, Check, X, Play, ArrowRight, Star, Menu, Plus, Minus,
+  Home as HomeIcon, Check, X, ArrowRight, Star, Menu, Plus, Minus,
   Building2, Sparkles, Users, CalendarDays, Smartphone, Download, Share2,
 } from "lucide-react";
 import { useT, useLocale, formatPrice } from "@/lib/i18n";
