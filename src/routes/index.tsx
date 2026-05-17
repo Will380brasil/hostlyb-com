@@ -227,10 +227,7 @@ function Navbar() {
 
 function Hero() {
   const t = useT();
-  const [demoOpen, setDemoOpen] = useState(false);
   return (
-    <>
-    <DemoLeadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     <section id="top" style={{ padding: "48px 24px 64px", background: "#fff" }}>
       <div className="hero-grid" style={{
         maxWidth: 1200, margin: "0 auto",
@@ -258,30 +255,10 @@ function Hero() {
 
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
             <CoralButton big href="/signup">{t("hero.cta")} <ArrowRight size={18} /></CoralButton>
-            <button
-              type="button"
-              onClick={() => setDemoOpen(true)}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                padding: "16px 28px", borderRadius: 999, fontSize: 16, fontWeight: 700,
-                background: "#fff", color: C.coral, border: `2px solid ${C.coral}`,
-                boxShadow: `0 4px 20px ${C.coralGlow}`, cursor: "pointer", fontFamily: "inherit",
-              }}
-            >
-              <Play size={18} fill={C.coral} /> {t("hero.demo")}
-            </button>
-          </div>
-
-          <div style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: C.coralLight }}>
-            <span style={{ width: 8, height: 8, borderRadius: 999, background: C.coral, boxShadow: `0 0 0 4px ${C.coralGlow}` }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: C.coral }}>
-              Demo ao vivo · sem cadastro · explore o painel completo
-            </span>
           </div>
 
           <p style={{ marginTop: 20, color: C.g400, fontSize: 13, display: "flex", gap: 18, flexWrap: "wrap" }}>
             <span>{t("hero.bullet1")}</span>
-            <span>{t("hero.bullet2")}</span>
             <span>{t("hero.bullet3")}</span>
           </p>
         </div>
@@ -316,7 +293,6 @@ function Hero() {
         }
       `}</style>
     </section>
-    </>
   );
 }
 
