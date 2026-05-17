@@ -283,6 +283,48 @@ export type Database = {
           },
         ]
       }
+      cleaning_photo_log: {
+        Row: {
+          cleaner_name: string | null
+          cleaning_job_id: string
+          description: string | null
+          id: string
+          kind: string
+          photo_sent: boolean
+          property_id: string | null
+          room_name: string | null
+          sent_at: string
+          urgency: string | null
+          user_id: string
+        }
+        Insert: {
+          cleaner_name?: string | null
+          cleaning_job_id: string
+          description?: string | null
+          id?: string
+          kind?: string
+          photo_sent?: boolean
+          property_id?: string | null
+          room_name?: string | null
+          sent_at?: string
+          urgency?: string | null
+          user_id: string
+        }
+        Update: {
+          cleaner_name?: string | null
+          cleaning_job_id?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          photo_sent?: boolean
+          property_id?: string | null
+          room_name?: string | null
+          sent_at?: string
+          urgency?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       demo_leads: {
         Row: {
           access_count: number
@@ -819,6 +861,7 @@ export type Database = {
     }
     Functions: {
       accept_invite: { Args: { p_token: string }; Returns: Json }
+      can_add_member: { Args: { _org: string }; Returns: boolean }
       can_add_property: { Args: { _user: string }; Returns: boolean }
       cleaner_add_forgotten_item: {
         Args: {
