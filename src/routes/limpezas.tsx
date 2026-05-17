@@ -181,48 +181,158 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
 }
 
 function ProfissionaisList() {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data: cleaners = [] } = useQuery({
     queryKey: ["cleaners"],
     queryFn: async () => (await supabase.from("cleaners").select("*").order("name")).data ?? [],
   });
   if (cleaners.length === 0) return <p className="text-sm text-muted-foreground text-center py-10">Nenhum profissional cadastrado.</p>;
   return (
+    <>
     <ul className="flex flex-col gap-3">
       {cleaners.map((c: any) => (
-        <li key={c.id} className="hostly-card !p-4 flex items-center gap-3">
-          <SignedImage
-            bucket="cleaner-avatars"
-            path={c.photo_url}
-            alt={c.name}
-            className="w-12 h-12 rounded-full object-cover"
-            fallback={
-              <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
-                style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
-                {c.name.charAt(0)}
-              </div>
-            }
-          />
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold truncate">{c.name}</p>
-            <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
-              <Star size={12} style={{ color: "var(--color-warning)" }} /> {c.rating} · {c.total_cleanings} limpezas
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {c.phone && (
-              <>
-                <a href={`tel:+${c.phone}`} className="grid place-items-center w-9 h-9 rounded-full bg-secondary"><Phone size={15} /></a>
-                <a href={`https://wa.me/${c.phone}`} target="_blank" rel="noreferrer"
-                  className="grid place-items-center w-9 h-9 rounded-full"
-                  style={{ background: "var(--color-success-soft)", color: "var(--color-success)" }}>
-                  <MessageCircle size={15} />
-                </a>
-              </>
-            )}
-          </div>
+        <li key={c.id}>
+          <button onClick={() => setSelectedId(c.id)} className="hostly-card !p-4 flex items-center gap-3 w-full text-left hover:bg-card/80 transition-colors">
+            <SignedImage
+              bucket="cleaner-avatars"
+              path={c.photo_url}
+              alt={c.name}
+              className="w-12 h-12 rounded-full object-cover"
+              fallback={
+                <div className="grid place-items-center w-12 h-12 rounded-full font-bold"
+                  style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
+                  {c.name.charAt(0)}
+                </div>
+              }
+            />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold truncate flex items-center gap-2">
+                {c.name}
+                {!c.is_active && <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Inativo</span>}
+              </p>
+              <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
+                <Star size={12} style={{ color: "var(--color-warning)" }} /> {c.rating} · {c.total_cleanings} limpezas
+              </p>
+            </div>
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              {c.phone && (
+                <>
+                  <a href={`tel:+${c.phone}`} className="grid place-items-center w-9 h-9 rounded-full bg-secondary"><Phone size={15} /></a>
+                  <a href={`https://wa.me/${c.phone}`} target="_blank" rel="noreferrer"
+                    className="grid place-items-center w-9 h-9 rounded-full"
+                    style={{ background: "var(--color-success-soft)", color: "var(--color-success)" }}>
+                    <MessageCircle size={15} />
+                  </a>
+                </>
+              )}
+            </div>
+          </button>
         </li>
       ))}
     </ul>
+    {selectedId && <CleanerDetailModal id={selectedId} onClose={() => setSelectedId(null)} />}
+    </>
+  );
+}
+
+function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }) {
+  const qc = useQueryClient();
+  const { data: cleaner } = useQuery({
+    queryKey: ["cleaner-detail", id],
+    queryFn: async () => (await supabase.from("cleaners").select("*").eq("id", id).maybeSingle()).data,
+  });
+  const { data: props = [] } = useQuery({
+    queryKey: ["cleaner-properties", id],
+    queryFn: async () => {
+      const { data } = await supabase.from("property_cleaners").select("properties(id, name)").eq("cleaner_id", id);
+      return (data ?? []).map((r: any) => r.properties).filter(Boolean);
+    },
+  });
+  const { data: history = [] } = useQuery({
+    queryKey: ["cleaner-history", id],
+    queryFn: async () => (await supabase.from("cleaning_jobs")
+      .select("id, scheduled_date, status, payment_amount, properties(name)")
+      .eq("cleaner_id", id).order("scheduled_date", { ascending: false }).limit(10)).data ?? [],
+  });
+
+  const toggleActive = useMutation({
+    mutationFn: async () => {
+      if (!cleaner) return;
+      const { error } = await supabase.from("cleaners").update({ is_active: !cleaner.is_active }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Atualizado"); qc.invalidateQueries({ queryKey: ["cleaners"] }); qc.invalidateQueries({ queryKey: ["cleaner-detail", id] }); },
+  });
+
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("cleaners").update({ is_active: false }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Removido"); qc.invalidateQueries({ queryKey: ["cleaners"] }); onClose(); },
+  });
+
+  if (!cleaner) return null;
+  const totalEarnings = history.reduce((s: number, h: any) => s + Number(h.payment_amount || 0), 0);
+
+  return (
+    <div onClick={onClose} className="fixed inset-0 z-50 bg-black/50 grid place-items-end md:place-items-center p-0 md:p-4">
+      <div onClick={(e) => e.stopPropagation()} className="bg-card w-full md:max-w-md md:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-auto">
+        <div className="p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <SignedImage bucket="cleaner-avatars" path={cleaner.photo_url} alt={cleaner.name}
+              className="w-14 h-14 rounded-full object-cover"
+              fallback={<div className="grid place-items-center w-14 h-14 rounded-full font-bold text-lg" style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>{cleaner.name.charAt(0)}</div>} />
+            <div className="flex-1 min-w-0">
+              <h2 className="font-bold text-lg truncate">{cleaner.name}</h2>
+              <p className="text-xs text-muted-foreground">
+                {cleaner.is_active ? <span className="text-success">● Ativo</span> : <span>● Inativo</span>}
+                {" · "}{cleaner.total_cleanings} limpezas · ★ {cleaner.rating}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2 mb-4 text-sm">
+            {cleaner.email && <p><span className="text-muted-foreground">Email:</span> {cleaner.email}</p>}
+            {cleaner.phone && <p><span className="text-muted-foreground">Telefone:</span> +{cleaner.phone}</p>}
+            {cleaner.price_per_cleaning > 0 && <p><span className="text-muted-foreground">Valor/limpeza:</span> R$ {Number(cleaner.price_per_cleaning).toFixed(2)}</p>}
+          </div>
+
+          <div className="mb-4">
+            <h3 className="font-bold text-sm mb-2">Imóveis vinculados ({props.length})</h3>
+            {props.length === 0 ? <p className="text-xs text-muted-foreground">Nenhum imóvel vinculado.</p> : (
+              <ul className="flex flex-wrap gap-1.5">
+                {props.map((p: any) => <li key={p.id} className="text-xs px-2 py-1 rounded-md bg-muted">{p.name}</li>)}
+              </ul>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <h3 className="font-bold text-sm mb-2">Histórico recente · total R$ {totalEarnings.toFixed(2)}</h3>
+            {history.length === 0 ? <p className="text-xs text-muted-foreground">Sem limpezas.</p> : (
+              <ul className="space-y-1.5">
+                {history.map((h: any) => (
+                  <li key={h.id} className="text-xs flex justify-between gap-2 p-2 rounded bg-background">
+                    <span className="truncate">{h.scheduled_date.split("-").reverse().join("/")} · {h.properties?.name ?? "—"}</span>
+                    <span className="text-muted-foreground capitalize shrink-0">{h.status}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="flex gap-2 pt-2 border-t border-card-border">
+            <button onClick={() => toggleActive.mutate()} className="flex-1 py-2 rounded-lg bg-muted text-sm font-semibold">
+              {cleaner.is_active ? "Desativar" : "Reativar"}
+            </button>
+            <button onClick={() => { if (confirm("Remover este profissional?")) remove.mutate(); }} className="flex-1 py-2 rounded-lg text-sm font-semibold text-white" style={{ background: "#991b1b" }}>
+              Remover
+            </button>
+            <button onClick={onClose} className="px-4 py-2 rounded-lg border border-card-border text-sm">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
