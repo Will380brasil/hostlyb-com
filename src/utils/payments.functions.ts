@@ -3,12 +3,14 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
 
 const ALLOWED_PRICES = new Set([
-  // Pro plan
+  // Pro v3 (current)
+  "pro_v3_monthly_brl", "pro_v3_monthly_eur", "pro_v3_monthly_usd", "pro_v3_monthly_gbp",
+  // Premium v3 (current)
+  "premium_v3_monthly_brl", "premium_v3_monthly_eur",
+  "premium_v3_monthly_usd", "premium_v3_monthly_gbp",
+  // Grandfathered legacy prices (existing subscribers only)
   "pro_monthly_brl", "pro_monthly_eur", "pro_monthly_usd", "pro_monthly_gbp",
-  // Premium plan (v2)
-  "premium_monthly_brl_v2", "premium_monthly_eur_v2",
-  "premium_monthly_usd_v2", "premium_monthly_gbp_v2",
-  // Legacy (kept for in-flight checkouts)
+  "premium_monthly_brl_v2", "premium_monthly_eur_v2", "premium_monthly_usd_v2", "premium_monthly_gbp_v2",
   "premium_monthly_brl", "premium_monthly_eur", "premium_monthly_usd",
   "hostly_pro_brl", "hostly_pro_eur", "hostly_pro_usd",
 ]);

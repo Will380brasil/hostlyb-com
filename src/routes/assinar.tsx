@@ -17,7 +17,7 @@ type Plan = "pro" | "premium";
 // Map display currency + plan → Stripe price ID. SA users are billed in EUR.
 function priceIdFor(currency: "BRL" | "EUR" | "USD" | "GBP", plan: Plan): string {
   const cur = currency.toLowerCase();
-  return plan === "premium" ? `premium_monthly_${cur}_v2` : `pro_monthly_${cur}`;
+  return `${plan}_v3_monthly_${cur}`;
 }
 
 function formatPlan(amount: number, currency: Currency | "SAR", lang: string): string {

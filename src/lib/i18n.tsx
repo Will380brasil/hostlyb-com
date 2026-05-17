@@ -14,8 +14,8 @@ export const LANGS: { code: Lang; label: string; flag: string }[] = [
 
 // Permanent 3-tier pricing (per month). Currency selected per visitor locale.
 export const PLAN_PRICE: Record<"pro" | "premium", Record<Currency, number>> = {
-  pro:     { BRL: 27.90, EUR: 9,    USD: 19,    GBP: 9 },
-  premium: { BRL: 54.90, EUR: 19,   USD: 39,    GBP: 19 },
+  pro:     { BRL: 34.90, EUR: 14,   USD: 19,    GBP: 14 },
+  premium: { BRL: 69.90, EUR: 29,   USD: 39,    GBP: 29 },
 };
 
 export function formatPrice(currency: Currency, lang: Lang, plan: "pro" | "premium" = "premium"): string {
