@@ -107,7 +107,7 @@ const pt: Dict = {
 
   "pricing.free.name": "Gratuito",
   "pricing.free.tag": "Para começar",
-  "pricing.free.f1": "Até 2 imóveis",
+  "pricing.free.f1": "1 imóvel",
   "pricing.free.f2": "1 usuário",
   "pricing.free.f3": "Checklist de limpeza com fotos",
   "pricing.free.f4": "Gestão de hóspedes, calendário e objetos esquecidos",
@@ -270,7 +270,7 @@ const en: Dict = {
 
   "pricing.free.name": "Free",
   "pricing.free.tag": "Get started",
-  "pricing.free.f1": "Up to 2 properties",
+  "pricing.free.f1": "1 property",
   "pricing.free.f2": "1 user",
   "pricing.free.f3": "Cleaning checklist with photos",
   "pricing.free.f4": "Guests, calendar and forgotten items",
@@ -433,7 +433,7 @@ const es: Dict = {
 
   "pricing.free.name": "Gratis",
   "pricing.free.tag": "Para empezar",
-  "pricing.free.f1": "Hasta 2 propiedades",
+  "pricing.free.f1": "1 propiedad",
   "pricing.free.f2": "1 usuario",
   "pricing.free.f3": "Checklist de limpieza con fotos",
   "pricing.free.f4": "Huéspedes, calendario y objetos olvidados",
