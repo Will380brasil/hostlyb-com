@@ -8,6 +8,8 @@ import { AppShell } from "@/components/AppShell";
 import { sanitize } from "@/lib/sanitize";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Download, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { formatMoney } from "@/lib/format";
+import { useLocale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/financeiro")({
   component: () => (
@@ -36,7 +38,7 @@ const txSchema = z.object({
   notes: z.string().max(1000).nullable().optional(),
 });
 
-type Tx = z.infer<typeof txSchema> & { id: string; user_id: string };
+type Tx = z.infer<typeof txSchema> & { id: string; user_id: string; origin?: string | null; guest_id?: string | null; cleaning_job_id?: string | null };
 
 const empty: Partial<Tx> = {
   type: "entrada", category: "", description: "", amount: 0,
@@ -46,6 +48,7 @@ const empty: Partial<Tx> = {
 
 function FinanceiroPage() {
   const { session } = useAuth();
+  const { currency, lang } = useLocale();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Tx | null>(null);
@@ -148,8 +151,14 @@ function FinanceiroPage() {
     URL.revokeObjectURL(url);
   };
 
-  const fmt = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const fmt = (n: number) => formatMoney(n, currency, lang);
   const categories = (form.type === "saida" ? CATEGORIES.saida : CATEGORIES.entrada);
+
+  const originLabel = (o?: string | null) => {
+    if (o === "auto:guest") return { text: "Reserva", bg: "#dbeafe", fg: "#1e40af" };
+    if (o === "auto:cleaning") return { text: "Limpeza", bg: "#fef3c7", fg: "#92400e" };
+    return { text: "Manual", bg: "#f3f4f6", fg: "#374151" };
+  };
 
   return (
     <div style={{ padding: 16, maxWidth: 1200, margin: "0 auto" }}>
@@ -181,27 +190,37 @@ function FinanceiroPage() {
       <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
           <thead style={{ background: "#f9fafb", textAlign: "left" }}>
-            <tr><th style={th}>Data</th><th style={th}>Tipo</th><th style={th}>Categoria</th><th style={th}>Descrição</th><th style={th}>Valor</th><th style={th}>Status</th><th style={th}></th></tr>
+            <tr><th style={th}>Data</th><th style={th}>Tipo</th><th style={th}>Categoria</th><th style={th}>Origem</th><th style={th}>Descrição</th><th style={th}>Valor</th><th style={th}>Status</th><th style={th}></th></tr>
           </thead>
           <tbody>
-            {isLoading && <tr><td colSpan={7} style={{ padding: 24, textAlign: "center" }}>Carregando…</td></tr>}
-            {!isLoading && filtered.length === 0 && (<tr><td colSpan={7} style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>Nenhuma transação no período.</td></tr>)}
-            {filtered.map((t) => (
+            {isLoading && <tr><td colSpan={8} style={{ padding: 24, textAlign: "center" }}>Carregando…</td></tr>}
+            {!isLoading && filtered.length === 0 && (<tr><td colSpan={8} style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>Nenhuma transação no período.</td></tr>)}
+            {filtered.map((t) => {
+              const orig = originLabel(t.origin);
+              const valueColor = t.type === "entrada" ? "#15803d" : "#991b1b";
+              const refId = (t.guest_id || t.cleaning_job_id || "").slice(0, 6);
+              return (
               <tr key={t.id} style={{ borderTop: "1px solid #f3f4f6" }}>
-                <td style={td}>{t.date.split("-").reverse().join("/")}</td>
-                <td style={td}><span style={{ padding: "2px 8px", borderRadius: 999, fontSize: 12, background: t.type === "entrada" ? "#dcfce7" : "#fee2e2", color: t.type === "entrada" ? "#166534" : "#991b1b" }}>{t.type === "entrada" ? "Entrada" : "Saída"}</span></td>
-                <td style={td}>{t.category}</td>
-                <td style={td}>{t.description}</td>
-                <td style={{ ...td, fontWeight: 600, color: t.type === "entrada" ? "#16a34a" : "#dc2626" }}>{t.type === "saida" ? "-" : ""}{fmt(Number(t.amount))}</td>
-                <td style={td}>{t.status}</td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t.date.split("-").reverse().join("/")}</td>
+                <td style={td}><span style={{ padding: "2px 8px", borderRadius: 999, fontSize: 12, background: t.type === "entrada" ? "#dcfce7" : "#fee2e2", color: t.type === "entrada" ? "#15803d" : "#991b1b" }}>{t.type === "entrada" ? "Entrada" : "Saída"}</span></td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t.category}</td>
+                <td style={td}>
+                  <span title={refId ? `#${refId}` : undefined} style={{ padding: "2px 8px", borderRadius: 999, fontSize: 11, fontWeight: 600, background: orig.bg, color: orig.fg }}>
+                    {orig.text}{refId ? ` #${refId}` : ""}
+                  </span>
+                </td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t.description}</td>
+                <td style={{ ...td, fontWeight: 700, color: valueColor }}>{t.type === "saida" ? "-" : ""}{fmt(Number(t.amount))}</td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t.status}</td>
                 <td style={td}>
                   <div style={{ display: "flex", gap: 4 }}>
                     <button onClick={() => { setEditing(t); setForm(t); setErrors({}); setOpen(true); }} style={iconBtn}><Pencil size={14} /></button>
-                    <button onClick={() => { if (confirm("Excluir transação?")) del.mutate(t.id); }} style={{ ...iconBtn, color: "#dc2626" }}><Trash2 size={14} /></button>
+                    <button onClick={() => { if (confirm("Excluir transação?")) del.mutate(t.id); }} style={{ ...iconBtn, color: "#991b1b" }}><Trash2 size={14} /></button>
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
