@@ -173,9 +173,9 @@ function FinanceiroPage() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 16 }}>
-        <Card title="Entradas" value={fmt(totals.entradas)} icon={<TrendingUp color="#16a34a" />} color="#16a34a" />
-        <Card title="Saídas" value={fmt(totals.saidas)} icon={<TrendingDown color="#dc2626" />} color="#dc2626" />
-        <Card title="Saldo" value={fmt(totals.saldo)} icon={<Wallet color="#2563eb" />} color={totals.saldo >= 0 ? "#16a34a" : "#dc2626"} />
+        <Card title="Entradas" value={fmt(totals.entradas)} icon={<TrendingUp color="#15803d" />} color="#15803d" />
+        <Card title="Saídas" value={fmt(totals.saidas)} icon={<TrendingDown color="#991b1b" />} color="#991b1b" />
+        <Card title="Saldo" value={fmt(totals.saldo)} icon={<Wallet color="#0f0f0f" />} color={totals.saldo >= 0 ? "#15803d" : "#991b1b"} />
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
