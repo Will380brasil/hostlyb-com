@@ -8,7 +8,7 @@ import { useT, useLocale, formatPrice } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
-import { DemoLeadModal } from "@/components/DemoLeadModal";
+import { useAuth } from "@/hooks/useAuth";
 
 
 const FAQ_KEYS = [
@@ -168,8 +168,10 @@ function CoralButton({ children, href, big, asLink, onClick }: {
 
 function Navbar() {
   const t = useT();
+  const { session } = useAuth();
   const scrolled = useScrolled(40);
   const [open, setOpen] = useState(false);
+  const logoHref = session ? "/app" : "/";
   return (
     <header style={{
       position: "sticky", top: 0, zIndex: 50, height: 72,
@@ -180,7 +182,7 @@ function Navbar() {
       transition: "all .2s ease",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
+        <Link to={logoHref as any} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
