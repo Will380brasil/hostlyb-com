@@ -15,11 +15,16 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
+import { Route as ItRouteImport } from './routes/it'
 import { Route as HospedesRouteImport } from './routes/hospedes'
+import { Route as FrRouteImport } from './routes/fr'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as EsRouteImport } from './routes/es'
 import { Route as EquipeRouteImport } from './routes/equipe'
+import { Route as EnRouteImport } from './routes/en'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as DemoRouteImport } from './routes/demo'
+import { Route as DeRouteImport } from './routes/de'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as AssinarRouteImport } from './routes/assinar'
 import { Route as AppRouteImport } from './routes/app'
@@ -83,9 +88,19 @@ const LimpezasRoute = LimpezasRouteImport.update({
   path: '/limpezas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ItRoute = ItRouteImport.update({
+  id: '/it',
+  path: '/it',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HospedesRoute = HospedesRouteImport.update({
   id: '/hospedes',
   path: '/hospedes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrRoute = FrRouteImport.update({
+  id: '/fr',
+  path: '/fr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FinanceiroRoute = FinanceiroRouteImport.update({
@@ -93,9 +108,19 @@ const FinanceiroRoute = FinanceiroRouteImport.update({
   path: '/financeiro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EsRoute = EsRouteImport.update({
+  id: '/es',
+  path: '/es',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EquipeRoute = EquipeRouteImport.update({
   id: '/equipe',
   path: '/equipe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnRoute = EnRouteImport.update({
+  id: '/en',
+  path: '/en',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
@@ -106,6 +131,11 @@ const DiagnosticoRoute = DiagnosticoRouteImport.update({
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeRoute = DeRouteImport.update({
+  id: '/de',
+  path: '/de',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -282,11 +312,16 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/de': typeof DeRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
+  '/es': typeof EsRoute
   '/financeiro': typeof FinanceiroRoute
+  '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
@@ -326,11 +361,16 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/de': typeof DeRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
+  '/es': typeof EsRoute
   '/financeiro': typeof FinanceiroRoute
+  '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
@@ -372,11 +412,16 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/de': typeof DeRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
+  '/es': typeof EsRoute
   '/financeiro': typeof FinanceiroRoute
+  '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
@@ -419,11 +464,16 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/de'
     | '/demo'
     | '/diagnostico'
+    | '/en'
     | '/equipe'
+    | '/es'
     | '/financeiro'
+    | '/fr'
     | '/hospedes'
+    | '/it'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
@@ -463,11 +513,16 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/de'
     | '/demo'
     | '/diagnostico'
+    | '/en'
     | '/equipe'
+    | '/es'
     | '/financeiro'
+    | '/fr'
     | '/hospedes'
+    | '/it'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
@@ -508,11 +563,16 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/de'
     | '/demo'
     | '/diagnostico'
+    | '/en'
     | '/equipe'
+    | '/es'
     | '/financeiro'
+    | '/fr'
     | '/hospedes'
+    | '/it'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
@@ -554,11 +614,16 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   AssinarRoute: typeof AssinarRoute
   CalendarioRoute: typeof CalendarioRoute
+  DeRoute: typeof DeRoute
   DemoRoute: typeof DemoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
+  EnRoute: typeof EnRoute
   EquipeRoute: typeof EquipeRoute
+  EsRoute: typeof EsRoute
   FinanceiroRoute: typeof FinanceiroRoute
+  FrRoute: typeof FrRoute
   HospedesRoute: typeof HospedesRoute
+  ItRoute: typeof ItRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   PwaCheckRoute: typeof PwaCheckRoute
@@ -630,11 +695,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LimpezasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/it': {
+      id: '/it'
+      path: '/it'
+      fullPath: '/it'
+      preLoaderRoute: typeof ItRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hospedes': {
       id: '/hospedes'
       path: '/hospedes'
       fullPath: '/hospedes'
       preLoaderRoute: typeof HospedesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fr': {
+      id: '/fr'
+      path: '/fr'
+      fullPath: '/fr'
+      preLoaderRoute: typeof FrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/financeiro': {
@@ -644,11 +723,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FinanceiroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/es': {
+      id: '/es'
+      path: '/es'
+      fullPath: '/es'
+      preLoaderRoute: typeof EsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/equipe': {
       id: '/equipe'
       path: '/equipe'
       fullPath: '/equipe'
       preLoaderRoute: typeof EquipeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en': {
+      id: '/en'
+      path: '/en'
+      fullPath: '/en'
+      preLoaderRoute: typeof EnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diagnostico': {
@@ -663,6 +756,13 @@ declare module '@tanstack/react-router' {
       path: '/demo'
       fullPath: '/demo'
       preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/de': {
+      id: '/de'
+      path: '/de'
+      fullPath: '/de'
+      preLoaderRoute: typeof DeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -931,11 +1031,16 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   AssinarRoute: AssinarRoute,
   CalendarioRoute: CalendarioRoute,
+  DeRoute: DeRoute,
   DemoRoute: DemoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
+  EnRoute: EnRoute,
   EquipeRoute: EquipeRoute,
+  EsRoute: EsRoute,
   FinanceiroRoute: FinanceiroRoute,
+  FrRoute: FrRoute,
   HospedesRoute: HospedesRoute,
+  ItRoute: ItRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   PwaCheckRoute: PwaCheckRoute,
