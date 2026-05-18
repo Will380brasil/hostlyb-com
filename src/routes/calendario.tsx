@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Download, Share2, X, FileSpreadsheet, Calend
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { DayStatusPanel } from "@/components/DayStatusPanel";
+import { IcalExportCard } from "@/components/IcalExportCard";
 
 export const Route = createFileRoute("/calendario")({
   head: () => ({ meta: [{ title: "Calendário — Hostlyb" }, { name: "description", content: "Veja check-ins, check-outs e limpezas." }] }),
