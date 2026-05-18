@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +9,17 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { createPortalSession } from "@/utils/payments.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-export const Route = createFileRoute("/assinar")({ component: SubscribePage });
+type AssinarSearch = { onboarding?: "1"; plan?: "free" | "pro" | "premium" };
+
+export const Route = createFileRoute("/assinar")({
+  validateSearch: (s: Record<string, unknown>): AssinarSearch => ({
+    onboarding: s.onboarding === "1" ? "1" : undefined,
+    plan: (s.plan === "free" || s.plan === "pro" || s.plan === "premium") ? s.plan : undefined,
+  }),
+  component: SubscribePage,
+});
 
 type Plan = "pro" | "premium";
 
