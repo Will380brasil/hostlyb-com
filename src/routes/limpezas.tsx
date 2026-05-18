@@ -263,6 +263,18 @@ function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }
       .select("id, scheduled_date, status, payment_amount, properties(name)")
       .eq("cleaner_id", id).order("scheduled_date", { ascending: false }).limit(10)).data ?? [],
   });
+  const jobIds = (history as any[]).map((h) => h.id);
+  const { data: thumbs = [] } = useQuery({
+    queryKey: ["cleaner-history-thumbs", id, jobIds.join(",")],
+    enabled: jobIds.length > 0,
+    queryFn: async () => (await supabase.from("cleaning_photo_thumbnails")
+      .select("cleaning_job_id, thumbnail_path")
+      .in("cleaning_job_id", jobIds)).data ?? [],
+  });
+  const thumbsByJob = (thumbs as any[]).reduce((acc, t) => {
+    (acc[t.cleaning_job_id] ??= []).push(t.thumbnail_path);
+    return acc;
+  }, {} as Record<string, string[]>);
 
   const toggleActive = useMutation({
     mutationFn: async () => {
@@ -320,12 +332,25 @@ function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }
             <h3 className="font-bold text-sm mb-2">Histórico recente · total R$ {totalEarnings.toFixed(2)}</h3>
             {history.length === 0 ? <p className="text-xs text-muted-foreground">Sem limpezas.</p> : (
               <ul className="space-y-1.5">
-                {history.map((h: any) => (
-                  <li key={h.id} className="text-xs flex justify-between gap-2 p-2 rounded bg-background">
-                    <span className="truncate">{h.scheduled_date.split("-").reverse().join("/")} · {h.properties?.name ?? "—"}</span>
-                    <span className="text-muted-foreground capitalize shrink-0">{h.status}</span>
-                  </li>
-                ))}
+                {history.map((h: any) => {
+                  const tlist = thumbsByJob[h.id] ?? [];
+                  return (
+                    <li key={h.id} className="text-xs p-2 rounded bg-background space-y-1.5">
+                      <div className="flex justify-between gap-2">
+                        <span className="truncate">{h.scheduled_date.split("-").reverse().join("/")} · {h.properties?.name ?? "—"}</span>
+                        <span className="text-muted-foreground capitalize shrink-0">{h.status}</span>
+                      </div>
+                      {tlist.length > 0 && (
+                        <div className="flex gap-1.5 flex-wrap">
+                          {tlist.slice(0, 6).map((p: string, i: number) => (
+                            <SignedImage key={i} bucket="cleaning-thumbnails" path={p} alt=""
+                              className="w-12 h-12 rounded object-cover border border-card-border" />
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

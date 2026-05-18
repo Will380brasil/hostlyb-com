@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type Bucket = "cleaning-photos" | "forgotten-items" | "cleaner-avatars";
+export type Bucket = "cleaning-photos" | "forgotten-items" | "cleaner-avatars" | "cleaning-thumbnails";
 
 /**
  * Extract storage path from either a raw path or a legacy public URL.

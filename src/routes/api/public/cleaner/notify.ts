@@ -17,6 +17,8 @@ const BodySchema = z.object({
   bucket: z.enum(["cleaning-photos", "forgotten-items"]).optional(),
   path: z.string().max(500).optional(),
   recordIssue: z.boolean().optional(),
+  // base64-encoded JPEG, ≤ ~70KB after encoding (50KB binary). Premium only.
+  thumbnailBase64: z.string().max(120_000).optional(),
 });
 
 export const Route = createFileRoute("/api/public/cleaner/notify")({
@@ -130,7 +132,58 @@ export const Route = createFileRoute("/api/public/cleaner/notify")({
           return Response.json({ error: "Failed to enqueue email" }, { status: 500 });
         }
 
-        // Zero-storage policy: delete the photo after the email is enqueued.
+        // Premium-only: persist a small thumbnail (≤50KB) for 30 days so the host
+        // can see an inline preview in the cleaning history.
+        if (body.thumbnailBase64 && body.type === "photo") {
+          try {
+            const { data: member } = await admin
+              .from("organization_members")
+              .select("organization_id")
+              .eq("user_id", job.user_id)
+              .order("created_at", { ascending: true })
+              .limit(1)
+              .maybeSingle();
+            let isPremium = false;
+            if (member?.organization_id) {
+              const { data: sub } = await admin
+                .from("subscriptions")
+                .select("plan_tier,status,current_period_end")
+                .eq("organization_id", member.organization_id)
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+              if (sub && sub.plan_tier === "premium") {
+                const active = sub.status === "active" || sub.status === "trialing" ||
+                  ((sub.status === "canceled" || sub.status === "past_due") &&
+                    sub.current_period_end && new Date(sub.current_period_end) > new Date());
+                isPremium = !!active;
+              }
+            }
+            if (isPremium) {
+              const b64 = body.thumbnailBase64.replace(/^data:image\/\w+;base64,/, "");
+              const bytes = Buffer.from(b64, "base64");
+              if (bytes.byteLength > 0 && bytes.byteLength <= 60_000) {
+                const thumbPath = `${job.user_id}/${job.id}/${Date.now()}.jpg`;
+                const { error: upErr } = await admin.storage
+                  .from("cleaning-thumbnails")
+                  .upload(thumbPath, bytes, { contentType: "image/jpeg", upsert: false });
+                if (!upErr) {
+                  await admin.from("cleaning_photo_thumbnails").insert({
+                    user_id: job.user_id,
+                    property_id: job.property_id,
+                    cleaning_job_id: job.id,
+                    thumbnail_path: thumbPath,
+                    description: body.description ?? null,
+                  });
+                }
+              }
+            }
+          } catch (e: any) {
+            console.warn("thumbnail persist failed", e?.message);
+          }
+        }
+
+        // Zero-storage policy: delete the full-resolution photo after the email is enqueued.
         if (body.bucket && body.path) {
           await admin.storage.from(body.bucket).remove([body.path]).catch(() => {});
         }

@@ -122,20 +122,65 @@ function CleanerPortal() {
     }
   }
 
+  async function makeThumbnail(file: File): Promise<string | null> {
+    try {
+      const bitmap = await createImageBitmap(file).catch(() => null);
+      if (!bitmap) return null;
+      const maxDim = 480;
+      const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+      const w = Math.max(1, Math.round(bitmap.width * scale));
+      const h = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return null;
+      ctx.drawImage(bitmap, 0, 0, w, h);
+      // Iteratively reduce quality to stay under ~50KB.
+      for (const q of [0.7, 0.55, 0.4, 0.3, 0.22]) {
+        const dataUrl = canvas.toDataURL("image/jpeg", q);
+        const b64 = dataUrl.split(",")[1] ?? "";
+        const bytes = Math.floor((b64.length * 3) / 4);
+        if (bytes <= 50_000) return b64;
+      }
+      return null;
+    } catch { return null; }
+  }
+
   async function onAddPhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !data) return;
     setUploading(true);
     try {
       const path = await uploadPhoto(file, "cleaning-photos");
+      const thumbnailBase64 = await makeThumbnail(file);
       // Send to host by email and delete from storage immediately.
-      await notifyHost({ type: "photo", bucket: "cleaning-photos", path });
+      await notifyHostWithThumb({ type: "photo", bucket: "cleaning-photos", path, thumbnailBase64 });
       toast.success("Foto enviada ao anfitrião");
     } catch (err: any) {
       toast.error(err.message ?? "Falha ao enviar");
     } finally {
       setUploading(false);
       e.target.value = "";
+    }
+  }
+
+  async function notifyHostWithThumb(payload: {
+    type: "photo" | "problem";
+    description?: string;
+    urgency?: "low" | "medium" | "high";
+    bucket?: "cleaning-photos" | "forgotten-items";
+    path?: string;
+    thumbnailBase64?: string | null;
+  }) {
+    try {
+      const res = await fetch("/api/public/cleaner/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, ...payload, thumbnailBase64: payload.thumbnailBase64 ?? undefined }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    } catch (e: any) {
+      console.warn("notifyHostWithThumb failed", e);
     }
   }
 

@@ -345,6 +345,39 @@ export type Database = {
         }
         Relationships: []
       }
+      cleaning_photo_thumbnails: {
+        Row: {
+          cleaning_job_id: string
+          created_at: string
+          description: string | null
+          expires_at: string
+          id: string
+          property_id: string | null
+          thumbnail_path: string
+          user_id: string
+        }
+        Insert: {
+          cleaning_job_id: string
+          created_at?: string
+          description?: string | null
+          expires_at?: string
+          id?: string
+          property_id?: string | null
+          thumbnail_path: string
+          user_id: string
+        }
+        Update: {
+          cleaning_job_id?: string
+          created_at?: string
+          description?: string | null
+          expires_at?: string
+          id?: string
+          property_id?: string | null
+          thumbnail_path?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       demo_leads: {
         Row: {
           access_count: number
