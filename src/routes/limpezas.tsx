@@ -136,6 +136,7 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
           {filterDate ? "Nenhuma limpeza nesta data." : "Nenhuma limpeza ainda. Toque em \u201cAgendar\u201d."}
         </p>
       ) : (
+        <>
           {(() => {
             const completed = filtered.filter((j: any) => j.status === "concluido" && j.duration_minutes);
             const avg = completed.length ? Math.round(completed.reduce((s: number, j: any) => s + (j.duration_minutes || 0), 0) / completed.length) : null;
@@ -182,6 +183,7 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
             );
           })}
         </ul>
+        </>
       )}
     </>
   );
