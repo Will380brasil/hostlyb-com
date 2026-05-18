@@ -141,6 +141,7 @@ function RootComponent() {
           <Outlet />
           <Toaster />
           <CookieConsent />
+          <SupportFAB />
         </AuthProvider>
       </LocaleProvider>
     </QueryClientProvider>
