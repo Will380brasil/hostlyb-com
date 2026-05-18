@@ -133,6 +133,8 @@ function CalendarPage() {
         </div>
       </header>
 
+      <IcalExportCard />
+
       <div className="flex items-center gap-2 mb-3 text-xs">
         <button onClick={() => setView("mes")} className={`px-3 py-1.5 rounded-lg ${view === "mes" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>Mês</button>
         <button onClick={() => setView("dia")} className={`px-3 py-1.5 rounded-lg ${view === "dia" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>Dia</button>
