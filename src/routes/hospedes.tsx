@@ -276,6 +276,14 @@ function GuestDetailSheet({ guest, onClose }: { guest: any; onClose: () => void 
           <button onClick={() => toggleVip.mutate()} className="btn-secondary justify-center" style={{ color: "var(--color-warning)" }}>
             <Star size={13} fill={guest.is_vip ? "currentColor" : "none"} /> {guest.is_vip ? "Remover VIP" : "Marcar VIP"}
           </button>
+          {guest.checkin_token && (
+            <a target="_blank" rel="noreferrer"
+              href={`https://wa.me/${guest.phone ?? ""}?text=${encodeURIComponent(`${window.location.origin}/checkin/${guest.checkin_token}`)}`}
+              onClick={(e) => { if (!guest.phone) { e.preventDefault(); navigator.clipboard.writeText(`${window.location.origin}/checkin/${guest.checkin_token}`); toast.success("Link copiado"); } }}
+              className="btn-secondary flex-1 justify-center">
+              🛂 Check-in digital
+            </a>
+          )}
         </div>
 
         <h4 className="font-semibold text-sm mb-2 flex items-center gap-1.5"><History size={14} /> Outras estadias</h4>

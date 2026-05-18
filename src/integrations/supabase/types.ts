@@ -532,14 +532,19 @@ export type Database = {
       guests: {
         Row: {
           checkin_date: string
+          checkin_submitted_at: string | null
+          checkin_token: string | null
           checkout_date: string
           created_at: string
+          date_of_birth: string | null
           document: string | null
+          document_country: string | null
           email: string | null
           had_issue: boolean
           id: string
           is_vip: boolean
           name: string
+          nationality: string | null
           nights: number | null
           notes: string | null
           phone: string | null
@@ -554,14 +559,19 @@ export type Database = {
         }
         Insert: {
           checkin_date: string
+          checkin_submitted_at?: string | null
+          checkin_token?: string | null
           checkout_date: string
           created_at?: string
+          date_of_birth?: string | null
           document?: string | null
+          document_country?: string | null
           email?: string | null
           had_issue?: boolean
           id?: string
           is_vip?: boolean
           name: string
+          nationality?: string | null
           nights?: number | null
           notes?: string | null
           phone?: string | null
@@ -576,14 +586,19 @@ export type Database = {
         }
         Update: {
           checkin_date?: string
+          checkin_submitted_at?: string | null
+          checkin_token?: string | null
           checkout_date?: string
           created_at?: string
+          date_of_birth?: string | null
           document?: string | null
+          document_country?: string | null
           email?: string | null
           had_issue?: boolean
           id?: string
           is_vip?: boolean
           name?: string
+          nationality?: string | null
           nights?: number | null
           notes?: string | null
           phone?: string | null
@@ -616,14 +631,18 @@ export type Database = {
       maintenance_issues: {
         Row: {
           cleaning_job_id: string | null
+          cost: number | null
           created_at: string
           description: string
           guest_id: string | null
           id: string
+          identified_date: string | null
+          internal_notes: string | null
           photo_url: string | null
           property_id: string
           reported_by: string
           resolved_at: string | null
+          responsible: string | null
           status: string
           updated_at: string
           urgency: string
@@ -631,14 +650,18 @@ export type Database = {
         }
         Insert: {
           cleaning_job_id?: string | null
+          cost?: number | null
           created_at?: string
           description: string
           guest_id?: string | null
           id?: string
+          identified_date?: string | null
+          internal_notes?: string | null
           photo_url?: string | null
           property_id: string
           reported_by?: string
           resolved_at?: string | null
+          responsible?: string | null
           status?: string
           updated_at?: string
           urgency?: string
@@ -646,14 +669,18 @@ export type Database = {
         }
         Update: {
           cleaning_job_id?: string | null
+          cost?: number | null
           created_at?: string
           description?: string
           guest_id?: string | null
           id?: string
+          identified_date?: string | null
+          internal_notes?: string | null
           photo_url?: string | null
           property_id?: string
           reported_by?: string
           resolved_at?: string | null
+          responsible?: string | null
           status?: string
           updated_at?: string
           urgency?: string
@@ -811,6 +838,9 @@ export type Database = {
           bedrooms: number | null
           city: string | null
           created_at: string
+          guidebook_data: Json
+          guidebook_enabled: boolean
+          guidebook_slug: string | null
           id: string
           income_monthly: number | null
           latitude: number | null
@@ -833,6 +863,9 @@ export type Database = {
           bedrooms?: number | null
           city?: string | null
           created_at?: string
+          guidebook_data?: Json
+          guidebook_enabled?: boolean
+          guidebook_slug?: string | null
           id?: string
           income_monthly?: number | null
           latitude?: number | null
@@ -855,6 +888,9 @@ export type Database = {
           bedrooms?: number | null
           city?: string | null
           created_at?: string
+          guidebook_data?: Json
+          guidebook_enabled?: boolean
+          guidebook_slug?: string | null
           id?: string
           income_monthly?: number | null
           latitude?: number | null
@@ -1148,6 +1184,18 @@ export type Database = {
         Returns: number
       }
       get_invite_by_token: { Args: { p_token: string }; Returns: Json }
+      guest_checkin_get: { Args: { p_token: string }; Returns: Json }
+      guest_checkin_submit: {
+        Args: {
+          p_date_of_birth: string
+          p_document: string
+          p_document_country: string
+          p_name: string
+          p_nationality: string
+          p_token: string
+        }
+        Returns: Json
+      }
       has_org_role: {
         Args: {
           _org: string

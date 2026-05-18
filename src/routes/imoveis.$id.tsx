@@ -1,14 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
 import { supabase } from "@/integrations/supabase/client";
 import { fullAddress, formatMoney } from "@/lib/format";
-import { useLocale } from "@/lib/i18n";
+import { useLocale, useT } from "@/lib/i18n";
 import { toast } from "sonner";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive } from "lucide-react";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, BookOpen, Wrench, BarChart3 } from "lucide-react";
 import { PropertyScoreBadge } from "@/components/dashboard/PropertyScoreBadge";
+import { PremiumGate, PremiumBadge } from "@/components/PremiumGate";
+import { MaintenanceTab } from "@/components/property/MaintenanceTab";
+import { PerformanceTab } from "@/components/property/PerformanceTab";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostlyb" }, { name: "description", content: "Detalhes do imóvel." }] }),
@@ -17,8 +21,10 @@ export const Route = createFileRoute("/imoveis/$id")({
 
 function PropertyDetail() {
   const { currency, lang } = useLocale();
+  const t = useT();
   const { id } = Route.useParams();
   const navigate = useNavigate();
+  const [tab, setTab] = useState<"overview" | "guidebook" | "maintenance" | "performance">("overview");
 
   const archive = useMutation({
     mutationFn: async () => {
@@ -72,6 +78,35 @@ function PropertyDetail() {
         <StatusBadge status={p.status as any} />
       </header>
 
+      <nav className="flex gap-1 mb-4 border-b overflow-x-auto">
+        {([
+          ["overview", "Geral", null],
+          ["guidebook", t("guidebook.title"), BookOpen],
+          ["maintenance", t("maint.tab"), Wrench],
+          ["performance", t("perf.tab"), BarChart3],
+        ] as const).map(([k, l, Icon]) => (
+          <button key={k} onClick={() => setTab(k as any)}
+            className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 -mb-px flex items-center gap-1 ${tab === k ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}>
+            {Icon && <Icon size={14} />} {l}
+            {(k === "guidebook" || k === "maintenance" || k === "performance") && <PremiumBadge />}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "guidebook" && (
+        <PremiumGate>
+          <div className="text-center py-6">
+            <Link to="/imoveis/$id/guia" params={{ id }} className="btn-primary inline-flex justify-center">
+              <BookOpen size={14} /> {t("guidebook.title")}
+            </Link>
+          </div>
+        </PremiumGate>
+      )}
+
+      {tab === "maintenance" && <PremiumGate><MaintenanceTab propertyId={id} /></PremiumGate>}
+      {tab === "performance" && <PremiumGate><PerformanceTab propertyId={id} propertyName={p.name} /></PremiumGate>}
+
+      {tab === "overview" && <>
       <section className="hostly-card mb-4">
         <AddressActions address={fullAddress(p)} />
       </section>
@@ -147,6 +182,7 @@ function PropertyDetail() {
         className="btn-secondary justify-center w-full mb-6" style={{ color: "var(--color-warning)" }}>
         <Archive size={14} /> Arquivar imóvel
       </button>
+      </>}
     </AppShell>
   );
 }
