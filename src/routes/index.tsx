@@ -14,17 +14,72 @@ const FAQ_ITEMS_SEO = [
   { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
 
+const BASE_URL = "https://www.hostlyb.com";
+const OG_IMAGE = `${BASE_URL}/og-cover.jpg`;
+
+const META_BY_LANG: Record<string, { title: string; description: string; keywords: string }> = {
+  pt: {
+    title: "Hostlyb | Gestão de Alojamento Local — Simples e Rápido",
+    description: "Gira o seu alojamento local em 2 minutos por dia. Fotos de limpeza enviadas por email, alertas automáticos, sincronização com Airbnb e Booking.com. Grátis até 1 imóvel.",
+    keywords: "gestão alojamento local, app anfitrião, sincronização airbnb booking, checklist limpeza fotos, gestão hóspedes, software alojamento",
+  },
+  en: {
+    title: "Hostlyb | Short-Term Rental Management — Simple & Fast",
+    description: "Manage your short-term rental in 2 minutes a day. Cleaning photos sent to your email, automatic alerts, iCal sync with Airbnb and Booking.com. Free up to 1 property.",
+    keywords: "short term rental management, vacation rental software, airbnb calendar sync, cleaning checklist app, host management software, rental property manager",
+  },
+  fr: {
+    title: "Hostlyb | Gestion Location Courte Durée — Simple et Rapide",
+    description: "Gérez votre location courte durée en 2 minutes. Photos de ménage envoyées par email, alertes automatiques, sync Airbnb et Booking.com. Gratuit jusqu'à 1 logement.",
+    keywords: "gestion location courte durée, logiciel location vacances, sync calendrier airbnb, checklist ménage, gestion hôtes, conciergerie airbnb",
+  },
+  de: {
+    title: "Hostlyb | Ferienwohnung Verwaltung — Einfach & Schnell",
+    description: "Verwalten Sie Ihre Ferienwohnung in 2 Minuten. Reinigungsfotos per Email, automatische Benachrichtigungen, iCal-Sync mit Airbnb und Booking.com. Kostenlos bis 1 Objekt.",
+    keywords: "ferienwohnung verwaltung, vermietung software, airbnb kalender sync, reinigungs checkliste, gastgeber app, kurzzeitvermietung",
+  },
+  it: {
+    title: "Hostlyb | Gestione Affitti Brevi — Semplice e Veloce",
+    description: "Gestisci i tuoi affitti brevi in 2 minuti al giorno. Foto delle pulizie via email, avvisi automatici, sincronizzazione iCal con Airbnb e Booking.com. Gratis fino a 1 immobile.",
+    keywords: "gestione affitti brevi, software locazioni turistiche, sync calendario airbnb, checklist pulizie, gestione ospiti, app host airbnb",
+  },
+  es: {
+    title: "Hostlyb | Gestión Alojamiento Local — Simple y Rápido",
+    description: "Gestiona tu alquiler vacacional en 2 minutos al día. Fotos de limpieza por email, alertas automáticas, sincronización iCal con Airbnb y Booking.com. Gratis hasta 1 propiedad.",
+    keywords: "gestión alquiler vacacional, software alojamiento, sync calendario airbnb, checklist limpieza, gestión huéspedes, app anfitrión",
+  },
+};
+
+const LANGS = ["pt", "en", "es", "fr", "it", "de"] as const;
+
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "SoftwareApplication",
       "name": "Hostlyb",
-      "description": "App de gestão para donos de aluguel por temporada. Controle limpezas com checklist e fotos, hóspedes, equipe e calendário.",
+      "description": "Short-term rental management: cleaning photos by email, automatic alerts, iCal sync with Airbnb and Booking.com.",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web, iOS, Android",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "url": BASE_URL,
+      "image": OG_IMAGE,
+      "offers": [
+        { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR", "url": `${BASE_URL}/signup` },
+        { "@type": "Offer", "name": "Pro", "price": "14", "priceCurrency": "EUR", "url": `${BASE_URL}/signup` },
+        { "@type": "Offer", "name": "Premium", "price": "29", "priceCurrency": "EUR", "url": `${BASE_URL}/signup` },
+      ],
       "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "2400", "bestRating": "5", "worstRating": "1" },
+    },
+    {
+      "@type": "Organization",
+      "name": "Hostlyb",
+      "url": BASE_URL,
+      "logo": `${BASE_URL}/icon-512.png`,
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "brasgold1@gmail.com",
+        "contactType": "customer support",
+      },
     },
     {
       "@type": "FAQPage",
@@ -38,22 +93,50 @@ const JSON_LD = {
 };
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Hostlyb — Seu aluguel por temporada organizado em 2 minutos por dia" },
-      { name: "description", content: "Pare de gerenciar limpezas pelo WhatsApp. Controle checklist com fotos, hóspedes e calendário. Plano grátis para sempre." },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
-      { name: "theme-color", content: "#FF6B6B" },
-      { property: "og:type", content: "website" },
-      { property: "og:title", content: "Hostlyb — Aluguel por temporada organizado" },
-      { property: "og:description", content: "Controle limpezas, hóspedes e calendário em um só lugar. Grátis para sempre até 2 imóveis." },
-      { property: "og:site_name", content: "Hostlyb" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    scripts: [{ type: "application/ld+json", children: JSON.stringify(JSON_LD) }],
-  }),
+  head: () => {
+    const m = META_BY_LANG.pt;
+    return {
+      meta: [
+        { title: m.title },
+        { name: "description", content: m.description },
+        { name: "keywords", content: m.keywords },
+        { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
+        { name: "theme-color", content: "#FF6B6B" },
+        { property: "og:type", content: "website" },
+        { property: "og:title", content: m.title },
+        { property: "og:description", content: m.description },
+        { property: "og:url", content: BASE_URL + "/" },
+        { property: "og:site_name", content: "Hostlyb" },
+        { property: "og:image", content: OG_IMAGE },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:locale", content: "pt_PT" },
+        { property: "og:locale:alternate", content: "en_US" },
+        { property: "og:locale:alternate", content: "fr_FR" },
+        { property: "og:locale:alternate", content: "de_DE" },
+        { property: "og:locale:alternate", content: "it_IT" },
+        { property: "og:locale:alternate", content: "es_ES" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: m.title },
+        { name: "twitter:description", content: m.description },
+        { name: "twitter:image", content: OG_IMAGE },
+      ],
+      links: [
+        { rel: "canonical", href: BASE_URL + "/" },
+        ...LANGS.map((l) => ({
+          rel: "alternate",
+          hreflang: l === "pt" ? "pt-PT" : l,
+          href: `${BASE_URL}/?lang=${l}`,
+        })),
+        { rel: "alternate", hreflang: "pt-BR", href: `${BASE_URL}/?lang=pt` },
+        { rel: "alternate", hreflang: "x-default", href: BASE_URL + "/" },
+      ],
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(JSON_LD) }],
+    };
+  },
   component: LandingPage,
 });
+
 
 const C = {
   coral: "#FF6B6B", coralDark: "#E85555", coralLight: "#FFE8E8", coralGlow: "rgba(255,107,107,0.28)",
