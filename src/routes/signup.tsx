@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,8 +6,14 @@ import { lovable } from "@/integrations/lovable";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 
+type SignupSearch = { plan?: "free" | "pro" | "premium" };
+
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Criar conta — Hostlyb" }, { name: "description", content: "Crie sua conta Hostlyb grátis." }] }),
+  validateSearch: (s: Record<string, unknown>): SignupSearch => {
+    const p = s.plan;
+    return p === "free" || p === "pro" || p === "premium" ? { plan: p } : {};
+  },
   component: SignupPage,
 });
 
