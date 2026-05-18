@@ -41,6 +41,7 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicHooksIcalSyncRouteImport } from './routes/api/public/hooks/ical-sync'
 import { Route as ApiPublicCleanerNotifyRouteImport } from './routes/api/public/cleaner/notify'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
@@ -207,6 +208,11 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksIcalSyncRoute = ApiPublicHooksIcalSyncRouteImport.update({
+  id: '/api/public/hooks/ical-sync',
+  path: '/api/public/hooks/ical-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCleanerNotifyRoute = ApiPublicCleanerNotifyRouteImport.update({
   id: '/api/public/cleaner/notify',
   path: '/api/public/cleaner/notify',
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
+  '/api/public/hooks/ical-sync': typeof ApiPublicHooksIcalSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -278,6 +285,7 @@ export interface FileRoutesByTo {
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
+  '/api/public/hooks/ical-sync': typeof ApiPublicHooksIcalSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -314,6 +322,7 @@ export interface FileRoutesById {
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
+  '/api/public/hooks/ical-sync': typeof ApiPublicHooksIcalSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
+    | '/api/public/hooks/ical-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
+    | '/api/public/hooks/ical-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -421,6 +432,7 @@ export interface FileRouteTypes {
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
+    | '/api/public/hooks/ical-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -456,6 +468,7 @@ export interface RootRouteChildren {
   ApiPublicGeoRoute: typeof ApiPublicGeoRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicCleanerNotifyRoute: typeof ApiPublicCleanerNotifyRoute
+  ApiPublicHooksIcalSyncRoute: typeof ApiPublicHooksIcalSyncRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -688,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/ical-sync': {
+      id: '/api/public/hooks/ical-sync'
+      path: '/api/public/hooks/ical-sync'
+      fullPath: '/api/public/hooks/ical-sync'
+      preLoaderRoute: typeof ApiPublicHooksIcalSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cleaner/notify': {
       id: '/api/public/cleaner/notify'
       path: '/api/public/cleaner/notify'
@@ -739,6 +759,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicGeoRoute: ApiPublicGeoRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicCleanerNotifyRoute: ApiPublicCleanerNotifyRoute,
+  ApiPublicHooksIcalSyncRoute: ApiPublicHooksIcalSyncRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
