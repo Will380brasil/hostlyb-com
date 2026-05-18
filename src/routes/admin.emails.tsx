@@ -83,7 +83,38 @@ function EmailsPage() {
         </table>
       </section>
 
+      <section style={{ background: "#fff", borderRadius: 14, padding: 20, border: "1px solid #e5e7eb", marginBottom: 16 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Testar templates de auth</h2>
+        <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>
+          Envia uma renderização de teste de cada template para validar entrega. Deixe o campo vazio para enviar para o seu e-mail de admin.
+        </p>
+        <input
+          value={testEmail}
+          onChange={(e) => setTestEmail(e.target.value)}
+          placeholder="Destinatário (opcional)"
+          style={{ ...inp, marginBottom: 12 }}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
+          {AUTH_TYPES.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => sendTest(t.key)}
+              disabled={testingType !== null}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8, justifyContent: "center",
+                background: "#0F172A", color: "#fff", border: "none", padding: "10px 12px",
+                borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                opacity: testingType !== null ? 0.6 : 1,
+              }}
+            >
+              <Mail size={14} /> {testingType === t.key ? "Enviando…" : t.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section style={{ background: "#fff", borderRadius: 14, padding: 20, border: "1px solid #e5e7eb" }}>
+
         <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>Manual blast</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <select value={audience} onChange={(e) => setAudience(e.target.value as any)}
