@@ -17,7 +17,6 @@ export const Route = createFileRoute("/hospedes")({
 });
 
 const PLATFORMS = [
-  { v: "airbnb", l: "Airbnb" },
   { v: "booking", l: "Booking.com" },
   { v: "vrbo", l: "Vrbo" },
   { v: "expedia", l: "Expedia" },
@@ -26,6 +25,7 @@ const PLATFORMS = [
   { v: "tripadvisor", l: "TripAdvisor" },
   { v: "trivago", l: "Trivago" },
   { v: "homeaway", l: "HomeAway" },
+  { v: "airbnb", l: "Airbnb" }, // kept for legacy records; new entries shouldn't use it
   { v: "direto", l: "Direto / Direct" },
   { v: "outro", l: "Outro / Other" },
 ];
