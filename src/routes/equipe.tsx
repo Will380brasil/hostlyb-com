@@ -73,17 +73,45 @@ function EquipePage() {
       if (members.length + invites.length >= (orgInfo?.max_members ?? 5)) {
         throw new Error("Limite de 5 usuários atingido neste plano.");
       }
-      const { error } = await supabase.from("organization_invites").insert({
-        organization_id: orgId,
-        email: email.trim().toLowerCase(),
-        role,
-        invited_by: user.id,
-      });
+      const { data: inserted, error } = await supabase
+        .from("organization_invites")
+        .insert({
+          organization_id: orgId,
+          email: email.trim().toLowerCase(),
+          role,
+          invited_by: user.id,
+        })
+        .select("id, token, email, role")
+        .single();
       if (error) throw error;
+
+      // Send invite email (best-effort — failure should not roll back the invite).
+      try {
+        const { data: inviterProfile } = await supabase
+          .from("profiles")
+          .select("display_name, email")
+          .eq("id", user.id)
+          .maybeSingle();
+        await sendTransactionalEmail({
+          templateName: "invite-employee",
+          recipientEmail: inserted.email,
+          idempotencyKey: `invite-${inserted.id}`,
+          templateData: {
+            organizationName: orgInfo?.name ?? "your team",
+            inviterName: inviterProfile?.display_name ?? inviterProfile?.email ?? "A teammate",
+            acceptUrl: publicUrl(`/convite/${inserted.token}`),
+            role: inserted.role,
+          },
+        });
+      } catch (e) {
+        console.warn("Failed to send invite email", e);
+        toast.warning("Convite criado, mas e-mail não enviado. Compartilhe o link manualmente.");
+      }
     },
     onSuccess: () => {
       setEmail("");
       qc.invalidateQueries({ queryKey: ["org-invites", orgId] });
+      toast.success("Convite enviado");
     },
     onError: (e: any) => setError(e.message ?? "Erro ao convidar"),
   });
