@@ -35,6 +35,10 @@ const COUNTRIES = [
 function SignupPage() {
   const t = useT();
   const navigate = useNavigate();
+  const { plan } = useSearch({ from: "/signup" }) as SignupSearch;
+  if (typeof window !== "undefined" && plan) {
+    try { localStorage.setItem("selected_plan", plan); } catch {}
+  }
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
