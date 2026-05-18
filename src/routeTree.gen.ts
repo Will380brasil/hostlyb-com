@@ -16,8 +16,10 @@ import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
+import { Route as FrRouteImport } from './routes/fr'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
 import { Route as EquipeRouteImport } from './routes/equipe'
+import { Route as EnRouteImport } from './routes/en'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as CalendarioRouteImport } from './routes/calendario'
@@ -88,6 +90,11 @@ const HospedesRoute = HospedesRouteImport.update({
   path: '/hospedes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FrRoute = FrRouteImport.update({
+  id: '/fr',
+  path: '/fr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FinanceiroRoute = FinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
@@ -96,6 +103,11 @@ const FinanceiroRoute = FinanceiroRouteImport.update({
 const EquipeRoute = EquipeRouteImport.update({
   id: '/equipe',
   path: '/equipe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnRoute = EnRouteImport.update({
+  id: '/en',
+  path: '/en',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
@@ -284,8 +296,10 @@ export interface FileRoutesByFullPath {
   '/calendario': typeof CalendarioRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
   '/financeiro': typeof FinanceiroRoute
+  '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
@@ -328,8 +342,10 @@ export interface FileRoutesByTo {
   '/calendario': typeof CalendarioRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
   '/financeiro': typeof FinanceiroRoute
+  '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
@@ -374,8 +390,10 @@ export interface FileRoutesById {
   '/calendario': typeof CalendarioRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
   '/financeiro': typeof FinanceiroRoute
+  '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
@@ -421,8 +439,10 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/demo'
     | '/diagnostico'
+    | '/en'
     | '/equipe'
     | '/financeiro'
+    | '/fr'
     | '/hospedes'
     | '/limpezas'
     | '/login'
@@ -465,8 +485,10 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/demo'
     | '/diagnostico'
+    | '/en'
     | '/equipe'
     | '/financeiro'
+    | '/fr'
     | '/hospedes'
     | '/limpezas'
     | '/login'
@@ -510,8 +532,10 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/demo'
     | '/diagnostico'
+    | '/en'
     | '/equipe'
     | '/financeiro'
+    | '/fr'
     | '/hospedes'
     | '/limpezas'
     | '/login'
@@ -556,8 +580,10 @@ export interface RootRouteChildren {
   CalendarioRoute: typeof CalendarioRoute
   DemoRoute: typeof DemoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
+  EnRoute: typeof EnRoute
   EquipeRoute: typeof EquipeRoute
   FinanceiroRoute: typeof FinanceiroRoute
+  FrRoute: typeof FrRoute
   HospedesRoute: typeof HospedesRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
@@ -637,6 +663,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HospedesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fr': {
+      id: '/fr'
+      path: '/fr'
+      fullPath: '/fr'
+      preLoaderRoute: typeof FrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/financeiro': {
       id: '/financeiro'
       path: '/financeiro'
@@ -649,6 +682,13 @@ declare module '@tanstack/react-router' {
       path: '/equipe'
       fullPath: '/equipe'
       preLoaderRoute: typeof EquipeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en': {
+      id: '/en'
+      path: '/en'
+      fullPath: '/en'
+      preLoaderRoute: typeof EnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diagnostico': {
@@ -933,8 +973,10 @@ const rootRouteChildren: RootRouteChildren = {
   CalendarioRoute: CalendarioRoute,
   DemoRoute: DemoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
+  EnRoute: EnRoute,
   EquipeRoute: EquipeRoute,
   FinanceiroRoute: FinanceiroRoute,
+  FrRoute: FrRoute,
   HospedesRoute: HospedesRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
@@ -965,3 +1007,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
