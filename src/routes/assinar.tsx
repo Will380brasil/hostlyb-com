@@ -170,7 +170,13 @@ function SubscribePage() {
                   </li>
                 ))}
               </ul>
-              <div className="text-xs text-muted-foreground text-center">Plano atual</div>
+              {isOnboarding ? (
+                <Button variant="outline" className="w-full" disabled={continuingFree} onClick={continueFree}>
+                  {continuingFree ? "Aguarde…" : "Continuar com Grátis"}
+                </Button>
+              ) : (
+                <div className="text-xs text-muted-foreground text-center">Plano atual</div>
+              )}
             </div>
 
             {/* PRO */}
