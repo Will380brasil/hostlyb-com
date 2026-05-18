@@ -38,6 +38,7 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicCleanerNotifyRouteImport } from './routes/api/public/cleaner/notify'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -188,6 +189,11 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCleanerNotifyRoute = ApiPublicCleanerNotifyRouteImport.update({
+  id: '/api/public/cleaner/notify',
+  path: '/api/public/cleaner/notify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/imoveis': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -311,6 +320,7 @@ export interface FileRouteTypes {
     | '/imoveis/'
     | '/api/public/geo'
     | '/lovable/email/suppression'
+    | '/api/public/cleaner/notify'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/imoveis'
     | '/api/public/geo'
     | '/lovable/email/suppression'
+    | '/api/public/cleaner/notify'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/imoveis/'
     | '/api/public/geo'
     | '/lovable/email/suppression'
+    | '/api/public/cleaner/notify'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -405,6 +417,7 @@ export interface RootRouteChildren {
   ImoveisIndexRoute: typeof ImoveisIndexRoute
   ApiPublicGeoRoute: typeof ApiPublicGeoRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicCleanerNotifyRoute: typeof ApiPublicCleanerNotifyRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -616,6 +629,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cleaner/notify': {
+      id: '/api/public/cleaner/notify'
+      path: '/api/public/cleaner/notify'
+      fullPath: '/api/public/cleaner/notify'
+      preLoaderRoute: typeof ApiPublicCleanerNotifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -645,6 +665,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImoveisIndexRoute: ImoveisIndexRoute,
   ApiPublicGeoRoute: ApiPublicGeoRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicCleanerNotifyRoute: ApiPublicCleanerNotifyRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
@@ -653,3 +674,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
