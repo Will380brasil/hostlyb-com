@@ -89,6 +89,8 @@ function Dashboard() {
         <OnboardingHelpButton onClick={onboarding.show} />
       </section>
 
+      <InstallBanner />
+
       {/* New: Today in your operation */}
       <OperationCenter />
 
