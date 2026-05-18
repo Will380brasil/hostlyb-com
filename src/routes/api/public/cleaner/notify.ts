@@ -17,6 +17,8 @@ const BodySchema = z.object({
   bucket: z.enum(["cleaning-photos", "forgotten-items"]).optional(),
   path: z.string().max(500).optional(),
   recordIssue: z.boolean().optional(),
+  // base64-encoded JPEG, ≤ ~70KB after encoding (50KB binary). Premium only.
+  thumbnailBase64: z.string().max(120_000).optional(),
 });
 
 export const Route = createFileRoute("/api/public/cleaner/notify")({
