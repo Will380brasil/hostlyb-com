@@ -4,7 +4,13 @@ import { createClient } from "@supabase/supabase-js";
 export const Route = createFileRoute("/api/public/hooks/cleanup-thumbnails")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const secret = process.env.CRON_SECRET;
+        const auth = request.headers.get("authorization");
+        if (!secret || auth !== `Bearer ${secret}`) {
+          return Response.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const url = process.env.SUPABASE_URL!;
         const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
         if (!url || !key) return Response.json({ error: "Server misconfigured" }, { status: 500 });
