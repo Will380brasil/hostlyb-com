@@ -12,6 +12,12 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" as any });
+    const { data: row } = await supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+    if (!row) throw redirect({ to: "/app" as any });
   },
   component: AdminPage,
 });
