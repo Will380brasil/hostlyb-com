@@ -71,7 +71,9 @@ function SignupPage() {
     if (error) { toast.error(error.message); return; }
     if (data.session) {
       toast.success(t("signup.success"));
-      navigate({ to: "/app" as any });
+      const planParam = plan ?? (typeof window !== "undefined" ? localStorage.getItem("selected_plan") : null);
+      const qs = planParam ? `?onboarding=1&plan=${planParam}` : "?onboarding=1";
+      navigate({ to: ("/assinar" + qs) as any });
     } else {
       // Awaiting email confirmation
       setSentTo(email);
