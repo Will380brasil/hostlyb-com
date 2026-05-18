@@ -20,8 +20,8 @@ export const Route = createFileRoute("/financeiro")({
 });
 
 const CATEGORIES = {
-  entrada: ["Receita Airbnb", "Receita Booking", "Receita aluguel direto", "Receita VRBO", "Taxa de limpeza cobrada", "Depósito caução", "Outros recebimentos"],
-  saida: ["Limpeza / faxina", "Manutenção", "Reparo emergencial", "Amenities / consumíveis", "Energia", "Água / gás", "Internet", "Condomínio", "IPTU", "Seguro", "Taxa Airbnb", "Taxa Booking", "Mobiliário", "Marketing", "Outros gastos"],
+  entrada: ["Receita plataforma", "Receita Booking", "Receita aluguel direto", "Receita VRBO", "Taxa de limpeza cobrada", "Depósito caução", "Outros recebimentos"],
+  saida: ["Limpeza / faxina", "Manutenção", "Reparo emergencial", "Amenities / consumíveis", "Energia", "Água / gás", "Internet", "Condomínio", "IPTU", "Seguro", "Taxa plataforma", "Taxa Booking", "Mobiliário", "Marketing", "Outros gastos"],
 };
 
 const txSchema = z.object({

@@ -67,7 +67,7 @@ export function downloadFinancialTemplate() {
       "Método",
     ],
     [
-      ["entrada", 850, "10/05/2025", "Receita Airbnb", "pago", "Apt Marais 3B", "Reserva 5 noites", "pix"],
+      ["entrada", 850, "10/05/2025", "Receita plataforma", "pago", "Apt Marais 3B", "Reserva 5 noites", "pix"],
       ["saida", 120, "11/05/2025", "Limpeza", "pago", "Apt Marais 3B", "Faxina pós checkout", "dinheiro"],
     ],
   );
