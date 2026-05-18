@@ -44,23 +44,27 @@ function ConvitePage() {
       return;
     }
     setDone(true);
-    // Notify the inviter (best-effort, never blocks redirect)
     try {
-      if (invite?.invited_by) {
+      const { data: inv } = await supabase
+        .from("organization_invites")
+        .select("invited_by, email, id")
+        .eq("token", token)
+        .maybeSingle();
+      if (inv?.invited_by) {
         const { data: inviter } = await supabase
           .from("profiles")
           .select("email, display_name")
-          .eq("id", invite.invited_by)
+          .eq("id", inv.invited_by)
           .maybeSingle();
         const { data: me } = await supabase.auth.getUser();
         if (inviter?.email) {
           await sendTransactionalEmail({
             templateName: "invite-accepted",
             recipientEmail: inviter.email,
-            idempotencyKey: `invite-accept-${invite.id}`,
+            idempotencyKey: `invite-accept-${inv.id}`,
             templateData: {
-              inviteeName: me.user?.user_metadata?.full_name ?? me.user?.email ?? invite.email,
-              inviteeEmail: invite.email,
+              inviteeName: me.user?.user_metadata?.full_name ?? me.user?.email ?? inv.email,
+              inviteeEmail: inv.email,
               organizationName: invite.organization_name,
             },
           });
