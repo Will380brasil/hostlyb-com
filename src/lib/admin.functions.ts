@@ -1,7 +1,29 @@
+import * as React from "react";
+import { render } from "@react-email/components";
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { internalSendEmail } from "@/lib/email/internal-send.server";
+import { SignupEmail } from "@/lib/email-templates/signup";
+import { InviteEmail } from "@/lib/email-templates/invite";
+import { MagicLinkEmail } from "@/lib/email-templates/magic-link";
+import { RecoveryEmail } from "@/lib/email-templates/recovery";
+import { EmailChangeEmail } from "@/lib/email-templates/email-change";
+import { ReauthenticationEmail } from "@/lib/email-templates/reauthentication";
+
+const SITE_NAME = "hostlyb-com";
+const SENDER_DOMAIN = "notify.www.hostlyb.com";
+const ROOT_DOMAIN = "www.hostlyb.com";
+const FROM_DOMAIN = "www.hostlyb.com";
+
+const AUTH_TEMPLATES: Record<string, { component: React.ComponentType<any>; subject: string }> = {
+  signup: { component: SignupEmail, subject: "[TEST] Confirm your email" },
+  invite: { component: InviteEmail, subject: "[TEST] You've been invited" },
+  magiclink: { component: MagicLinkEmail, subject: "[TEST] Your login link" },
+  recovery: { component: RecoveryEmail, subject: "[TEST] Reset your password" },
+  email_change: { component: EmailChangeEmail, subject: "[TEST] Confirm your new email" },
+  reauthentication: { component: ReauthenticationEmail, subject: "[TEST] Your verification code" },
+};
 
 const PLAN_BRL = 59.90;
 const HARDCODED_ADMINS = ["brasgold1@gmail.com"];
@@ -305,4 +327,71 @@ export const sendManualBlast = createServerFn({ method: "POST" })
       } catch {}
     }
     return { ok: true, queued, total: targets.length };
+  });
+
+export const sendAuthTestEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { type: string; recipientEmail?: string }) => {
+    if (!AUTH_TEMPLATES[d.type]) throw new Error("Tipo inválido");
+    return d;
+  })
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const userEmail = ((context.claims as any)?.email as string | undefined) || "";
+    const recipient = (data.recipientEmail || userEmail || "").trim();
+    if (!recipient) throw new Error("Sem e-mail destinatário");
+
+    const tpl = AUTH_TEMPLATES[data.type];
+    const sampleUrl = `https://${ROOT_DOMAIN}/?test=auth-${data.type}`;
+    const props = {
+      siteName: SITE_NAME,
+      siteUrl: `https://${ROOT_DOMAIN}`,
+      recipient,
+      email: recipient,
+      oldEmail: recipient,
+      newEmail: recipient,
+      confirmationUrl: sampleUrl,
+      token: "123456",
+    };
+    const element = React.createElement(tpl.component, props);
+    const html = await render(element);
+    const text = await render(element, { plainText: true });
+
+    const messageId = crypto.randomUUID();
+    await supabaseAdmin.from("email_send_log").insert({
+      message_id: messageId,
+      template_name: `test_${data.type}`,
+      recipient_email: recipient,
+      status: "pending",
+    });
+
+    const { error } = await supabaseAdmin.rpc("enqueue_email", {
+      queue_name: "auth_emails",
+      payload: {
+        run_id: messageId,
+        message_id: messageId,
+        to: recipient,
+        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        sender_domain: SENDER_DOMAIN,
+        subject: tpl.subject,
+        html,
+        text,
+        purpose: "transactional",
+        label: `test_${data.type}`,
+        queued_at: new Date().toISOString(),
+      },
+    });
+
+    if (error) {
+      await supabaseAdmin.from("email_send_log").insert({
+        message_id: messageId,
+        template_name: `test_${data.type}`,
+        recipient_email: recipient,
+        status: "failed",
+        error_message: error.message,
+      });
+      throw new Error(error.message);
+    }
+
+    return { ok: true, messageId, recipient };
   });

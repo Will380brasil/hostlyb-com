@@ -3,8 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getEmailStats, sendManualBlast } from "@/lib/admin.functions";
-import { Send } from "lucide-react";
+import { getEmailStats, sendManualBlast, sendAuthTestEmail } from "@/lib/admin.functions";
+import { Send, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/admin/emails")({
   head: () => ({ meta: [{ title: "Emails · Admin" }, { name: "robots", content: "noindex, nofollow" }] }),
@@ -14,12 +14,36 @@ export const Route = createFileRoute("/admin/emails")({
 function EmailsPage() {
   const fetch = useServerFn(getEmailStats);
   const blast = useServerFn(sendManualBlast);
+  const sendAuthTest = useServerFn(sendAuthTestEmail);
   const { data } = useQuery({ queryKey: ["admin-email-stats"], queryFn: () => fetch(), refetchInterval: 60_000 });
 
   const [audience, setAudience] = useState<"all" | "free" | "pro" | "premium" | "inactive7">("all");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
+  const [testingType, setTestingType] = useState<string | null>(null);
+
+  const AUTH_TYPES: { key: string; label: string }[] = [
+    { key: "signup", label: "Signup (confirmar e-mail)" },
+    { key: "magiclink", label: "Magic link" },
+    { key: "recovery", label: "Reset de senha" },
+    { key: "invite", label: "Convite" },
+    { key: "email_change", label: "Mudança de e-mail" },
+    { key: "reauthentication", label: "Reautenticação (OTP)" },
+  ];
+
+  const sendTest = async (type: string) => {
+    setTestingType(type);
+    try {
+      const r: any = await sendAuthTest({ data: { type, recipientEmail: testEmail || undefined } });
+      toast.success(`Enviado para ${r.recipient}`);
+    } catch (e: any) {
+      toast.error(e.message || "Falhou");
+    } finally {
+      setTestingType(null);
+    }
+  };
 
   const send = async () => {
     if (!subject || !body) return toast.error("Subject and body required");
@@ -59,7 +83,38 @@ function EmailsPage() {
         </table>
       </section>
 
+      <section style={{ background: "#fff", borderRadius: 14, padding: 20, border: "1px solid #e5e7eb", marginBottom: 16 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Testar templates de auth</h2>
+        <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>
+          Envia uma renderização de teste de cada template para validar entrega. Deixe o campo vazio para enviar para o seu e-mail de admin.
+        </p>
+        <input
+          value={testEmail}
+          onChange={(e) => setTestEmail(e.target.value)}
+          placeholder="Destinatário (opcional)"
+          style={{ ...inp, marginBottom: 12 }}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
+          {AUTH_TYPES.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => sendTest(t.key)}
+              disabled={testingType !== null}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8, justifyContent: "center",
+                background: "#0F172A", color: "#fff", border: "none", padding: "10px 12px",
+                borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                opacity: testingType !== null ? 0.6 : 1,
+              }}
+            >
+              <Mail size={14} /> {testingType === t.key ? "Enviando…" : t.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section style={{ background: "#fff", borderRadius: 14, padding: 20, border: "1px solid #e5e7eb" }}>
+
         <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>Manual blast</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <select value={audience} onChange={(e) => setAudience(e.target.value as any)}
