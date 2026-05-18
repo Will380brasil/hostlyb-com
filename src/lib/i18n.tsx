@@ -139,7 +139,7 @@ const pt: Dict = {
 
   "faq.title": "Perguntas frequentes",
   "faq.q1": "Quanto custa para começar?",
-  "faq.a1": "Nada. O plano Gratuito é permanente — até 2 imóveis e 1 usuário, com checklist, hóspedes e calendário. Faça upgrade só quando precisar.",
+  "faq.a1": "Nada. O plano Gratuito é permanente — 1 imóvel e 1 usuário, com checklist, hóspedes e calendário. Faça upgrade só quando precisar.",
   "faq.q2": "Posso importar minhas reservas existentes?",
   "faq.a2": "Sim, no plano Pro. Importe uma planilha (Excel ou CSV) com hóspedes, imóveis e finanças em segundos.",
   "faq.q3": "A faxineira precisa baixar algum aplicativo?",
@@ -364,7 +364,7 @@ const en: Dict = {
 
   "faq.title": "Frequently asked questions",
   "faq.q1": "How much does it cost to start?",
-  "faq.a1": "Nothing. The Free plan is permanent — up to 2 properties and 1 user, with checklist, guests and calendar. Upgrade only when you need more.",
+  "faq.a1": "Nothing. The Free plan is permanent — 1 property and 1 user, with checklist, guests and calendar. Upgrade only when you need more.",
   "faq.q2": "Can I import my existing reservations?",
   "faq.a2": "Yes, on the Pro plan. Import a spreadsheet (Excel or CSV) with guests, properties and finances in seconds.",
   "faq.q3": "Does the cleaner need to download an app?",
@@ -589,7 +589,7 @@ const es: Dict = {
 
   "faq.title": "Preguntas frecuentes",
   "faq.q1": "¿Cuánto cuesta empezar?",
-  "faq.a1": "Nada. El plan Gratis es permanente — hasta 2 propiedades y 1 usuario, con checklist, huéspedes y calendario. Mejora solo si lo necesitas.",
+  "faq.a1": "Nada. El plan Gratis es permanente — 1 propiedad y 1 usuario, con checklist, huéspedes y calendario. Mejora solo si lo necesitas.",
   "faq.q2": "¿Puedo importar mis reservas existentes?",
   "faq.a2": "Sí, en el plan Pro. Importa una hoja de cálculo con huéspedes, propiedades y finanzas en segundos.",
   "faq.q3": "¿La limpiadora necesita descargar alguna app?",
@@ -814,7 +814,7 @@ const fr: Dict = {
 
   "faq.title": "Questions fréquentes",
   "faq.q1": "Combien ça coûte pour commencer ?",
-  "faq.a1": "Rien. Le plan Gratuit est permanent — jusqu'à 2 logements et 1 utilisateur, avec checklist, voyageurs et agenda. Mettez à niveau seulement si nécessaire.",
+  "faq.a1": "Rien. Le plan Gratuit est permanent — 1 logement et 1 utilisateur, avec checklist, voyageurs et agenda. Mettez à niveau seulement si nécessaire.",
   "faq.q2": "Puis-je importer mes réservations existantes ?",
   "faq.a2": "Oui, sur le plan Pro. Importez un tableur (Excel ou CSV) avec voyageurs, logements et finances en quelques secondes.",
   "faq.q3": "La femme de ménage doit-elle télécharger une app ?",
@@ -1039,7 +1039,7 @@ const it: Dict = {
 
   "faq.title": "Domande frequenti",
   "faq.q1": "Quanto costa iniziare?",
-  "faq.a1": "Niente. Il piano Gratis è permanente — fino a 2 appartamenti e 1 utente, con checklist, ospiti e calendario. Aggiorna solo se ti serve.",
+  "faq.a1": "Niente. Il piano Gratis è permanente — 1 appartamento e 1 utente, con checklist, ospiti e calendario. Aggiorna solo se ti serve.",
   "faq.q2": "Posso importare le mie prenotazioni esistenti?",
   "faq.a2": "Sì, sul piano Pro. Importa un foglio (Excel o CSV) con ospiti, appartamenti e finanze in pochi secondi.",
   "faq.q3": "La pulitrice deve scaricare un'app?",
@@ -1264,7 +1264,7 @@ const de: Dict = {
 
   "faq.title": "Häufig gestellte Fragen",
   "faq.q1": "Was kostet der Einstieg?",
-  "faq.a1": "Nichts. Der kostenlose Plan ist dauerhaft — bis zu 2 Unterkünfte und 1 Nutzer, mit Checkliste, Gästen und Kalender. Upgrade nur bei Bedarf.",
+  "faq.a1": "Nichts. Der kostenlose Plan ist dauerhaft — 1 Unterkunft und 1 Nutzer, mit Checkliste, Gästen und Kalender. Upgrade nur bei Bedarf.",
   "faq.q2": "Kann ich meine bestehenden Buchungen importieren?",
   "faq.a2": "Ja, im Pro-Plan. Importiere eine Tabelle (Excel oder CSV) mit Gästen, Unterkünften und Finanzen in Sekunden.",
   "faq.q3": "Muss die Reinigungskraft eine App herunterladen?",
