@@ -861,7 +861,8 @@ function Footer() {
   );
 }
 
-function LandingPage() {
+export { META_BY_LANG, LANGS, BASE_URL, OG_IMAGE, JSON_LD, FAQ_ITEMS_SEO };
+export function LandingPage() {
   useReveal();
   useAnalytics();
   return (
