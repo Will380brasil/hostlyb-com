@@ -27,12 +27,15 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
+import { Route as GuiaSlugRouteImport } from './routes/guia.$slug'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as CheckinTokenRouteImport } from './routes/checkin.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as ImoveisIdGuiaRouteImport } from './routes/imoveis.$id.guia'
 import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -130,6 +133,11 @@ const ImoveisIdRoute = ImoveisIdRouteImport.update({
   path: '/imoveis/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuiaSlugRoute = GuiaSlugRouteImport.update({
+  id: '/guia/$slug',
+  path: '/guia/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaxineiraTokenRoute = FaxineiraTokenRouteImport.update({
   id: '/faxineira/$token',
   path: '/faxineira/$token',
@@ -150,6 +158,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckinTokenRoute = CheckinTokenRouteImport.update({
+  id: '/checkin/$token',
+  path: '/checkin/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -159,6 +172,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ImoveisIdGuiaRoute = ImoveisIdGuiaRouteImport.update({
+  id: '/guia',
+  path: '/guia',
+  getParentRoute: () => ImoveisIdRoute,
 } as any)
 const ApiPublicGeoRoute = ApiPublicGeoRouteImport.update({
   id: '/api/public/geo',
@@ -213,13 +231,16 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/checkin/$token': typeof CheckinTokenRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
-  '/imoveis/$id': typeof ImoveisIdRoute
+  '/guia/$slug': typeof GuiaSlugRoute
+  '/imoveis/$id': typeof ImoveisIdRouteWithChildren
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
+  '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -245,13 +266,16 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/checkin/$token': typeof CheckinTokenRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
-  '/imoveis/$id': typeof ImoveisIdRoute
+  '/guia/$slug': typeof GuiaSlugRoute
+  '/imoveis/$id': typeof ImoveisIdRouteWithChildren
   '/imoveis': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
+  '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -278,13 +302,16 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/checkin/$token': typeof CheckinTokenRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/faxineira/$token': typeof FaxineiraTokenRoute
-  '/imoveis/$id': typeof ImoveisIdRoute
+  '/guia/$slug': typeof GuiaSlugRoute
+  '/imoveis/$id': typeof ImoveisIdRouteWithChildren
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
+  '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -312,13 +339,16 @@ export interface FileRouteTypes {
     | '/signup'
     | '/unsubscribe'
     | '/auth/callback'
+    | '/checkin/$token'
     | '/checkout/return'
     | '/convite/$token'
     | '/email/unsubscribe'
     | '/faxineira/$token'
+    | '/guia/$slug'
     | '/imoveis/$id'
     | '/imoveis/'
     | '/api/public/geo'
+    | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
     | '/api/public/payments/webhook'
@@ -344,13 +374,16 @@ export interface FileRouteTypes {
     | '/signup'
     | '/unsubscribe'
     | '/auth/callback'
+    | '/checkin/$token'
     | '/checkout/return'
     | '/convite/$token'
     | '/email/unsubscribe'
     | '/faxineira/$token'
+    | '/guia/$slug'
     | '/imoveis/$id'
     | '/imoveis'
     | '/api/public/geo'
+    | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
     | '/api/public/payments/webhook'
@@ -376,13 +409,16 @@ export interface FileRouteTypes {
     | '/signup'
     | '/unsubscribe'
     | '/auth/callback'
+    | '/checkin/$token'
     | '/checkout/return'
     | '/convite/$token'
     | '/email/unsubscribe'
     | '/faxineira/$token'
+    | '/guia/$slug'
     | '/imoveis/$id'
     | '/imoveis/'
     | '/api/public/geo'
+    | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
     | '/api/public/payments/webhook'
@@ -409,11 +445,13 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  CheckinTokenRoute: typeof CheckinTokenRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   FaxineiraTokenRoute: typeof FaxineiraTokenRoute
-  ImoveisIdRoute: typeof ImoveisIdRoute
+  GuiaSlugRoute: typeof GuiaSlugRoute
+  ImoveisIdRoute: typeof ImoveisIdRouteWithChildren
   ImoveisIndexRoute: typeof ImoveisIndexRoute
   ApiPublicGeoRoute: typeof ApiPublicGeoRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -552,6 +590,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImoveisIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guia/$slug': {
+      id: '/guia/$slug'
+      path: '/guia/$slug'
+      fullPath: '/guia/$slug'
+      preLoaderRoute: typeof GuiaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faxineira/$token': {
       id: '/faxineira/$token'
       path: '/faxineira/$token'
@@ -580,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkin/$token': {
+      id: '/checkin/$token'
+      path: '/checkin/$token'
+      fullPath: '/checkin/$token'
+      preLoaderRoute: typeof CheckinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -593,6 +645,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/lovable/email/suppression'
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/imoveis/$id/guia': {
+      id: '/imoveis/$id/guia'
+      path: '/guia'
+      fullPath: '/imoveis/$id/guia'
+      preLoaderRoute: typeof ImoveisIdGuiaRouteImport
+      parentRoute: typeof ImoveisIdRoute
     }
     '/api/public/geo': {
       id: '/api/public/geo'
@@ -639,6 +698,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ImoveisIdRouteChildren {
+  ImoveisIdGuiaRoute: typeof ImoveisIdGuiaRoute
+}
+
+const ImoveisIdRouteChildren: ImoveisIdRouteChildren = {
+  ImoveisIdGuiaRoute: ImoveisIdGuiaRoute,
+}
+
+const ImoveisIdRouteWithChildren = ImoveisIdRoute._addFileChildren(
+  ImoveisIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -657,11 +728,13 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  CheckinTokenRoute: CheckinTokenRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ConviteTokenRoute: ConviteTokenRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   FaxineiraTokenRoute: FaxineiraTokenRoute,
-  ImoveisIdRoute: ImoveisIdRoute,
+  GuiaSlugRoute: GuiaSlugRoute,
+  ImoveisIdRoute: ImoveisIdRouteWithChildren,
   ImoveisIndexRoute: ImoveisIndexRoute,
   ApiPublicGeoRoute: ApiPublicGeoRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
@@ -674,13 +747,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

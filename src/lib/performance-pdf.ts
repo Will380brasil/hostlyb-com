@@ -83,7 +83,7 @@ export function generatePerformancePdf(m: PerfMetrics) {
     doc.setFillColor(255, 107, 107);
     doc.roundedRect(x + 4, y, bw - 12, h, 3, 3, "F");
     doc.setFontSize(8); doc.setTextColor(110); doc.setFont("helvetica", "normal");
-    doc.text(d.label, x + bw / 2, chartTop + chartH + 14, { align: "center" });
+    doc.text(String(d.label), x + bw / 2, chartTop + chartH + 14, { align: "center" });
   });
 
   // Footer

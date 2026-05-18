@@ -44,7 +44,7 @@ function PublicCheckin() {
       p_name: form.name,
       p_document: form.document,
       p_document_country: form.docCountry,
-      p_date_of_birth: form.dob || null,
+      p_date_of_birth: form.dob || (null as any),
       p_nationality: form.nationality,
     });
     setSubmitting(false);
