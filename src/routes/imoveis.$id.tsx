@@ -87,6 +87,7 @@ function PropertyDetail() {
           ["guidebook", t("guidebook.title"), BookOpen, true],
           ["maintenance", t("maint.tab"), Wrench, true],
           ["performance", t("perf.tab"), BarChart3, true],
+          ["compliance", t("legal.tab"), ShieldCheck, true],
         ] as const).map(([k, l, Icon, premium]) => (
           <button key={k} onClick={() => setTab(k as any)}
             className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 -mb-px flex items-center gap-1 ${tab === k ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}>
