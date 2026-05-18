@@ -302,7 +302,7 @@ function CleanerPortal() {
             className="w-full px-3 py-2 rounded-lg border border-card-border bg-background text-sm" />
         </section>
 
-        <button onClick={() => update.mutate({ status: "problema", checklist, notes })}
+        <button onClick={onReportProblem} disabled={uploading}
           className="w-full py-2.5 rounded-xl text-sm font-semibold border border-card-border flex items-center justify-center gap-2"
           style={{ color: "var(--color-destructive, #ef4444)" }}>
           <AlertTriangle size={14} /> Reportar problema
