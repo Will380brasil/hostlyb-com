@@ -18,6 +18,7 @@ import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as FrRouteImport } from './routes/fr'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as EsRouteImport } from './routes/es'
 import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as EnRouteImport } from './routes/en'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
@@ -98,6 +99,11 @@ const FrRoute = FrRouteImport.update({
 const FinanceiroRoute = FinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsRoute = EsRouteImport.update({
+  id: '/es',
+  path: '/es',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EquipeRoute = EquipeRouteImport.update({
@@ -298,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/diagnostico': typeof DiagnosticoRoute
   '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
+  '/es': typeof EsRoute
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
@@ -344,6 +351,7 @@ export interface FileRoutesByTo {
   '/diagnostico': typeof DiagnosticoRoute
   '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
+  '/es': typeof EsRoute
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
@@ -392,6 +400,7 @@ export interface FileRoutesById {
   '/diagnostico': typeof DiagnosticoRoute
   '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
+  '/es': typeof EsRoute
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
@@ -441,6 +450,7 @@ export interface FileRouteTypes {
     | '/diagnostico'
     | '/en'
     | '/equipe'
+    | '/es'
     | '/financeiro'
     | '/fr'
     | '/hospedes'
@@ -487,6 +497,7 @@ export interface FileRouteTypes {
     | '/diagnostico'
     | '/en'
     | '/equipe'
+    | '/es'
     | '/financeiro'
     | '/fr'
     | '/hospedes'
@@ -534,6 +545,7 @@ export interface FileRouteTypes {
     | '/diagnostico'
     | '/en'
     | '/equipe'
+    | '/es'
     | '/financeiro'
     | '/fr'
     | '/hospedes'
@@ -582,6 +594,7 @@ export interface RootRouteChildren {
   DiagnosticoRoute: typeof DiagnosticoRoute
   EnRoute: typeof EnRoute
   EquipeRoute: typeof EquipeRoute
+  EsRoute: typeof EsRoute
   FinanceiroRoute: typeof FinanceiroRoute
   FrRoute: typeof FrRoute
   HospedesRoute: typeof HospedesRoute
@@ -675,6 +688,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/financeiro'
       preLoaderRoute: typeof FinanceiroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es': {
+      id: '/es'
+      path: '/es'
+      fullPath: '/es'
+      preLoaderRoute: typeof EsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/equipe': {
@@ -975,6 +995,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiagnosticoRoute: DiagnosticoRoute,
   EnRoute: EnRoute,
   EquipeRoute: EquipeRoute,
+  EsRoute: EsRoute,
   FinanceiroRoute: FinanceiroRoute,
   FrRoute: FrRoute,
   HospedesRoute: HospedesRoute,
