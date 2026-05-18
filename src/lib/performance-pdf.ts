@@ -60,7 +60,7 @@ export function generatePerformancePdf(m: PerfMetrics) {
     const col = i % 4, row = Math.floor(i / 4);
     const x = MX + col * (cardW + 20);
     const y = 120 + row * (cardH + 14);
-    doc.setDrawColor(230); doc.setFillColor(250); doc.roundedRect(x, y, cardW, cardH, 6, 6, "FD");
+    doc.setDrawColor(230, 230, 230); doc.setFillColor(250, 250, 250); doc.roundedRect(x, y, cardW, cardH, 6, 6, "FD");
     doc.setTextColor(120); doc.setFontSize(8); doc.text(mt[0], x + 10, y + 18);
     doc.setTextColor(15); doc.setFontSize(13); doc.setFont("helvetica", "bold");
     doc.text(mt[1], x + 10, y + 44);
