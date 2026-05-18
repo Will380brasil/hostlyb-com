@@ -5,7 +5,13 @@ import { syncOneFeed } from "@/lib/ical.functions";
 export const Route = createFileRoute("/api/public/hooks/ical-sync")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const secret = process.env.CRON_SECRET;
+        const auth = request.headers.get("authorization");
+        if (!secret || auth !== `Bearer ${secret}`) {
+          return Response.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const { data: feeds, error } = await supabaseAdmin
           .from("ical_feeds")
           .select("*")
