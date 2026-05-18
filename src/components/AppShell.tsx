@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { TrialBanner, TrialGate } from "@/components/TrialGate";
+import { InstallButton } from "@/components/InstallButton";
 
 const tabs = [
   { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
