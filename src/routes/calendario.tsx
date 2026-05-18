@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Download, Share2, X, FileSpreadsheet, Calend
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { DayStatusPanel } from "@/components/DayStatusPanel";
+import { IcalExportCard } from "@/components/IcalExportCard";
 
 export const Route = createFileRoute("/calendario")({
   head: () => ({ meta: [{ title: "Calendário — Hostlyb" }, { name: "description", content: "Veja check-ins, check-outs e limpezas." }] }),
@@ -131,6 +132,8 @@ function CalendarPage() {
           <button className="btn-secondary !py-1.5 !px-2.5" title="Exportar .ics" onClick={() => downloadIcs(events)}><Download size={14} /></button>
         </div>
       </header>
+
+      <IcalExportCard />
 
       <div className="flex items-center gap-2 mb-3 text-xs">
         <button onClick={() => setView("mes")} className={`px-3 py-1.5 rounded-lg ${view === "mes" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>Mês</button>
