@@ -14,6 +14,7 @@ import { PremiumGate, PremiumBadge } from "@/components/PremiumGate";
 import { MaintenanceTab } from "@/components/property/MaintenanceTab";
 import { PerformanceTab } from "@/components/property/PerformanceTab";
 import { IcalFeedsTab } from "@/components/property/IcalFeedsTab";
+import { IcalExportCard } from "@/components/IcalExportCard";
 import { LegalComplianceTab } from "@/components/property/LegalComplianceTab";
 
 export const Route = createFileRoute("/imoveis/$id")({
