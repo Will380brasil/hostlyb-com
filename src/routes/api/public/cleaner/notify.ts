@@ -60,6 +60,18 @@ export const Route = createFileRoute("/api/public/cleaner/notify")({
           photoUrl = signed?.signedUrl;
         }
 
+        // Optional: persist a maintenance issue via RPC (also creates alert + pending transaction via trigger)
+        if (body.type === "problem" && body.recordIssue) {
+          const urg = body.urgency === "high" ? "urgent" : "normal";
+          const { error: rpcErr } = await admin.rpc("cleaner_report_problem", {
+            p_token: body.token,
+            p_description: body.description ?? "(sem descrição)",
+            p_photo_url: photoUrl,
+            p_urgency: urg,
+          });
+          if (rpcErr) console.warn("cleaner_report_problem failed:", rpcErr.message);
+        }
+
         const templateName = body.type === "photo" ? "cleaning-photo" : "cleaning-problem";
         const template = TEMPLATES[templateName];
         if (!template) return Response.json({ error: "Template missing" }, { status: 500 });

@@ -8,6 +8,7 @@ import { fullAddress, formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive } from "lucide-react";
+import { PropertyScoreBadge } from "@/components/dashboard/PropertyScoreBadge";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostlyb" }, { name: "description", content: "Detalhes do imóvel." }] }),
@@ -73,6 +74,10 @@ function PropertyDetail() {
 
       <section className="hostly-card mb-4">
         <AddressActions address={fullAddress(p)} />
+      </section>
+
+      <section className="mb-4">
+        <PropertyScoreBadge propertyId={id} />
       </section>
 
       <section className="hostly-card mb-4">

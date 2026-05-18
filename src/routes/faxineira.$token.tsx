@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Sparkles, MapPin, Wifi, AlertTriangle, Camera, Loader2, BedDouble, Bath } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SignedImage } from "@/components/SignedImage";
+import { ReportProblemSheet } from "@/components/cleaner/ReportProblemSheet";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/faxineira/$token")({
@@ -54,6 +55,7 @@ function CleanerPortal() {
   const [newItem, setNewItem] = useState({ description: "", notes: "" });
   const [showItemForm, setShowItemForm] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showProblem, setShowProblem] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -149,21 +151,8 @@ function CleanerPortal() {
     } finally { setUploading(false); }
   }
 
-  async function onReportProblem() {
-    const description = window.prompt("Descreva o problema:");
-    if (!description?.trim()) return;
-    const urgencyRaw = window.prompt("Urgência (low / medium / high):", "medium")?.toLowerCase();
-    const urgency = (["low", "medium", "high"].includes(urgencyRaw ?? "") ? urgencyRaw : "medium") as "low" | "medium" | "high";
-    setUploading(true);
-    try {
-      await update.mutateAsync({ status: "problema", checklist, notes });
-      await notifyHost({ type: "problem", description: description.trim(), urgency });
-      toast.success("Problema reportado ao anfitrião");
-    } catch (err: any) {
-      toast.error(err.message ?? "Falha ao reportar");
-    } finally {
-      setUploading(false);
-    }
+  async function afterProblemReported() {
+    try { await update.mutateAsync({ status: "problema", checklist, notes }); } catch {}
   }
 
   if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando…</div>;
@@ -302,11 +291,12 @@ function CleanerPortal() {
             className="w-full px-3 py-2 rounded-lg border border-card-border bg-background text-sm" />
         </section>
 
-        <button onClick={onReportProblem} disabled={uploading}
+        <button onClick={() => setShowProblem(true)} disabled={uploading}
           className="w-full py-2.5 rounded-xl text-sm font-semibold border border-card-border flex items-center justify-center gap-2"
           style={{ color: "var(--color-destructive, #ef4444)" }}>
           <AlertTriangle size={14} /> Reportar problema
         </button>
+        {showProblem && <ReportProblemSheet token={token} onClose={() => setShowProblem(false)} onReported={afterProblemReported} />}
       </main>
 
       <footer className="fixed bottom-0 inset-x-0 mx-auto max-w-[480px] p-4 bg-background/95 backdrop-blur border-t border-card-border space-y-2">

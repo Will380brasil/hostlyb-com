@@ -12,6 +12,7 @@ import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search, FileSpreadsheet 
 import { usePropertyLimit } from "@/hooks/usePropertyLimit";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { SpreadsheetImport } from "@/components/SpreadsheetImport";
+import { PropertyScoreBadge } from "@/components/dashboard/PropertyScoreBadge";
 
 export const Route = createFileRoute("/imoveis/")({
   head: () => ({ meta: [{ title: "Imóveis — Hostlyb" }, { name: "description", content: "Gerencie seus imóveis." }] }),
@@ -126,7 +127,10 @@ function PropertiesPage() {
                           <h3 className="font-semibold truncate">{p.name}</h3>
                           <p className="text-xs text-muted-foreground truncate">{p.address}{p.city ? `, ${p.city}` : ""}{p.state ? ` - ${p.state}` : ""}</p>
                         </div>
-                        <StatusBadge status={filterDate ? statusForDate(p.id) : p.status} />
+                        <div className="flex flex-col items-end gap-1">
+                          <StatusBadge status={filterDate ? statusForDate(p.id) : p.status} />
+                          <PropertyScoreBadge propertyId={p.id} compact />
+                        </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
