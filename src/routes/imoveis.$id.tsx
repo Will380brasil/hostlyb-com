@@ -1,14 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AddressActions } from "@/components/AddressActions";
 import { supabase } from "@/integrations/supabase/client";
 import { fullAddress, formatMoney } from "@/lib/format";
-import { useLocale } from "@/lib/i18n";
+import { useLocale, useT } from "@/lib/i18n";
 import { toast } from "sonner";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive } from "lucide-react";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, BookOpen, Wrench, BarChart3 } from "lucide-react";
 import { PropertyScoreBadge } from "@/components/dashboard/PropertyScoreBadge";
+import { PremiumGate, PremiumBadge } from "@/components/PremiumGate";
+import { MaintenanceTab } from "@/components/property/MaintenanceTab";
+import { PerformanceTab } from "@/components/property/PerformanceTab";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostlyb" }, { name: "description", content: "Detalhes do imóvel." }] }),
@@ -17,8 +21,10 @@ export const Route = createFileRoute("/imoveis/$id")({
 
 function PropertyDetail() {
   const { currency, lang } = useLocale();
+  const t = useT();
   const { id } = Route.useParams();
   const navigate = useNavigate();
+  const [tab, setTab] = useState<"overview" | "guidebook" | "maintenance" | "performance">("overview");
 
   const archive = useMutation({
     mutationFn: async () => {
