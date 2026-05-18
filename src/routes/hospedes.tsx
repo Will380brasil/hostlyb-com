@@ -221,6 +221,7 @@ function Select({ label, value, onChange, options }: { label: string; value: str
 
 function GuestDetailSheet({ guest, onClose }: { guest: any; onClose: () => void }) {
   const { currency, lang } = useLocale();
+  const qc = useQueryClient();
   // History: all stays from this guest by name+email/phone match
   const { data: history = [] } = useQuery({
     queryKey: ["guest-history", guest.email ?? guest.phone ?? guest.name],
@@ -234,13 +235,27 @@ function GuestDetailSheet({ guest, onClose }: { guest: any; onClose: () => void 
       return data ?? [];
     },
   });
+  const returning = history.length > 0;
+  const toggleVip = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("guests").update({ is_vip: !guest.is_vip }).eq("id", guest.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success(guest.is_vip ? "VIP removido" : "Marcado como VIP"); qc.invalidateQueries({ queryKey: ["guests"] }); onClose(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const wppMsg = encodeURIComponent(`Olá ${guest.name}! Aqui é do ${guest.properties?.name ?? "seu anfitrião"}. Tudo bem com sua estadia?`);
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end" onClick={onClose}>
       <div className="bg-card border-t border-card-border w-full max-w-[480px] mx-auto rounded-t-2xl p-5 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold text-lg">{guest.name}</h3>
+          <h3 className="font-bold text-lg flex items-center gap-2">
+            {guest.name}
+            {guest.is_vip && <Star size={16} fill="currentColor" style={{ color: "var(--color-warning)" }} />}
+          </h3>
           <button onClick={onClose}><X size={20} /></button>
         </div>
+        <div className="mb-3"><GuestTags guest={guest} returning={returning} /></div>
         <div className="text-sm space-y-1.5 mb-4">
           <p className="text-muted-foreground">📍 {guest.properties?.name ?? "—"}</p>
           <p className="text-muted-foreground"><Calendar size={12} className="inline mr-1" />{guest.checkin_date} → {guest.checkout_date} · {guest.nights ?? "—"} noites</p>
@@ -251,13 +266,16 @@ function GuestDetailSheet({ guest, onClose }: { guest: any; onClose: () => void 
           {guest.notes && <p className="text-muted-foreground">📝 {guest.notes}</p>}
         </div>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           {guest.phone && (
             <>
               <a href={`tel:+${guest.phone}`} className="btn-secondary flex-1 justify-center"><Phone size={13} /> Ligar</a>
-              <a href={`https://wa.me/${guest.phone}`} target="_blank" rel="noreferrer" className="btn-primary flex-1 justify-center"><MessageCircle size={13} /> WhatsApp</a>
+              <a href={`https://wa.me/${guest.phone}?text=${wppMsg}`} target="_blank" rel="noreferrer" className="btn-primary flex-1 justify-center"><MessageCircle size={13} /> WhatsApp</a>
             </>
           )}
+          <button onClick={() => toggleVip.mutate()} className="btn-secondary justify-center" style={{ color: "var(--color-warning)" }}>
+            <Star size={13} fill={guest.is_vip ? "currentColor" : "none"} /> {guest.is_vip ? "Remover VIP" : "Marcar VIP"}
+          </button>
         </div>
 
         <h4 className="font-semibold text-sm mb-2 flex items-center gap-1.5"><History size={14} /> Outras estadias</h4>
