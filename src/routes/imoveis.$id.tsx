@@ -98,7 +98,12 @@ function PropertyDetail() {
         ))}
       </nav>
 
-      {tab === "channels" && <IcalFeedsTab propertyId={id} />}
+      {tab === "channels" && (
+        <>
+          <IcalFeedsTab propertyId={id} />
+          <IcalExportCard />
+        </>
+      )}
 
       {tab === "guidebook" && (
         <PremiumGate>
