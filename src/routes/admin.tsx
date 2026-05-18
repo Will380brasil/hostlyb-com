@@ -7,8 +7,6 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" as any });
-    const email = data.user.email?.toLowerCase();
-    void email;
     const { data: row } = await supabase
       .from("admin_users")
       .select("user_id")
