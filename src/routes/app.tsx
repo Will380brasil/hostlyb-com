@@ -11,6 +11,8 @@ import { OperationCenter } from "@/components/dashboard/OperationCenter";
 import { FinancialSummary } from "@/components/dashboard/FinancialSummary";
 import { GuestChart } from "@/components/dashboard/GuestChart";
 import { OperationProgress } from "@/components/dashboard/OperationProgress";
+import { InstallBanner } from "@/components/InstallBanner";
+import { IcalExportCard } from "@/components/IcalExportCard";
 
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Dashboard — Hostlyb" }, { name: "description", content: "Visão geral dos seus imóveis." }] }),
@@ -87,6 +89,8 @@ function Dashboard() {
         <OnboardingHelpButton onClick={onboarding.show} />
       </section>
 
+      <InstallBanner />
+
       {/* New: Today in your operation */}
       <OperationCenter />
 
@@ -97,6 +101,8 @@ function Dashboard() {
       <GuestChart />
 
       {/* New: Operation progress */}
+      <IcalExportCard />
+
       <OperationProgress />
 
       <section className="grid grid-cols-2 gap-3 mt-6">
