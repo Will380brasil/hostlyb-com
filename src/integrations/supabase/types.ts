@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notes: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          note: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          note: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          note?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -408,6 +432,27 @@ export type Database = {
           phone?: string
           source?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      email_audience_log: {
+        Row: {
+          id: number
+          sent_at: string
+          template_name: string
+          user_id: string
+        }
+        Insert: {
+          id?: number
+          sent_at?: string
+          template_name: string
+          user_id: string
+        }
+        Update: {
+          id?: number
+          sent_at?: string
+          template_name?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -888,7 +933,9 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          locale: string
           property_tier: number
+          suspended_at: string | null
           updated_at: string
         }
         Insert: {
@@ -900,7 +947,9 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          locale?: string
           property_tier?: number
+          suspended_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -912,7 +961,9 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          locale?: string
           property_tier?: number
+          suspended_at?: string | null
           updated_at?: string
         }
         Relationships: []
