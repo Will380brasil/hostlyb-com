@@ -101,15 +101,34 @@ function CleanerPortal() {
     return path;
   }
 
+  async function notifyHost(payload: {
+    type: "photo" | "problem";
+    description?: string;
+    urgency?: "low" | "medium" | "high";
+    bucket?: "cleaning-photos" | "forgotten-items";
+    path?: string;
+  }) {
+    try {
+      const res = await fetch("/api/public/cleaner/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, ...payload }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    } catch (e: any) {
+      console.warn("notifyHost failed", e);
+    }
+  }
+
   async function onAddPhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !data) return;
     setUploading(true);
     try {
-      const url = await uploadPhoto(file, "cleaning-photos");
-      const photos = [...(data.photos ?? []), url];
-      await update.mutateAsync({ photos });
-      toast.success("Foto enviada");
+      const path = await uploadPhoto(file, "cleaning-photos");
+      // Send to host by email and delete from storage immediately.
+      await notifyHost({ type: "photo", bucket: "cleaning-photos", path });
+      toast.success("Foto enviada ao anfitrião");
     } catch (err: any) {
       toast.error(err.message ?? "Falha ao enviar");
     } finally {
@@ -128,6 +147,23 @@ function CleanerPortal() {
     } catch (err: any) {
       toast.error(err.message ?? "Falha ao registrar");
     } finally { setUploading(false); }
+  }
+
+  async function onReportProblem() {
+    const description = window.prompt("Descreva o problema:");
+    if (!description?.trim()) return;
+    const urgencyRaw = window.prompt("Urgência (low / medium / high):", "medium")?.toLowerCase();
+    const urgency = (["low", "medium", "high"].includes(urgencyRaw ?? "") ? urgencyRaw : "medium") as "low" | "medium" | "high";
+    setUploading(true);
+    try {
+      await update.mutateAsync({ status: "problema", checklist, notes });
+      await notifyHost({ type: "problem", description: description.trim(), urgency });
+      toast.success("Problema reportado ao anfitrião");
+    } catch (err: any) {
+      toast.error(err.message ?? "Falha ao reportar");
+    } finally {
+      setUploading(false);
+    }
   }
 
   if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando…</div>;
@@ -266,7 +302,7 @@ function CleanerPortal() {
             className="w-full px-3 py-2 rounded-lg border border-card-border bg-background text-sm" />
         </section>
 
-        <button onClick={() => update.mutate({ status: "problema", checklist, notes })}
+        <button onClick={onReportProblem} disabled={uploading}
           className="w-full py-2.5 rounded-xl text-sm font-semibold border border-card-border flex items-center justify-center gap-2"
           style={{ color: "var(--color-destructive, #ef4444)" }}>
           <AlertTriangle size={14} /> Reportar problema
