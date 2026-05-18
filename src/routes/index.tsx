@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Home as HomeIcon, Check, X, ArrowRight, Plus, Minus, Star } from "lucide-react";
 import { useLocale, PLAN_PRICE, type Currency } from "@/lib/i18n";
