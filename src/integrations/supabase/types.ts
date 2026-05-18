@@ -143,6 +143,13 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "calendar_events_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_cleaning_stats"
+            referencedColumns: ["property_id"]
+          },
         ]
       }
       cleaners: {
@@ -211,6 +218,7 @@ export type Database = {
           cleaner_id: string | null
           completed_at: string | null
           created_at: string
+          duration_minutes: number | null
           has_forgotten_items: boolean
           id: string
           notes: string | null
@@ -220,6 +228,7 @@ export type Database = {
           property_id: string
           scheduled_date: string
           scheduled_time: string
+          started_at: string | null
           status: string
           updated_at: string
           user_id: string
@@ -232,6 +241,7 @@ export type Database = {
           cleaner_id?: string | null
           completed_at?: string | null
           created_at?: string
+          duration_minutes?: number | null
           has_forgotten_items?: boolean
           id?: string
           notes?: string | null
@@ -241,6 +251,7 @@ export type Database = {
           property_id: string
           scheduled_date: string
           scheduled_time?: string
+          started_at?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -253,6 +264,7 @@ export type Database = {
           cleaner_id?: string | null
           completed_at?: string | null
           created_at?: string
+          duration_minutes?: number | null
           has_forgotten_items?: boolean
           id?: string
           notes?: string | null
@@ -262,6 +274,7 @@ export type Database = {
           property_id?: string
           scheduled_date?: string
           scheduled_time?: string
+          started_at?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -280,6 +293,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cleaning_jobs_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_cleaning_stats"
+            referencedColumns: ["property_id"]
           },
         ]
       }
@@ -500,6 +520,13 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "forgotten_items_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_cleaning_stats"
+            referencedColumns: ["property_id"]
+          },
         ]
       }
       guests: {
@@ -509,7 +536,9 @@ export type Database = {
           created_at: string
           document: string | null
           email: string | null
+          had_issue: boolean
           id: string
+          is_vip: boolean
           name: string
           nights: number | null
           notes: string | null
@@ -529,7 +558,9 @@ export type Database = {
           created_at?: string
           document?: string | null
           email?: string | null
+          had_issue?: boolean
           id?: string
+          is_vip?: boolean
           name: string
           nights?: number | null
           notes?: string | null
@@ -549,7 +580,9 @@ export type Database = {
           created_at?: string
           document?: string | null
           email?: string | null
+          had_issue?: boolean
           id?: string
+          is_vip?: boolean
           name?: string
           nights?: number | null
           notes?: string | null
@@ -571,7 +604,62 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "guests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_cleaning_stats"
+            referencedColumns: ["property_id"]
+          },
         ]
+      }
+      maintenance_issues: {
+        Row: {
+          cleaning_job_id: string | null
+          created_at: string
+          description: string
+          guest_id: string | null
+          id: string
+          photo_url: string | null
+          property_id: string
+          reported_by: string
+          resolved_at: string | null
+          status: string
+          updated_at: string
+          urgency: string
+          user_id: string
+        }
+        Insert: {
+          cleaning_job_id?: string | null
+          created_at?: string
+          description: string
+          guest_id?: string | null
+          id?: string
+          photo_url?: string | null
+          property_id: string
+          reported_by?: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          urgency?: string
+          user_id: string
+        }
+        Update: {
+          cleaning_job_id?: string | null
+          created_at?: string
+          description?: string
+          guest_id?: string | null
+          id?: string
+          photo_url?: string | null
+          property_id?: string
+          reported_by?: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          urgency?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       organization_invites: {
         Row: {
@@ -818,6 +906,13 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "property_cleaners_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_cleaning_stats"
+            referencedColumns: ["property_id"]
+          },
         ]
       }
       subscriptions: {
@@ -968,7 +1063,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      property_cleaning_stats: {
+        Row: {
+          avg_duration_minutes: number | null
+          cleanings_this_month: number | null
+          last_cleaning_at: string | null
+          open_issues: number | null
+          property_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avg_duration_minutes?: never
+          cleanings_this_month?: never
+          last_cleaning_at?: never
+          open_issues?: never
+          property_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avg_duration_minutes?: never
+          cleanings_this_month?: never
+          last_cleaning_at?: never
+          open_issues?: never
+          property_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_invite: { Args: { p_token: string }; Returns: Json }
@@ -984,6 +1105,15 @@ export type Database = {
         Returns: string
       }
       cleaner_get_job: { Args: { p_token: string }; Returns: Json }
+      cleaner_report_problem: {
+        Args: {
+          p_description: string
+          p_photo_url?: string
+          p_token: string
+          p_urgency?: string
+        }
+        Returns: string
+      }
       cleaner_update_job: {
         Args: {
           p_checklist?: Json
