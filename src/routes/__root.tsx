@@ -12,6 +12,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { LocaleProvider } from "@/lib/i18n";
 import { CookieConsent } from "@/components/CookieConsent";
 import { SupportFAB } from "@/components/SupportFAB";
+import { InstallProvider } from "@/contexts/InstallContext";
+import { InstallModal } from "@/components/InstallModal";
 
 import appCss from "../styles.css?url";
 
