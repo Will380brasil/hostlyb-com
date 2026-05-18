@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
@@ -14,12 +13,14 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const t = useT();
   const navigate = useNavigate();
-  const { session } = useAuth();
+  const { session, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { if (session) navigate({ to: "/app" as any }); }, [session, navigate]);
+  useEffect(() => {
+    if (!authLoading && session) navigate({ to: "/app" as any });
+  }, [session, authLoading, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +29,14 @@ function LoginPage() {
     setLoading(false);
     if (error) toast.error(t("login.fail"));
     else navigate({ to: "/app" as any });
+  };
+
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) toast.error(`${t("login.googleFail")}: ${error.message}`);
   };
 
   return (
@@ -44,29 +53,13 @@ function LoginPage() {
           <input type="password" required placeholder={t("login.password")} value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="px-4 py-3 rounded-xl bg-card border border-card-border" />
-          <button disabled={loading} className="btn-primary justify-center">
+          <button disabled={loading || authLoading} className="btn-primary justify-center">
             {loading ? t("login.submitting") : t("login.submit")}
           </button>
         </form>
         <button
           type="button"
-          onClick={async () => {
-            try {
-              const r = await lovable.auth.signInWithOAuth("google", {
-                redirect_uri: window.location.origin + "/app",
-              });
-              if (r.redirected) return;
-              if (r.error) {
-                console.error("[google-oauth login]", r.error);
-                toast.error(`${t("login.googleFail")}: ${(r.error as any)?.message ?? r.error}`);
-                return;
-              }
-              window.location.assign("/app");
-            } catch (err: any) {
-              console.error("[google-oauth login] threw", err);
-              toast.error(`${t("login.googleFail")}: ${err?.message ?? "erro desconhecido"}`);
-            }
-          }}
+          onClick={signInWithGoogle}
           className="btn-secondary justify-center w-full mt-3"
         >
           {t("login.google")}

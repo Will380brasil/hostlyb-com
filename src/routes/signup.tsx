@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
 import { PasswordField } from "@/components/PasswordField";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { sendTransactionalEmail } from "@/lib/email/send";
 
-type SignupSearch = { plan?: "free" | "pro" | "premium" };
+type SignupPlan = "free" | "pro" | "premium";
+type SignupSearch = { plan?: SignupPlan };
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Criar conta — Hostlyb" }, { name: "description", content: "Crie sua conta Hostlyb grátis." }] }),
@@ -33,25 +34,40 @@ const COUNTRIES = [
   { code: "CL", flag: "🇨🇱", dial: "+56" },
 ];
 
+const PLAN_OPTIONS: Array<{ id: SignupPlan; name: string; price: string; description: string; features: string[] }> = [
+  { id: "free", name: "Grátis", price: "R$ 0", description: "Para começar agora", features: ["1 imóvel", "Agenda básica"] },
+  { id: "pro", name: "Pro", price: "R$ 59,90/mês", description: "Mais controle da operação", features: ["Mais imóveis", "iCal e alertas"] },
+  { id: "premium", name: "Premium", price: "Plano completo", description: "Para operações maiores", features: ["Recursos avançados", "Gestão completa"] },
+];
+
 function SignupPage() {
   const t = useT();
   const navigate = useNavigate();
   const { plan } = useSearch({ from: "/signup" }) as SignupSearch;
-  if (typeof window !== "undefined" && plan) {
-    try { localStorage.setItem("selected_plan", plan); } catch {}
-  }
+  const [selectedPlan, setSelectedPlan] = useState<SignupPlan>(plan ?? "free");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // password visibility now handled inside PasswordField
   const [country, setCountry] = useState("BR");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
 
+  useEffect(() => {
+    if (plan) setSelectedPlan(plan);
+  }, [plan]);
+
+  useEffect(() => {
+    try { localStorage.setItem("selected_plan", selectedPlan); } catch {}
+  }, [selectedPlan]);
+
   const dial = COUNTRIES.find((c) => c.code === country)?.dial ?? "";
   const fullPhone = phone ? `${dial}${phone.replace(/\D/g, "")}` : "";
+
+  const goToPlanSelection = () => {
+    navigate({ to: "/assinar" as any, search: { onboarding: "1", plan: selectedPlan } as any });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,13 +80,12 @@ function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email, password,
       options: {
-        emailRedirectTo: "https://hostlyb.com/auth/callback",
-        data: { full_name: name, phone: fullPhone, country },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: { full_name: name, phone: fullPhone, country, selected_plan: selectedPlan },
       },
     });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
-    // Fire welcome email (best-effort, non-blocking)
     if (data.user?.id) {
       sendTransactionalEmail({
         templateName: "welcome",
@@ -81,11 +96,8 @@ function SignupPage() {
     }
     if (data.session) {
       toast.success(t("signup.success"));
-      const planParam = plan ?? (typeof window !== "undefined" ? localStorage.getItem("selected_plan") : null);
-      const qs = planParam ? `?onboarding=1&plan=${planParam}` : "?onboarding=1";
-      navigate({ to: ("/assinar" + qs) as any });
+      goToPlanSelection();
     } else {
-      // Awaiting email confirmation
       setSentTo(email);
     }
   };
@@ -96,23 +108,32 @@ function SignupPage() {
     const { error } = await supabase.auth.resend({
       type: "signup",
       email: sentTo,
-      options: { emailRedirectTo: "https://hostlyb.com/auth/callback" },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setResending(false);
     if (error) toast.error(error.message);
     else toast.success("E-mail reenviado!");
   };
 
+  const signUpWithGoogle = async () => {
+    try { localStorage.setItem("selected_plan", selectedPlan); } catch {}
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) toast.error(`${t("signup.googleFail")}: ${error.message}`);
+  };
+
   const inputCls = "px-4 py-3 rounded-xl bg-card border border-card-border";
 
   return (
-    <div className="min-h-screen grid place-items-center px-5 bg-background">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen grid place-items-center px-5 py-8 bg-background">
+      <div className="w-full max-w-2xl">
         <Link to="/" className="block mb-1">
           <h1 className="text-3xl font-black">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
         </Link>
         {sentTo ? (
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center max-w-sm mx-auto">
             <div className="mx-auto mb-4 grid place-items-center w-14 h-14 rounded-2xl text-2xl"
               style={{ background: "var(--color-accent-soft, #ffe4e0)", color: "var(--color-accent)" }}>📧</div>
             <h2 className="text-xl font-bold mb-2">Confirme seu e-mail</h2>
@@ -120,7 +141,7 @@ function SignupPage() {
               Enviamos um link de confirmação para <strong>{sentTo}</strong>.
             </p>
             <p className="text-xs text-muted-foreground mb-5">
-              Não recebeu? Verifique a caixa de spam ou reenvie abaixo.
+              Depois da confirmação, você irá escolher ou confirmar o plano selecionado.
             </p>
             <button onClick={resend} disabled={resending} className="btn-primary justify-center w-full mb-2">
               {resending ? "Reenviando…" : "Reenviar e-mail"}
@@ -128,34 +149,51 @@ function SignupPage() {
             <button onClick={() => setSentTo(null)} className="text-xs text-muted-foreground">
               Usar outro e-mail
             </button>
-            <p className="mt-5 text-xs text-muted-foreground">
-              Problemas? Abra o <Link to={"/diagnostico" as any} style={{ color: "var(--color-accent)" }}>diagnóstico</Link>.
-            </p>
           </div>
         ) : (
         <>
         <p className="text-sm text-muted-foreground mb-6">{t("signup.title")}</p>
 
+        <section className="mb-5">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h2 className="text-sm font-bold">Escolha seu plano</h2>
+            <span className="text-xs text-muted-foreground">Você pode trocar depois</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {PLAN_OPTIONS.map((option) => {
+              const active = selectedPlan === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setSelectedPlan(option.id)}
+                  className="text-left rounded-xl border bg-card p-4 transition"
+                  style={{ borderColor: active ? "var(--color-accent)" : "var(--color-card-border)", boxShadow: active ? "0 0 0 3px var(--color-accent-soft)" : "none" }}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-bold">{option.name}</div>
+                      <div className="text-sm font-semibold" style={{ color: "var(--color-accent)" }}>{option.price}</div>
+                    </div>
+                    {active && <Check size={18} style={{ color: "var(--color-accent)" }} />}
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">{option.description}</p>
+                  <ul className="mt-3 space-y-1">
+                    {option.features.map((feature) => (
+                      <li key={feature} className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Check size={12} style={{ color: "var(--color-success)" }} /> {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
         <button
           type="button"
-          onClick={async () => {
-            try {
-              const r = await lovable.auth.signInWithOAuth("google", {
-                redirect_uri: window.location.origin + "/app",
-              });
-              if (r.redirected) return; // navegador vai para o Google
-              if (r.error) {
-                console.error("[google-oauth signup]", r.error);
-                toast.error(`${t("signup.googleFail")}: ${(r.error as any)?.message ?? r.error}`);
-                return;
-              }
-              // tokens recebidos sem redirect → já autenticado
-              window.location.assign("/app");
-            } catch (err: any) {
-              console.error("[google-oauth signup] threw", err);
-              toast.error(`${t("signup.googleFail")}: ${err?.message ?? "erro desconhecido"}`);
-            }
-          }}
+          onClick={signUpWithGoogle}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-card-border bg-card hover:bg-muted transition font-semibold"
         >
           <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A10.99 10.99 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.62 6.62 0 0 1 5.5 12c0-.72.13-1.43.34-2.09V7.07H2.18A10.99 10.99 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A10.99 10.99 0 0 0 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
@@ -168,7 +206,7 @@ function SignupPage() {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        <form onSubmit={submit} className="flex flex-col gap-3">
+        <form onSubmit={submit} className="flex flex-col gap-3 max-w-sm mx-auto md:max-w-none">
           <input required placeholder={t("signup.name")} value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
           <input type="email" required placeholder={t("signup.email")} value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,17 +14,32 @@ const Ctx = createContext<AuthCtx>({ session: null, user: null, loading: true, s
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setLoading(false);
+    let mounted = true;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!mounted) return;
+      setSession(nextSession);
+      if (initializedRef.current) setLoading(false);
     });
+
     supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      initializedRef.current = true;
       setSession(data.session);
       setLoading(false);
+    }).catch(() => {
+      if (!mounted) return;
+      initializedRef.current = true;
+      setSession(null);
+      setLoading(false);
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

@@ -6,6 +6,11 @@ import { sendTransactionalEmail } from "@/lib/email/send";
 import { toast } from "sonner";
 
 type Status = "checking" | "ok" | "expired" | "error";
+type SignupPlan = "free" | "pro" | "premium";
+
+function isSignupPlan(value: unknown): value is SignupPlan {
+  return value === "free" || value === "pro" || value === "premium";
+}
 
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({ meta: [{ title: "Confirmação — Hostlyb" }, { name: "robots", content: "noindex" }] }),
@@ -22,7 +27,6 @@ function AuthCallback() {
   useEffect(() => {
     (async () => {
       try {
-        // Supabase places errors in the URL hash on failure
         const hash = typeof window !== "undefined" ? window.location.hash.slice(1) : "";
         const params = new URLSearchParams(hash);
         const errCode = params.get("error_code") || params.get("error");
@@ -39,15 +43,21 @@ function AuthCallback() {
           return;
         }
 
-        // Otherwise check if a session was established
+        const code = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("code") : null;
+        if (code) {
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) throw exchangeError;
+        }
+
         const { data, error } = await supabase.auth.getSession();
         if (error) throw error;
 
         if (data.session?.user) {
-          setEmail(data.session.user.email ?? "");
-          setStatus("ok");
           const u = data.session.user;
-          const name = (u.user_metadata as any)?.full_name as string | undefined;
+          setEmail(u.email ?? "");
+          setStatus("ok");
+          const metadata = u.user_metadata as Record<string, unknown>;
+          const name = metadata?.full_name as string | undefined;
           if (u.email) {
             sendTransactionalEmail({
               templateName: "welcome",
@@ -56,9 +66,24 @@ function AuthCallback() {
               templateData: { name, lang: "pt" },
             }).catch((e) => console.warn("[welcome email] failed", e));
           }
-          setTimeout(() => navigate({ to: "/app" as any }), 1800);
+
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("onboarding_completed")
+            .eq("id", u.id)
+            .maybeSingle();
+          const storedPlan = typeof window !== "undefined" ? localStorage.getItem("selected_plan") : null;
+          const selectedPlan = isSignupPlan(metadata?.selected_plan) ? metadata.selected_plan : isSignupPlan(storedPlan) ? storedPlan : "free";
+          const needsOnboarding = profile?.onboarding_completed === false;
+
+          setTimeout(() => {
+            if (needsOnboarding) {
+              navigate({ to: "/assinar" as any, search: { onboarding: "1", plan: selectedPlan } as any });
+            } else {
+              navigate({ to: "/app" as any });
+            }
+          }, 1200);
         } else {
-          // No session and no explicit error — likely link already used or invalid
           setStatus("error");
           setDetail("Não conseguimos validar este link. Ele pode ter sido usado ou estar incompleto.");
         }
@@ -79,7 +104,7 @@ function AuthCallback() {
     const { error } = await supabase.auth.resend({
       type: "signup",
       email,
-      options: { emailRedirectTo: "https://hostlyb.com/auth/callback" },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setResending(false);
     if (error) toast.error(error.message);
@@ -105,7 +130,7 @@ function AuthCallback() {
             <CheckCircle2 className="mx-auto my-6 text-success" size={56} style={{ color: "var(--color-success)" }} />
             <h2 className="text-lg font-bold mb-1">E-mail verificado!</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              Tudo certo{email ? `, ${email}` : ""}. Estamos te levando ao painel…
+              Tudo certo{email ? `, ${email}` : ""}. Estamos te levando ao próximo passo…
             </p>
             <Link to={"/app" as any} className="btn-primary justify-center w-full">Ir para o painel</Link>
           </>

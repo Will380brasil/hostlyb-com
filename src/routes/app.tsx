@@ -52,7 +52,7 @@ function Dashboard() {
     },
   });
   useEffect(() => {
-    if (needsOnboarding) navigate({ to: "/assinar?onboarding=1" as any });
+    if (needsOnboarding) navigate({ to: "/assinar" as any, search: { onboarding: "1" } as any });
   }, [needsOnboarding, navigate]);
   const { data: properties = [] } = useQuery({
     queryKey: ["properties"],

@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocale, useT, PLAN_PRICE, type Currency } from "@/lib/i18n";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { createPortalSession } from "@/utils/payments.functions";
@@ -50,6 +51,7 @@ function SubscribePage() {
   const t = useT();
   const search = useSearch({ from: "/assinar" }) as AssinarSearch;
   const isOnboarding = search.onboarding === "1";
+  const { session, loading: authLoading } = useAuth();
   const [orgId, setOrgId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -60,17 +62,18 @@ function SubscribePage() {
   const { subscription, isActive, loading } = useSubscription(orgId);
 
   useEffect(() => {
+    if (authLoading) return;
+    const user = session?.user;
+    if (!user) { navigate({ to: "/login" as any }); return; }
+    setUserId(user.id);
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { navigate({ to: "/login" }); return; }
-      setUserId(user.id);
       const { data: m } = await supabase
         .from("organization_members")
         .select("organization_id, role")
         .eq("user_id", user.id).order("created_at", { ascending: true }).limit(1).maybeSingle();
       if (m) { setOrgId(m.organization_id); setRole(m.role); }
     })();
-  }, [navigate]);
+  }, [authLoading, session?.user, navigate]);
 
   // When user becomes active via Stripe during onboarding, mark complete and go to /app
   useEffect(() => {
@@ -135,7 +138,7 @@ function SubscribePage() {
           </p>
         )}
 
-        {loading || !orgId ? (
+        {authLoading || loading || !orgId ? (
           <p className="text-muted-foreground">Carregando…</p>
         ) : isActive ? (
           <div className="rounded-lg border p-6 space-y-3">

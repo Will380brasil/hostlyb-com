@@ -5,7 +5,7 @@ import { render } from "@react-email/components";
 import { z } from "zod";
 import { TEMPLATES } from "@/lib/email-templates/registry";
 
-const SITE_NAME = "hostlyb-com";
+const SITE_NAME = "Hostlyb";
 const SENDER_DOMAIN = "notify.www.hostlyb.com";
 const FROM_DOMAIN = "www.hostlyb.com";
 
