@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as LoginRouteImport } from './routes/login'
@@ -38,6 +39,11 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/unsubscribe'
     | '/auth/callback'
     | '/checkout/return'
     | '/convite/$token'
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/unsubscribe'
     | '/auth/callback'
     | '/checkout/return'
     | '/convite/$token'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/unsubscribe'
     | '/auth/callback'
     | '/checkout/return'
     | '/convite/$token'
@@ -383,6 +395,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PwaCheckRoute: typeof PwaCheckRoute
   SignupRoute: typeof SignupRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
@@ -400,6 +413,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -615,6 +635,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PwaCheckRoute: PwaCheckRoute,
   SignupRoute: SignupRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ConviteTokenRoute: ConviteTokenRoute,
