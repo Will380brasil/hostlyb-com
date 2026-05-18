@@ -1,73 +1,89 @@
-# Plan — Bug fixes, Photo-by-Email, New Pricing
 
-## A. Email infrastructure (Lovable Emails)
-Set up Lovable email domain on `hostlyb.com` → scaffold transactional email infra → create 3 templates:
-1. `invite-employee` — invite link + role + org name
-2. `cleaning-photo` — per-photo (subject: "📸 [Property] — [Room] — HH:MM"), attaches photo
-3. `cleaning-problem` — problem report with photo + urgency
+# Operational Modules Upgrade — Implementation Plan
 
-Note: Lovable Emails do not natively support attachments. Workaround: upload to a **temporary** Supabase bucket (`photo-outbox`), include signed URL in email, then **delete the object** in the same server function after enqueue. Net result: no persistent storage cost. Email contains the photo as embedded inline image fetched at send time by the queue worker (we'll fetch + base64-attach via `@lovable.dev/email-js` attachments field).
+This is a large multi-area change. Grouped into 4 batches by concern. All UI copy will be added to `src/lib/i18n.tsx` (PT/EN/ES/FR/IT/DE).
 
-## B. Photo flow rewrite
-- New bucket `photo-outbox` (private, lifecycle: delete after 1h as safety net).
-- Cleaner uploads photo → server fn `sendCleaningPhotoEmail({ jobId, roomName, photoBlob })`:
-  1. Upload to `photo-outbox/<uuid>`
-  2. Fetch bytes, base64
-  3. Enqueue email to host with attachment
-  4. Delete object
-  5. Insert row in `cleaning_photo_log` `{ cleaning_job_id, room_name, sent_at, photo_sent: true }`
-- Replace existing `cleaning-photos` bucket usage in `faxineira.$token.tsx` and forgotten-items flow.
-- Dashboard cleaning history shows row from `cleaning_photo_log` with label "📸 Photos sent to your email" (no thumbnails for Free/Pro).
-- Premium: also keep thumbnail in `cleaning-photos` (lifecycle delete after 30d) — separate gating.
+---
 
-## C. Invite flow fix
-- Audit `accept_invite` RPC + `/convite/$token` route.
-- On invite create in `equipe.tsx`: call new server fn `sendInviteEmail` (Lovable Emails template `invite-employee`) AND show copy-link button as backup.
-- Handle: signed-out user → `/login?redirect=/convite/<token>`; expired/accepted/org-full clear errors.
-- Verify role lands in `organization_members` and RLS works post-accept.
+## Batch 1 — Database & schema
 
-## D. Logo redirect
-`AppShell` + landing header: dynamic `<Link to={session ? '/app' : '/'}>`.
+One migration adding the schema needed by the new features:
 
-## E. Financial module
-- `formatMoney()` already locale-aware (done) — wire into `routes/financeiro.tsx`.
-- Add tokens `--finance-value #0f0f0f`, `--finance-income #15803d`, `--finance-expense #991b1b` in `styles.css` + use as `text-[hsl(var(--finance-*))]`.
-- Add `origin` badge column ("Reserva #abc", "Limpeza", "Manutenção", "Manual").
-- Add manual `maintenance` category to transaction form; triggers already cover guest + cleaning. Add optional `maintenance_log` table later (Premium feature) — for now, manual "despesa / manutenção" with `origin='manual'`.
+1. `cleaning_jobs`: add `started_at TIMESTAMPTZ`, `duration_minutes INT GENERATED` (or computed in SQL view). Add trigger: when `status` flips to `em_andamento` → set `started_at = now()`; when `concluido` → set `completed_at = now()` (already exists) and compute duration.
+2. `guests`: add `is_vip BOOLEAN DEFAULT false`, `had_issue BOOLEAN DEFAULT false`.
+3. New table `maintenance_issues`:
+   - `id, user_id, property_id, cleaning_job_id?, description, photo_url?, urgency ('normal'|'urgent'), status ('open'|'resolved'), reported_by ('cleaner'|'host'), created_at, resolved_at`.
+   - RLS: owner-only (`auth.uid() = user_id`).
+   - Trigger on insert: `create_alert(...)` + auto-insert pending `transactions` entry (category "Manutenção", status "pendente", amount 0) for the host to fill in.
+4. New RPC `cleaner_report_problem(p_token, p_description, p_photo_url, p_urgency)` (security definer, mirrors `cleaner_add_forgotten_item`).
+5. Optional view `property_cleaning_stats` aggregating last cleaning date / monthly count / issue count per property → consumed by the score badge.
 
-## F. Cleaner detail modal
-`routes/equipe.tsx`: clicking a cleaner card opens `<Dialog>` with:
-- Full name, email, phone, status, photo
-- Linked properties (via `property_cleaners`)
-- Last 10 cleanings + total count + total earnings
-- Edit / Toggle active / Remove (soft `is_active=false`) buttons
+---
 
-## G. Pricing — new 3 tiers (grandfather old subscribers)
-Create new Stripe prices (keep old IDs in `ALLOWED_PRICES` for grandfather):
-| Plan | BRL | EUR | USD | GBP |
-|---|---|---|---|---|
-| Pro | R$34,90 | €14 | $19 | £14 |
-| Premium | R$69,90 | €29 | $39 | £29 |
+## Batch 2 — Dashboard rewrite (`src/routes/app.tsx`)
 
-- `payments--batch_create_product`: `hostlyb_pro` (4 prices), `hostlyb_premium` (4 prices) at new amounts.
-- Update `ALLOWED_PRICES` (add new, keep old).
-- Webhook `plan_tier` derivation handles both old + new price ids.
-- `can_add_property`: Free = **1** (not 2), Pro = 5, Premium = unlimited. Update existing migration.
-- Add `max_org_members` enforcement: Free=1, Pro=3, Premium=999.
+Sections in order:
 
-## H. Landing + checkout UI
-- `routes/index.tsx` — rebuild `Pricing` with 3 cards (Free 1 prop, Pro 5 prop €14, Premium unlimited €29). Remove Demo button from header + hero. Remove all "7 dias grátis / no credit card" copy in i18n.
-- `routes/assinar.tsx` — already 3-plan; update prices to new values, drop SAR special-case (keep simple EUR for non-listed countries).
-- `TrialGate.tsx` / `useTrialStatus` — gut trial banner + lockout; Free is permanent and gated only by feature/property limits via `UpgradeModal`.
+1. **Today in your operation** — 6 KPI cards (Check-ins, Check-outs, Pending cleanings, Currently staying, Maintenance, Estimated revenue today). Each card is a `Link` to the relevant page with a query string pre-filter (e.g. `/hospedes?filter=checkin-today`). Maintenance hidden when count is 0.
+2. **Financial summary** — 4 big numbers (month revenue, expenses, profit, top property) + month-over-month % comparison (green/red). Queries `transactions` aggregated by month.
+3. **Guest chart** — line chart (recharts is already a dep) with Day/Week/Month/Year toggle, grouping `guests.checkin_date`.
+4. **Operation progress bar** — computes a 0–100 score from 6 criteria, hover/click opens a sheet listing missing items with direct links. Premium criterion (guidebook) opens UpgradeModal.
 
-## I. Files affected
-- migrations: bucket + lifecycle + `cleaning_photo_log` + update `can_add_property` to 1 + `max_org_members` enforcement function
-- new: `src/lib/email-templates/{invite-employee,cleaning-photo,cleaning-problem}.tsx`, `src/lib/email-templates/registry.ts`
-- new server fns: `src/lib/email/send.ts`, `src/utils/photo-email.functions.ts`, `src/utils/invite-email.functions.ts`
-- edited: `assinar.tsx`, `index.tsx` (Pricing), `equipe.tsx` (modal + email), `financeiro.tsx` (format + colors + origin), `faxineira.$token.tsx` (photo flow), `AppShell.tsx` (logo), `TrialGate.tsx` (gut), `i18n.tsx` (strings), `payments.functions.ts` (new prices)
+Keep the existing "Your properties" / "Upcoming cleanings" / "Alerts" sections below.
 
-## Open
-- "Powered by Hostlyb" on cleaner public link — add for Free, hide for Pro/Premium (gated on org's plan_tier).
-- Premium-only features (guidebook, check-in, maintenance log, PDF report, AIMA): scaffold as "Coming soon" stubs to ship pricing now; full build in follow-up.
+---
 
-Approve and I'll execute in order: email infra → DB migration → email templates + server fns → photo flow rewrite → invite fix → pricing/landing/checkout → financial UI → cleaner modal → logo.
+## Batch 3 — Cleaning module
+
+1. `src/routes/limpezas.tsx`: each job in the host view shows `⏱️ duration_minutes` (when complete) and "avg X min on this property" (averaged client-side from completed jobs for the same `property_id`).
+2. `src/routes/faxineira.$token.tsx`: when user taps the first checklist item or "Start", call `cleaner_update_job(status: 'em_andamento')` if still `agendado` (trigger records start). On submit `concluido`, duration is computed automatically.
+3. `src/routes/imoveis.$id.tsx` and the property card on dashboard: render a **cleaning score badge** (🟢/🟡/🔴) using stats from the new view. Show last cleaning date, count this month, # issues.
+4. **Report Problem button** in cleaner portal — red button above checklist. Opens a sheet with photo upload (existing `forgotten-items` bucket pattern, or new `maintenance-photos`), description, urgency radio. POSTs to a new server route `/api/public/cleaner/report-problem` (zero-storage policy similar to `/api/public/cleaner/notify`) which calls the RPC + sends email via existing `cleaning-problem` template + creates alert.
+
+---
+
+## Batch 4 — Guest module
+
+1. **Status tags** on list + detail sheet: compute client-side
+   - 🔵 Returning: more than 1 row with same email/phone
+   - 🟡 VIP: `is_vip = true` (manual toggle in detail sheet)
+   - 🔴 Attention: `had_issue = true` OR any `maintenance_issues` linked to a past stay
+   - 🟢 Check-in confirmed: `status = 'confirmado' | 'hospedado'`
+   - ⚪ Payment pending: linked `transactions` row with `status = 'pendente'` (or `total_value = 0`)
+2. **WhatsApp button** in `GuestDetailSheet` with pre-filled localized template message using host's display name + property name (already wired via existing `wa.me/` pattern — just add a deep-link with `?text=`).
+3. **Import guests** button — the SpreadsheetImport modal already supports guests. Plan: surface column-mapping UI (currently inferred only). Add a `MappingStep` between parse and import showing detected columns vs system fields with `<select>` overrides, plus the first-5-row preview + per-row validation errors (already partially there).
+
+---
+
+## Files touched
+
+**Created**
+- `supabase/migrations/<ts>_ops_upgrade.sql`
+- `src/components/dashboard/OperationCenter.tsx`
+- `src/components/dashboard/FinancialSummary.tsx`
+- `src/components/dashboard/GuestChart.tsx`
+- `src/components/dashboard/OperationProgress.tsx`
+- `src/components/dashboard/PropertyScoreBadge.tsx`
+- `src/components/cleaner/ReportProblemSheet.tsx`
+- `src/routes/api/public/cleaner/report-problem.ts`
+
+**Edited**
+- `src/routes/app.tsx` (full rewrite around new sections)
+- `src/routes/limpezas.tsx` (duration display + avg)
+- `src/routes/faxineira.$token.tsx` (auto-start on first interaction + Report Problem button)
+- `src/routes/imoveis.$id.tsx` and `imoveis.index.tsx` (score badge)
+- `src/routes/hospedes.tsx` (tags, VIP toggle, WhatsApp deeplink)
+- `src/components/SpreadsheetImport.tsx` (column-mapping step)
+- `src/lib/i18n.tsx` (all new strings × 6 locales)
+
+---
+
+## Sequencing
+
+1. Run migration (Batch 1) — wait for approval.
+2. Add i18n strings + Batch 2 dashboard components.
+3. Batch 3 (cleaning module + score) + Batch 4 (guest module).
+4. Spreadsheet column-mapping polish.
+5. Verify with browser preview.
+
+**Estimated edits:** ~12 files, ~1500 LOC. Migration must be approved before code changes.

@@ -7,6 +7,10 @@ import { formatMoney } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { Wallet, Home, Star, Users as UsersIcon, AlertTriangle, ChevronRight, Clock } from "lucide-react";
 import { Onboarding, OnboardingHelpButton, useOnboarding } from "@/components/Onboarding";
+import { OperationCenter } from "@/components/dashboard/OperationCenter";
+import { FinancialSummary } from "@/components/dashboard/FinancialSummary";
+import { GuestChart } from "@/components/dashboard/GuestChart";
+import { OperationProgress } from "@/components/dashboard/OperationProgress";
 
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Dashboard — Hostlyb" }, { name: "description", content: "Visão geral dos seus imóveis." }] }),
@@ -83,8 +87,20 @@ function Dashboard() {
         <OnboardingHelpButton onClick={onboarding.show} />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 mt-4">
-        <KpiCard icon={Wallet} label="Receita do mês" value={fm(monthlyRevenue)} color="#FF5A5F" />
+      {/* New: Today in your operation */}
+      <OperationCenter />
+
+      {/* New: Financial summary */}
+      <FinancialSummary />
+
+      {/* New: Guest chart */}
+      <GuestChart />
+
+      {/* New: Operation progress */}
+      <OperationProgress />
+
+      <section className="grid grid-cols-2 gap-3 mt-6">
+        <KpiCard icon={Wallet} label="Receita potencial/mês" value={fm(monthlyRevenue)} color="#FF5A5F" />
         <KpiCard icon={Home} label="Imóveis ativos" value={String(properties.length)} color="#4A9EFF" />
         <KpiCard icon={Star} label="Avaliação média" value={`${avgRating} ★`} color="#FFB347" />
         <KpiCard icon={UsersIcon} label="Hóspedes" value={String(guests.length)} color="#00C896" />
