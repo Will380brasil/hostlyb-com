@@ -3,8 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getEmailStats, sendManualBlast } from "@/lib/admin.functions";
-import { Send } from "lucide-react";
+import { getEmailStats, sendManualBlast, sendAuthTestEmail } from "@/lib/admin.functions";
+import { Send, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/admin/emails")({
   head: () => ({ meta: [{ title: "Emails · Admin" }, { name: "robots", content: "noindex, nofollow" }] }),
