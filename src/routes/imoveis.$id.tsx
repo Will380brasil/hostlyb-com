@@ -81,18 +81,21 @@ function PropertyDetail() {
 
       <nav className="flex gap-1 mb-4 border-b overflow-x-auto">
         {([
-          ["overview", "Geral", null],
-          ["guidebook", t("guidebook.title"), BookOpen],
-          ["maintenance", t("maint.tab"), Wrench],
-          ["performance", t("perf.tab"), BarChart3],
-        ] as const).map(([k, l, Icon]) => (
+          ["overview", "Geral", null, false],
+          ["channels", "Canais", Link2, false],
+          ["guidebook", t("guidebook.title"), BookOpen, true],
+          ["maintenance", t("maint.tab"), Wrench, true],
+          ["performance", t("perf.tab"), BarChart3, true],
+        ] as const).map(([k, l, Icon, premium]) => (
           <button key={k} onClick={() => setTab(k as any)}
             className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 -mb-px flex items-center gap-1 ${tab === k ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}>
             {Icon && <Icon size={14} />} {l}
-            {(k === "guidebook" || k === "maintenance" || k === "performance") && <PremiumBadge />}
+            {premium && <PremiumBadge />}
           </button>
         ))}
       </nav>
+
+      {tab === "channels" && <IcalFeedsTab propertyId={id} />}
 
       {tab === "guidebook" && (
         <PremiumGate>
