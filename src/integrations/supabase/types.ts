@@ -935,6 +935,8 @@ export type Database = {
           ical_export_token: string
           id: string
           locale: string
+          onboarding_completed: boolean
+          plan_selected_at: string | null
           property_tier: number
           suspended_at: string | null
           updated_at: string
@@ -950,6 +952,8 @@ export type Database = {
           ical_export_token?: string
           id: string
           locale?: string
+          onboarding_completed?: boolean
+          plan_selected_at?: string | null
           property_tier?: number
           suspended_at?: string | null
           updated_at?: string
@@ -965,6 +969,8 @@ export type Database = {
           ical_export_token?: string
           id?: string
           locale?: string
+          onboarding_completed?: boolean
+          plan_selected_at?: string | null
           property_tier?: number
           suspended_at?: string | null
           updated_at?: string

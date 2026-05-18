@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { PasswordField } from "@/components/PasswordField";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,8 +6,14 @@ import { lovable } from "@/integrations/lovable";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 
+type SignupSearch = { plan?: "free" | "pro" | "premium" };
+
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Criar conta — Hostlyb" }, { name: "description", content: "Crie sua conta Hostlyb grátis." }] }),
+  validateSearch: (s: Record<string, unknown>): SignupSearch => {
+    const p = s.plan;
+    return p === "free" || p === "pro" || p === "premium" ? { plan: p } : {};
+  },
   component: SignupPage,
 });
 
@@ -29,6 +35,10 @@ const COUNTRIES = [
 function SignupPage() {
   const t = useT();
   const navigate = useNavigate();
+  const { plan } = useSearch({ from: "/signup" }) as SignupSearch;
+  if (typeof window !== "undefined" && plan) {
+    try { localStorage.setItem("selected_plan", plan); } catch {}
+  }
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,7 +71,9 @@ function SignupPage() {
     if (error) { toast.error(error.message); return; }
     if (data.session) {
       toast.success(t("signup.success"));
-      navigate({ to: "/app" as any });
+      const planParam = plan ?? (typeof window !== "undefined" ? localStorage.getItem("selected_plan") : null);
+      const qs = planParam ? `?onboarding=1&plan=${planParam}` : "?onboarding=1";
+      navigate({ to: ("/assinar" + qs) as any });
     } else {
       // Awaiting email confirmation
       setSentTo(email);

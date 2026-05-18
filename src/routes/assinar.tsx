@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +9,17 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { createPortalSession } from "@/utils/payments.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-export const Route = createFileRoute("/assinar")({ component: SubscribePage });
+type AssinarSearch = { onboarding?: "1"; plan?: "free" | "pro" | "premium" };
+
+export const Route = createFileRoute("/assinar")({
+  validateSearch: (s: Record<string, unknown>): AssinarSearch => ({
+    onboarding: s.onboarding === "1" ? "1" : undefined,
+    plan: (s.plan === "free" || s.plan === "pro" || s.plan === "premium") ? s.plan : undefined,
+  }),
+  component: SubscribePage,
+});
 
 type Plan = "pro" | "premium";
 
@@ -39,15 +48,22 @@ function SubscribePage() {
   const navigate = useNavigate();
   const { currency, lang, country } = useLocale();
   const t = useT();
+  const search = useSearch({ from: "/assinar" }) as AssinarSearch;
+  const isOnboarding = search.onboarding === "1";
   const [orgId, setOrgId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
+    search.plan === "pro" || search.plan === "premium" ? (search.plan as Plan) : null
+  );
+  const [continuingFree, setContinuingFree] = useState(false);
   const { subscription, isActive, loading } = useSubscription(orgId);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { navigate({ to: "/login" }); return; }
+      setUserId(user.id);
       const { data: m } = await supabase
         .from("organization_members")
         .select("organization_id, role")
@@ -55,6 +71,32 @@ function SubscribePage() {
       if (m) { setOrgId(m.organization_id); setRole(m.role); }
     })();
   }, [navigate]);
+
+  // When user becomes active via Stripe during onboarding, mark complete and go to /app
+  useEffect(() => {
+    if (!isOnboarding || !isActive || !userId) return;
+    (async () => {
+      await supabase.from("profiles").update({
+        onboarding_completed: true,
+        plan_selected_at: new Date().toISOString(),
+      }).eq("id", userId);
+      try { localStorage.removeItem("selected_plan"); } catch {}
+      navigate({ to: "/app" as any });
+    })();
+  }, [isOnboarding, isActive, userId, navigate]);
+
+  const continueFree = async () => {
+    if (!userId) return;
+    setContinuingFree(true);
+    const { error } = await supabase.from("profiles").update({
+      onboarding_completed: true,
+      plan_selected_at: new Date().toISOString(),
+    }).eq("id", userId);
+    setContinuingFree(false);
+    if (error) { toast.error(error.message); return; }
+    try { localStorage.removeItem("selected_plan"); } catch {}
+    navigate({ to: "/app" as any });
+  };
 
   const isSA = (country || "").toUpperCase() === "SA";
   const billedCurrency: "BRL" | "EUR" | "USD" | "GBP" = isSA ? "EUR" : currency;
@@ -80,9 +122,18 @@ function SubscribePage() {
       <PaymentTestModeBanner />
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{t("pricing.title.a")} {t("pricing.title.b")}</h1>
-          <Link to="/app" className="text-sm text-muted-foreground hover:underline">Voltar</Link>
+          <h1 className="text-2xl font-bold">
+            {isOnboarding ? "Escolha seu plano" : `${t("pricing.title.a")} ${t("pricing.title.b")}`}
+          </h1>
+          {!isOnboarding && (
+            <Link to="/app" className="text-sm text-muted-foreground hover:underline">Voltar</Link>
+          )}
         </div>
+        {isOnboarding && (
+          <p className="text-sm text-muted-foreground">
+            Você pode trocar a qualquer momento. Se escolher Pro ou Premium, será redirecionado para o pagamento seguro.
+          </p>
+        )}
 
         {loading || !orgId ? (
           <p className="text-muted-foreground">Carregando…</p>
@@ -119,7 +170,13 @@ function SubscribePage() {
                   </li>
                 ))}
               </ul>
-              <div className="text-xs text-muted-foreground text-center">Plano atual</div>
+              {isOnboarding ? (
+                <Button variant="outline" className="w-full" disabled={continuingFree} onClick={continueFree}>
+                  {continuingFree ? "Aguarde…" : "Continuar com Grátis"}
+                </Button>
+              ) : (
+                <div className="text-xs text-muted-foreground text-center">Plano atual</div>
+              )}
             </div>
 
             {/* PRO */}
