@@ -244,8 +244,8 @@ export const getEmailStats = createServerFn({ method: "GET" })
     // dedup by message_id keep latest (already ordered desc)
     const seen = new Set<string>();
     const dedup: any[] = [];
-    for (const r of data ?? []) {
-      const k = r.message_id || r.id;
+    for (const r of (data ?? []) as any[]) {
+      const k = (r.message_id as string | null) || (r as any).id || `${r.recipient_email}-${r.created_at}`;
       if (seen.has(k)) continue;
       seen.add(k);
       dedup.push(r);
@@ -297,7 +297,7 @@ export const sendManualBlast = createServerFn({ method: "POST" })
         await internalSendEmail({
           templateName: "product-update",
           recipientEmail: u.email!,
-          templateData: { subject: data.subject, body: data.body, displayName: u.user_metadata?.full_name ?? null },
+          templateData: { title: data.subject, bodyHtml: data.body, lang: "pt", recipientEmail: u.email },
           idempotencyKey: `blast-${Date.now()}-${u.id}`,
         });
         queued++;
