@@ -122,9 +122,18 @@ function SubscribePage() {
       <PaymentTestModeBanner />
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{t("pricing.title.a")} {t("pricing.title.b")}</h1>
-          <Link to="/app" className="text-sm text-muted-foreground hover:underline">Voltar</Link>
+          <h1 className="text-2xl font-bold">
+            {isOnboarding ? "Escolha seu plano" : `${t("pricing.title.a")} ${t("pricing.title.b")}`}
+          </h1>
+          {!isOnboarding && (
+            <Link to="/app" className="text-sm text-muted-foreground hover:underline">Voltar</Link>
+          )}
         </div>
+        {isOnboarding && (
+          <p className="text-sm text-muted-foreground">
+            Você pode trocar a qualquer momento. Se escolher Pro ou Premium, será redirecionado para o pagamento seguro.
+          </p>
+        )}
 
         {loading || !orgId ? (
           <p className="text-muted-foreground">Carregando…</p>
