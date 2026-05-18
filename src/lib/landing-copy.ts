@@ -7,7 +7,7 @@ export interface LandingCopy {
   hero: {
     headline: string;
     subheadline: string;
-    cta: string; // "Start free — no card needed"
+    cta: string; // "Start free"
     bullets: [string, string, string];
     social: string; // "★★★★★ Trusted by 2,400+ hosts..."
     phoneDashboard: string;
@@ -71,7 +71,7 @@ const pt: LandingCopy = {
   hero: {
     headline: "Seu aluguel por temporada, organizado em 2 minutos por dia.",
     subheadline: "Pare de gerenciar limpezas pelo WhatsApp, perder o controle de objetos esquecidos e não saber o que acontece no seu imóvel. O Hostlyb te dá controle total — sem complexidade.",
-    cta: "Começar grátis — sem cartão",
+    cta: "Começar grátis",
     bullets: ["✓ Plano grátis para sempre", "✓ Cancele quando quiser", "✓ Configure em 5 minutos"],
     social: "★★★★★ Usado por +2.400 anfitriões no Brasil, EUA e Europa",
     phoneDashboard: "Painel",
@@ -146,7 +146,7 @@ const pt: LandingCopy = {
   },
   finalCta: {
     title: "Pare de apagar incêndio. Comece a gerenciar.",
-    subtitle: "Grátis para sempre até 2 imóveis. Sem cartão. Sem contrato.",
+    subtitle: "Grátis para sempre para 1 imóvel. Cancele quando quiser.",
     cta: "Começar grátis agora →",
     micro: "✓ Configure em 5 minutos   ✓ Cancele quando quiser   ✓ Usado em 3 continentes",
   },
@@ -158,7 +158,7 @@ const en: LandingCopy = {
   hero: {
     headline: "Your rental property, organized in 2 minutes a day.",
     subheadline: "Stop managing cleanings over WhatsApp, losing track of forgotten items, and not knowing what's happening in your property. Hostlyb gives you full control — without the complexity.",
-    cta: "Start free — no card needed",
+    cta: "Start free",
     bullets: ["✓ Free plan forever", "✓ Cancel anytime", "✓ Setup in 5 minutes"],
     social: "★★★★★ Trusted by 2,400+ hosts in Brazil, USA and Europe",
     phoneDashboard: "Dashboard",
@@ -233,7 +233,7 @@ const en: LandingCopy = {
   },
   finalCta: {
     title: "Stop putting out fires. Start managing.",
-    subtitle: "Free forever up to 2 properties. No card. No contract.",
+    subtitle: "Free forever for 1 property. Cancel anytime.",
     cta: "Start free now →",
     micro: "✓ Setup in 5 minutes   ✓ Cancel anytime   ✓ Used across 3 continents",
   },
@@ -245,7 +245,7 @@ const es: LandingCopy = {
   hero: {
     headline: "Tu alquiler vacacional, organizado en 2 minutos al día.",
     subheadline: "Deja de gestionar limpiezas por WhatsApp, perder objetos olvidados y no saber qué pasa en tu propiedad. Hostlyb te da control total — sin complejidad.",
-    cta: "Empezar gratis — sin tarjeta",
+    cta: "Empezar gratis",
     bullets: ["✓ Plan gratis para siempre", "✓ Cancela cuando quieras", "✓ Listo en 5 minutos"],
     social: "★★★★★ Usado por +2.400 anfitriones en Brasil, EE.UU. y Europa",
     phoneDashboard: "Panel",
@@ -320,7 +320,7 @@ const es: LandingCopy = {
   },
   finalCta: {
     title: "Deja de apagar fuegos. Empieza a gestionar.",
-    subtitle: "Gratis para siempre hasta 2 propiedades. Sin tarjeta. Sin contrato.",
+    subtitle: "Gratis para siempre para 1 propiedad. Cancela cuando quieras.",
     cta: "Empezar gratis ahora →",
     micro: "✓ Listo en 5 minutos   ✓ Cancela cuando quieras   ✓ Usado en 3 continentes",
   },
@@ -332,7 +332,7 @@ const fr: LandingCopy = {
   hero: {
     headline: "Votre location saisonnière, organisée en 2 minutes par jour.",
     subheadline: "Arrêtez de gérer les ménages par WhatsApp, de perdre les objets oubliés et de ne pas savoir ce qui se passe dans votre logement. Hostlyb vous donne le contrôle total — sans complexité.",
-    cta: "Commencer gratuitement — sans carte",
+    cta: "Commencer gratuitement",
     bullets: ["✓ Plan gratuit à vie", "✓ Annulez à tout moment", "✓ Prêt en 5 minutes"],
     social: "★★★★★ Utilisé par +2 400 hôtes au Brésil, aux USA et en Europe",
     phoneDashboard: "Tableau",
@@ -407,7 +407,7 @@ const fr: LandingCopy = {
   },
   finalCta: {
     title: "Arrêtez d'éteindre des incendies. Commencez à gérer.",
-    subtitle: "Gratuit à vie jusqu'à 2 logements. Sans carte. Sans engagement.",
+    subtitle: "Gratuit à vie pour 1 logement. Résiliez à tout moment.",
     cta: "Commencer gratuitement →",
     micro: "✓ Prêt en 5 minutes   ✓ Annulez quand vous voulez   ✓ Utilisé sur 3 continents",
   },
@@ -419,7 +419,7 @@ const it: LandingCopy = {
   hero: {
     headline: "Il tuo affitto breve, organizzato in 2 minuti al giorno.",
     subheadline: "Smetti di gestire le pulizie via WhatsApp, di perdere gli oggetti dimenticati e di non sapere cosa succede nel tuo appartamento. Hostlyb ti dà controllo totale — senza complessità.",
-    cta: "Inizia gratis — senza carta",
+    cta: "Inizia gratis",
     bullets: ["✓ Piano gratuito per sempre", "✓ Disdici quando vuoi", "✓ Pronto in 5 minuti"],
     social: "★★★★★ Usato da +2.400 host in Brasile, USA ed Europa",
     phoneDashboard: "Dashboard",
@@ -494,7 +494,7 @@ const it: LandingCopy = {
   },
   finalCta: {
     title: "Smetti di spegnere incendi. Inizia a gestire.",
-    subtitle: "Gratis per sempre fino a 2 appartamenti. Senza carta. Senza contratto.",
+    subtitle: "Gratis per sempre per 1 appartamento. Disdici quando vuoi.",
     cta: "Inizia gratis ora →",
     micro: "✓ Pronto in 5 minuti   ✓ Disdici quando vuoi   ✓ Usato in 3 continenti",
   },
@@ -506,7 +506,7 @@ const de: LandingCopy = {
   hero: {
     headline: "Deine Ferienwohnung, organisiert in 2 Minuten am Tag.",
     subheadline: "Schluss damit, Reinigungen über WhatsApp zu koordinieren, vergessene Gegenstände zu verlieren und nicht zu wissen, was in deiner Unterkunft passiert. Hostlyb gibt dir volle Kontrolle — ohne Komplexität.",
-    cta: "Kostenlos starten — ohne Kreditkarte",
+    cta: "Kostenlos starten",
     bullets: ["✓ Für immer kostenloser Plan", "✓ Jederzeit kündbar", "✓ In 5 Minuten eingerichtet"],
     social: "★★★★★ Genutzt von über 2.400 Gastgebern in Brasilien, USA und Europa",
     phoneDashboard: "Dashboard",
@@ -581,7 +581,7 @@ const de: LandingCopy = {
   },
   finalCta: {
     title: "Hör auf, Feuer zu löschen. Fang an zu managen.",
-    subtitle: "Für immer kostenlos für bis zu 2 Unterkünfte. Keine Karte. Kein Vertrag.",
+    subtitle: "Für immer kostenlos für 1 Unterkunft. Jederzeit kündbar.",
     cta: "Jetzt kostenlos starten →",
     micro: "✓ In 5 Minuten eingerichtet   ✓ Jederzeit kündbar   ✓ Auf 3 Kontinenten genutzt",
   },

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Home as HomeIcon, Check, X, ArrowRight, Plus, Minus, Star } from "lucide-react";
 import { useLocale, PLAN_PRICE, type Currency } from "@/lib/i18n";
@@ -124,8 +124,10 @@ function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const scrollTop = (e: React.MouseEvent) => {
+  const navigate = useNavigate();
+  const onLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (session) { navigate({ to: "/app" as any }); return; }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
@@ -138,7 +140,7 @@ function Navbar() {
       transition: "all .2s ease",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="#" onClick={scrollTop} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 800, color: C.black, textDecoration: "none" }}>
+        <a href="#" onClick={onLogoClick} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 800, color: C.black, textDecoration: "none", cursor: "pointer" }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
