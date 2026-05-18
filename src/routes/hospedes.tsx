@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatMoney, currencySymbol } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Plus, Phone, MessageCircle, Search, X, Calendar, History, FileSpreadsheet } from "lucide-react";
+import { Plus, Phone, MessageCircle, Search, X, Calendar, History, FileSpreadsheet, Star, AlertTriangle } from "lucide-react";
 import { SpreadsheetImport } from "@/components/SpreadsheetImport";
 
 export const Route = createFileRoute("/hospedes")({
@@ -30,6 +30,24 @@ const PLATFORMS = [
   { v: "outro", l: "Outro / Other" },
 ];
 const platformLabel: Record<string, string> = Object.fromEntries(PLATFORMS.map(p => [p.v, p.l]));
+
+function GuestTags({ guest, returning }: { guest: any; returning?: boolean }) {
+  const tags: { l: string; bg: string; c: string }[] = [];
+  if (guest.is_vip) tags.push({ l: "⭐ VIP", bg: "var(--color-warning-soft)", c: "var(--color-warning)" });
+  if (returning) tags.push({ l: "🔁 Retornando", bg: "var(--color-info-soft)", c: "var(--color-info)" });
+  if (guest.had_issue) tags.push({ l: "⚠️ Atenção", bg: "rgba(239,68,68,0.12)", c: "var(--color-destructive, #ef4444)" });
+  const today = new Date().toISOString().slice(0, 10);
+  if (guest.checkin_date === today) tags.push({ l: "🛬 Check-in hoje", bg: "var(--color-accent-soft)", c: "var(--color-accent)" });
+  if (Number(guest.total_value ?? 0) <= 0) tags.push({ l: "💳 Pagamento pendente", bg: "var(--color-warning-soft)", c: "var(--color-warning)" });
+  if (!tags.length) return null;
+  return (
+    <div className="flex flex-wrap gap-1">
+      {tags.map((t, i) => (
+        <span key={i} className="text-[10px] font-semibold px-1.5 py-0.5 rounded" style={{ background: t.bg, color: t.c }}>{t.l}</span>
+      ))}
+    </div>
+  );
+}
 
 function GuestsPage() {
   const { currency, lang } = useLocale();
@@ -86,13 +104,39 @@ function GuestsPage() {
               <button onClick={() => setDetail(g)} className="hostly-card !p-4 flex flex-col gap-3 w-full text-left active:scale-[0.99] transition">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-semibold truncate">{g.name}</p>
+                    <p className="font-semibold truncate flex items-center gap-1.5">
+                      {g.name}
+                      {g.is_vip && <Star size={12} style={{ color: "var(--color-warning)" }} fill="currentColor" />}
+                    </p>
                     <p className="text-xs text-muted-foreground truncate">{g.properties?.name ?? "—"}</p>
                   </div>
                   <StatusBadge status={g.status} />
                 </div>
+                <GuestTags guest={g} />
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{g.checkin_date} → {g.checkout_date}</span>
+                  <span>{g.nights ?? "—"} noites</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="hostly-pill" style={{ background: "var(--color-info-soft)", color: "var(--color-info)" }}>
+                    {platformLabel[g.platform] ?? g.platform}
+                  </span>
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <span className="font-mono text-sm" style={{ color: "var(--color-success)" }}>
+                      {formatMoney(Number(g.total_value ?? 0), currency, lang)}
+                    </span>
+                    {g.phone && (
+                      <>
+                        <a href={`tel:+${g.phone}`} className="grid place-items-center w-8 h-8 rounded-full bg-secondary"><Phone size={13} /></a>
+                        <a href={`https://wa.me/${g.phone}?text=${encodeURIComponent(`Olá ${g.name}!`)}`} target="_blank" rel="noreferrer"
+                           className="grid place-items-center w-8 h-8 rounded-full"
+                           style={{ background: "var(--color-success-soft)", color: "var(--color-success)" }}>
+                          <MessageCircle size={13} />
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </div>
                   <span>{g.nights ?? "—"} noites</span>
                 </div>
                 <div className="flex items-center justify-between">
