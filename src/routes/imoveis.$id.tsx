@@ -8,12 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { fullAddress, formatMoney } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n";
 import { toast } from "sonner";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, BookOpen, Wrench, BarChart3, Link2 } from "lucide-react";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, BookOpen, Wrench, BarChart3, Link2, ShieldCheck } from "lucide-react";
 import { PropertyScoreBadge } from "@/components/dashboard/PropertyScoreBadge";
 import { PremiumGate, PremiumBadge } from "@/components/PremiumGate";
 import { MaintenanceTab } from "@/components/property/MaintenanceTab";
 import { PerformanceTab } from "@/components/property/PerformanceTab";
 import { IcalFeedsTab } from "@/components/property/IcalFeedsTab";
+import { LegalComplianceTab } from "@/components/property/LegalComplianceTab";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostlyb" }, { name: "description", content: "Detalhes do imóvel." }] }),
@@ -25,7 +26,7 @@ function PropertyDetail() {
   const t = useT();
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"overview" | "guidebook" | "maintenance" | "performance" | "channels">("overview");
+  const [tab, setTab] = useState<"overview" | "guidebook" | "maintenance" | "performance" | "channels" | "compliance">("overview");
 
   const archive = useMutation({
     mutationFn: async () => {
@@ -86,6 +87,7 @@ function PropertyDetail() {
           ["guidebook", t("guidebook.title"), BookOpen, true],
           ["maintenance", t("maint.tab"), Wrench, true],
           ["performance", t("perf.tab"), BarChart3, true],
+          ["compliance", t("legal.tab"), ShieldCheck, true],
         ] as const).map(([k, l, Icon, premium]) => (
           <button key={k} onClick={() => setTab(k as any)}
             className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 -mb-px flex items-center gap-1 ${tab === k ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}>
@@ -109,6 +111,7 @@ function PropertyDetail() {
 
       {tab === "maintenance" && <PremiumGate><MaintenanceTab propertyId={id} /></PremiumGate>}
       {tab === "performance" && <PremiumGate><PerformanceTab propertyId={id} propertyName={p.name} /></PremiumGate>}
+      {tab === "compliance" && <PremiumGate><LegalComplianceTab propertyId={id} propertyName={p.name} /></PremiumGate>}
 
       {tab === "overview" && <>
       <section className="hostly-card mb-4">
