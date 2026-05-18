@@ -26,6 +26,7 @@ import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ImoveisIndexRouteImport } from './routes/imoveis.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ImoveisIdRouteImport } from './routes/imoveis.$id'
 import { Route as GuiaSlugRouteImport } from './routes/guia.$slug'
 import { Route as FaxineiraTokenRouteImport } from './routes/faxineira.$token'
@@ -34,6 +35,11 @@ import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as CheckinTokenRouteImport } from './routes/checkin.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminRevenueRouteImport } from './routes/admin.revenue'
+import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
+import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ImoveisIdGuiaRouteImport } from './routes/imoveis.$id.guia'
 import { Route as ApiPublicGeoRouteImport } from './routes/api/public/geo'
@@ -131,6 +137,11 @@ const ImoveisIndexRoute = ImoveisIndexRouteImport.update({
   path: '/imoveis/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ImoveisIdRoute = ImoveisIdRouteImport.update({
   id: '/imoveis/$id',
   path: '/imoveis/$id',
@@ -170,6 +181,31 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRevenueRoute = AdminRevenueRouteImport.update({
+  id: '/revenue',
+  path: '/revenue',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEmailsRoute = AdminEmailsRouteImport.update({
+  id: '/emails',
+  path: '/emails',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AdminRoute,
 } as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
@@ -235,7 +271,7 @@ const ApiPublicCleanerNotifyRoute = ApiPublicCleanerNotifyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
@@ -250,6 +286,11 @@ export interface FileRoutesByFullPath {
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/emails': typeof AdminEmailsRoute
+  '/admin/revenue': typeof AdminRevenueRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkin/$token': typeof CheckinTokenRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -258,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/guia/$slug': typeof GuiaSlugRoute
   '/imoveis/$id': typeof ImoveisIdRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
@@ -273,7 +315,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
@@ -288,6 +329,11 @@ export interface FileRoutesByTo {
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/emails': typeof AdminEmailsRoute
+  '/admin/revenue': typeof AdminRevenueRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkin/$token': typeof CheckinTokenRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -296,6 +342,7 @@ export interface FileRoutesByTo {
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/guia/$slug': typeof GuiaSlugRoute
   '/imoveis/$id': typeof ImoveisIdRouteWithChildren
+  '/admin': typeof AdminIndexRoute
   '/imoveis': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
@@ -312,7 +359,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/alertas': typeof AlertasRoute
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
@@ -327,6 +374,11 @@ export interface FileRoutesById {
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/emails': typeof AdminEmailsRoute
+  '/admin/revenue': typeof AdminRevenueRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkin/$token': typeof CheckinTokenRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -335,6 +387,7 @@ export interface FileRoutesById {
   '/faxineira/$token': typeof FaxineiraTokenRoute
   '/guia/$slug': typeof GuiaSlugRoute
   '/imoveis/$id': typeof ImoveisIdRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
   '/imoveis/': typeof ImoveisIndexRoute
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
@@ -367,6 +420,11 @@ export interface FileRouteTypes {
     | '/pwa-check'
     | '/signup'
     | '/unsubscribe'
+    | '/admin/activity'
+    | '/admin/emails'
+    | '/admin/revenue'
+    | '/admin/settings'
+    | '/admin/users'
     | '/auth/callback'
     | '/checkin/$token'
     | '/checkout/return'
@@ -375,6 +433,7 @@ export interface FileRouteTypes {
     | '/faxineira/$token'
     | '/guia/$slug'
     | '/imoveis/$id'
+    | '/admin/'
     | '/imoveis/'
     | '/api/public/geo'
     | '/imoveis/$id/guia'
@@ -390,7 +449,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/alertas'
     | '/app'
     | '/assinar'
@@ -405,6 +463,11 @@ export interface FileRouteTypes {
     | '/pwa-check'
     | '/signup'
     | '/unsubscribe'
+    | '/admin/activity'
+    | '/admin/emails'
+    | '/admin/revenue'
+    | '/admin/settings'
+    | '/admin/users'
     | '/auth/callback'
     | '/checkin/$token'
     | '/checkout/return'
@@ -413,6 +476,7 @@ export interface FileRouteTypes {
     | '/faxineira/$token'
     | '/guia/$slug'
     | '/imoveis/$id'
+    | '/admin'
     | '/imoveis'
     | '/api/public/geo'
     | '/imoveis/$id/guia'
@@ -443,6 +507,11 @@ export interface FileRouteTypes {
     | '/pwa-check'
     | '/signup'
     | '/unsubscribe'
+    | '/admin/activity'
+    | '/admin/emails'
+    | '/admin/revenue'
+    | '/admin/settings'
+    | '/admin/users'
     | '/auth/callback'
     | '/checkin/$token'
     | '/checkout/return'
@@ -451,6 +520,7 @@ export interface FileRouteTypes {
     | '/faxineira/$token'
     | '/guia/$slug'
     | '/imoveis/$id'
+    | '/admin/'
     | '/imoveis/'
     | '/api/public/geo'
     | '/imoveis/$id/guia'
@@ -467,7 +537,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AlertasRoute: typeof AlertasRoute
   AppRoute: typeof AppRoute
   AssinarRoute: typeof AssinarRoute
@@ -624,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImoveisIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/imoveis/$id': {
       id: '/imoveis/$id'
       path: '/imoveis/$id'
@@ -679,6 +756,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/revenue': {
+      id: '/admin/revenue'
+      path: '/revenue'
+      fullPath: '/admin/revenue'
+      preLoaderRoute: typeof AdminRevenueRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/emails': {
+      id: '/admin/emails'
+      path: '/emails'
+      fullPath: '/admin/emails'
+      preLoaderRoute: typeof AdminEmailsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/activity': {
+      id: '/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
@@ -760,6 +872,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminActivityRoute: typeof AdminActivityRoute
+  AdminEmailsRoute: typeof AdminEmailsRoute
+  AdminRevenueRoute: typeof AdminRevenueRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminActivityRoute: AdminActivityRoute,
+  AdminEmailsRoute: AdminEmailsRoute,
+  AdminRevenueRoute: AdminRevenueRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface ImoveisIdRouteChildren {
   ImoveisIdGuiaRoute: typeof ImoveisIdGuiaRoute
 }
@@ -774,7 +906,7 @@ const ImoveisIdRouteWithChildren = ImoveisIdRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AlertasRoute: AlertasRoute,
   AppRoute: AppRoute,
   AssinarRoute: AssinarRoute,
