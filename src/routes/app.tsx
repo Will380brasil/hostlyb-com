@@ -37,6 +37,23 @@ function KpiCard({ icon: Icon, label, value, color }: { icon: any; label: string
 function Dashboard() {
   const { currency, lang } = useLocale();
   const fm = (v: number) => formatMoney(v, currency, lang);
+  const navigate = useNavigate();
+  const { data: needsOnboarding } = useQuery({
+    queryKey: ["needs-onboarding"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return false;
+      const { data } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", u.user.id)
+        .maybeSingle();
+      return data ? data.onboarding_completed === false : false;
+    },
+  });
+  useEffect(() => {
+    if (needsOnboarding) navigate({ to: "/assinar?onboarding=1" as any });
+  }, [needsOnboarding, navigate]);
   const { data: properties = [] } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
