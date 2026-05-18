@@ -8,12 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { fullAddress, formatMoney } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n";
 import { toast } from "sonner";
-import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, BookOpen, Wrench, BarChart3, Link2 } from "lucide-react";
+import { ArrowLeft, BedDouble, Bath, Users, Wifi, Sparkles, Archive, BookOpen, Wrench, BarChart3, Link2, ShieldCheck } from "lucide-react";
 import { PropertyScoreBadge } from "@/components/dashboard/PropertyScoreBadge";
 import { PremiumGate, PremiumBadge } from "@/components/PremiumGate";
 import { MaintenanceTab } from "@/components/property/MaintenanceTab";
 import { PerformanceTab } from "@/components/property/PerformanceTab";
 import { IcalFeedsTab } from "@/components/property/IcalFeedsTab";
+import { LegalComplianceTab } from "@/components/property/LegalComplianceTab";
 
 export const Route = createFileRoute("/imoveis/$id")({
   head: () => ({ meta: [{ title: "Imóvel — Hostlyb" }, { name: "description", content: "Detalhes do imóvel." }] }),
