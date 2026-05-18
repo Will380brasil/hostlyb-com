@@ -44,6 +44,31 @@ function ConvitePage() {
       return;
     }
     setDone(true);
+    // Notify the inviter (best-effort, never blocks redirect)
+    try {
+      if (invite?.invited_by) {
+        const { data: inviter } = await supabase
+          .from("profiles")
+          .select("email, display_name")
+          .eq("id", invite.invited_by)
+          .maybeSingle();
+        const { data: me } = await supabase.auth.getUser();
+        if (inviter?.email) {
+          await sendTransactionalEmail({
+            templateName: "invite-accepted",
+            recipientEmail: inviter.email,
+            idempotencyKey: `invite-accept-${invite.id}`,
+            templateData: {
+              inviteeName: me.user?.user_metadata?.full_name ?? me.user?.email ?? invite.email,
+              inviteeEmail: invite.email,
+              organizationName: invite.organization_name,
+            },
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("invite-accept notify failed", e);
+    }
     setTimeout(() => navigate({ to: "/app" as any }), 1200);
   };
 
