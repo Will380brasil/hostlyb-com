@@ -1089,13 +1089,17 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const setLang = (l: Lang) => {
     setLangState(l);
     if (typeof window !== "undefined") localStorage.setItem(STORAGE_LANG, l);
-    // Lang drives currency unless geo overrides (BR→BRL, SA→SAR display).
     const co = (country || "").toUpperCase();
-    if (co !== "BR" && co !== "SA") {
-      const next: Currency = l === "pt" ? "BRL" : l === "en" ? "USD" : "EUR";
-      setCurrencyState(next);
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_CURRENCY, next);
-    }
+    // Country wins for BR/SA; GB → GBP. Otherwise pick by language.
+    let next: Currency;
+    if (co === "BR") next = "BRL";
+    else if (co === "SA") return; // SAR display handled elsewhere
+    else if (co === "GB") next = "GBP";
+    else if (l === "pt") next = "BRL";
+    else if (l === "en") next = "USD";
+    else next = "EUR"; // fr / it / de / es
+    setCurrencyState(next);
+    if (typeof window !== "undefined") localStorage.setItem(STORAGE_CURRENCY, next);
   };
   const setCurrency = (c: Currency) => {
     setCurrencyState(c);
