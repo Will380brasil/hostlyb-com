@@ -24,6 +24,7 @@ import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as EnRouteImport } from './routes/en'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as DemoRouteImport } from './routes/demo'
+import { Route as DeRouteImport } from './routes/de'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as AssinarRouteImport } from './routes/assinar'
 import { Route as AppRouteImport } from './routes/app'
@@ -130,6 +131,11 @@ const DiagnosticoRoute = DiagnosticoRouteImport.update({
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeRoute = DeRouteImport.update({
+  id: '/de',
+  path: '/de',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -306,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/de': typeof DeRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/en': typeof EnRoute
@@ -354,6 +361,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/de': typeof DeRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/en': typeof EnRoute
@@ -404,6 +412,7 @@ export interface FileRoutesById {
   '/app': typeof AppRoute
   '/assinar': typeof AssinarRoute
   '/calendario': typeof CalendarioRoute
+  '/de': typeof DeRoute
   '/demo': typeof DemoRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/en': typeof EnRoute
@@ -455,6 +464,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/de'
     | '/demo'
     | '/diagnostico'
     | '/en'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/de'
     | '/demo'
     | '/diagnostico'
     | '/en'
@@ -552,6 +563,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/assinar'
     | '/calendario'
+    | '/de'
     | '/demo'
     | '/diagnostico'
     | '/en'
@@ -602,6 +614,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRoute
   AssinarRoute: typeof AssinarRoute
   CalendarioRoute: typeof CalendarioRoute
+  DeRoute: typeof DeRoute
   DemoRoute: typeof DemoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
   EnRoute: typeof EnRoute
@@ -743,6 +756,13 @@ declare module '@tanstack/react-router' {
       path: '/demo'
       fullPath: '/demo'
       preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/de': {
+      id: '/de'
+      path: '/de'
+      fullPath: '/de'
+      preLoaderRoute: typeof DeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -1011,6 +1031,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRoute,
   AssinarRoute: AssinarRoute,
   CalendarioRoute: CalendarioRoute,
+  DeRoute: DeRoute,
   DemoRoute: DemoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
   EnRoute: EnRoute,
