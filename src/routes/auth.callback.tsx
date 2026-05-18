@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { sendTransactionalEmail } from "@/lib/email/send";
 import { toast } from "sonner";
 
 type Status = "checking" | "ok" | "expired" | "error";
@@ -45,6 +46,16 @@ function AuthCallback() {
         if (data.session?.user) {
           setEmail(data.session.user.email ?? "");
           setStatus("ok");
+          const u = data.session.user;
+          const name = (u.user_metadata as any)?.full_name as string | undefined;
+          if (u.email) {
+            sendTransactionalEmail({
+              templateName: "welcome",
+              recipientEmail: u.email,
+              idempotencyKey: `welcome-${u.id}`,
+              templateData: { name, lang: "pt" },
+            }).catch((e) => console.warn("[welcome email] failed", e));
+          }
           setTimeout(() => navigate({ to: "/app" as any }), 1800);
         } else {
           // No session and no explicit error — likely link already used or invalid
