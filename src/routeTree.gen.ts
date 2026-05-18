@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as LoginRouteImport } from './routes/login'
@@ -55,6 +56,11 @@ import { Route as ApiPublicCleanerNotifyRouteImport } from './routes/api/public/
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
   path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -285,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -373,6 +381,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -419,6 +428,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/sitemap.xml'
     | '/unsubscribe'
     | '/admin/activity'
     | '/admin/emails'
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/sitemap.xml'
     | '/unsubscribe'
     | '/admin/activity'
     | '/admin/emails'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pwa-check'
     | '/signup'
+    | '/sitemap.xml'
     | '/unsubscribe'
     | '/admin/activity'
     | '/admin/emails'
@@ -551,6 +563,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PwaCheckRoute: typeof PwaCheckRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CheckinTokenRoute: typeof CheckinTokenRoute
@@ -580,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/unsubscribe'
       fullPath: '/unsubscribe'
       preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -920,6 +940,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PwaCheckRoute: PwaCheckRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CheckinTokenRoute: CheckinTokenRoute,
