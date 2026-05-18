@@ -103,9 +103,9 @@ export const Route = createFileRoute("/api/public/hooks/automated-emails")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const expected = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
-        const apikey = (request.headers.get("apikey") || "").trim();
-        if (!expected || apikey !== expected) return unauthorized();
+        const secret = process.env.CRON_SECRET;
+        const auth = request.headers.get("authorization");
+        if (!secret || auth !== `Bearer ${secret}`) return unauthorized();
 
         const [welcome, inact3, inact7] = await Promise.all([
           sendWelcomeBatch(100),

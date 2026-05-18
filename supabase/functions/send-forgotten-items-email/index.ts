@@ -9,6 +9,15 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const secret = Deno.env.get("CRON_SECRET");
+    const authHeader = req.headers.get("Authorization");
+    if (!secret || authHeader !== `Bearer ${secret}`) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { cleaning_job_id } = await req.json();
     if (!cleaning_job_id) throw new Error("cleaning_job_id required");
 
