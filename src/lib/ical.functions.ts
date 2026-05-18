@@ -8,10 +8,32 @@ function toDateOnly(d: Date): string {
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
+function assertSafeFeedUrl(raw: string): URL {
+  let parsed: URL;
+  try { parsed = new URL(raw); } catch { throw new Error("Invalid URL"); }
+  if (parsed.protocol !== "https:") throw new Error("Only HTTPS iCal URLs are allowed");
+  const host = parsed.hostname.toLowerCase();
+  // Block obvious internal / metadata targets
+  const blocked = [
+    "localhost", "127.0.0.1", "0.0.0.0", "::1",
+    "169.254.169.254", "metadata.google.internal",
+  ];
+  if (blocked.includes(host)) throw new Error("Host not allowed");
+  if (/^(10\.|192\.168\.|169\.254\.|127\.)/.test(host)) throw new Error("Private hosts not allowed");
+  if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) throw new Error("Private hosts not allowed");
+  return parsed;
+}
+
+const MAX_ICAL_BYTES = 5 * 1024 * 1024; // 5MB
+
 async function fetchAndParse(url: string): Promise<Array<{ uid: string; start: Date; end: Date; summary: string }>> {
-  const res = await fetch(url, { headers: { "User-Agent": "Hostlyb/1.0 iCal-Sync" } });
+  assertSafeFeedUrl(url);
+  const res = await fetch(url, { headers: { "User-Agent": "Hostlyb/1.0 iCal-Sync" }, redirect: "error" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const lenHeader = Number(res.headers.get("content-length") ?? 0);
+  if (lenHeader && lenHeader > MAX_ICAL_BYTES) throw new Error("iCal feed too large");
   const text = await res.text();
+  if (text.length > MAX_ICAL_BYTES) throw new Error("iCal feed too large");
   const ical = await import("node-ical");
   const parsed = ical.sync.parseICS(text);
   const events: Array<{ uid: string; start: Date; end: Date; summary: string }> = [];
