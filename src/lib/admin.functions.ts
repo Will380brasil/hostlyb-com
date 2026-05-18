@@ -1,7 +1,29 @@
+import * as React from "react";
+import { render } from "@react-email/components";
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { internalSendEmail } from "@/lib/email/internal-send.server";
+import { SignupEmail } from "@/lib/email-templates/signup";
+import { InviteEmail } from "@/lib/email-templates/invite";
+import { MagicLinkEmail } from "@/lib/email-templates/magic-link";
+import { RecoveryEmail } from "@/lib/email-templates/recovery";
+import { EmailChangeEmail } from "@/lib/email-templates/email-change";
+import { ReauthenticationEmail } from "@/lib/email-templates/reauthentication";
+
+const SITE_NAME = "hostlyb-com";
+const SENDER_DOMAIN = "notify.www.hostlyb.com";
+const ROOT_DOMAIN = "www.hostlyb.com";
+const FROM_DOMAIN = "www.hostlyb.com";
+
+const AUTH_TEMPLATES: Record<string, { component: React.ComponentType<any>; subject: string }> = {
+  signup: { component: SignupEmail, subject: "[TEST] Confirm your email" },
+  invite: { component: InviteEmail, subject: "[TEST] You've been invited" },
+  magiclink: { component: MagicLinkEmail, subject: "[TEST] Your login link" },
+  recovery: { component: RecoveryEmail, subject: "[TEST] Reset your password" },
+  email_change: { component: EmailChangeEmail, subject: "[TEST] Confirm your new email" },
+  reauthentication: { component: ReauthenticationEmail, subject: "[TEST] Your verification code" },
+};
 
 const PLAN_BRL = 59.90;
 const HARDCODED_ADMINS = ["brasgold1@gmail.com"];
