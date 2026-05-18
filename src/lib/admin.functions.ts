@@ -26,12 +26,12 @@ const AUTH_TEMPLATES: Record<string, { component: React.ComponentType<any>; subj
 };
 
 const PLAN_BRL = 59.90;
-const HARDCODED_ADMINS = ["brasgold1@gmail.com"];
 
 async function assertAdmin(context: any) {
   const userEmail = ((context.claims as any)?.email as string | undefined)?.toLowerCase();
   const userId = (context.claims as any)?.sub as string | undefined;
-  if (userEmail && HARDCODED_ADMINS.includes(userEmail)) return;
+  const adminEnv = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+  if (adminEnv && userEmail === adminEnv) return;
   if (userId) {
     const { data } = await supabaseAdmin.from("admin_users").select("user_id").eq("user_id", userId).maybeSingle();
     if (data) return;
