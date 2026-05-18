@@ -42,7 +42,7 @@ const pt: Dict = {
   "nav.cta": "Começar grátis",
 
   "hero.badge": "✦ +2.400 anfitriões pararam de gerenciar pelo WhatsApp",
-  "hero.title.a": "Seu Airbnb",
+  "hero.title.a": "Seu alojamento local",
   "hero.title.b": "no piloto automático",
   "hero.title.c": "— em 2 minutos por dia.",
   "hero.subtitle": "Faxineira que não responde. Hóspede chegando num imóvel sujo. Objeto esquecido que você só descobre semanas depois. O Hostlyb resolve tudo isso — direto do seu celular.",
@@ -205,7 +205,7 @@ const en: Dict = {
   "nav.cta": "Start free",
 
   "hero.badge": "✦ 2,400+ hosts stopped managing by WhatsApp",
-  "hero.title.a": "Your Airbnb",
+  "hero.title.a": "Your short-term rental",
   "hero.title.b": "on autopilot",
   "hero.title.c": "— in 2 minutes a day.",
   "hero.subtitle": "Cleaner who doesn't reply. Guest arriving at a dirty place. Forgotten items you find weeks later. Hostlyb fixes all of that — straight from your phone.",
@@ -368,7 +368,7 @@ const es: Dict = {
   "nav.cta": "Empezar gratis",
 
   "hero.badge": "✦ +2.400 anfitriones dejaron de gestionar por WhatsApp",
-  "hero.title.a": "Tu Airbnb",
+  "hero.title.a": "Tu alojamiento local",
   "hero.title.b": "en piloto automático",
   "hero.title.c": "— en 2 minutos al día.",
   "hero.subtitle": "Limpiadora que no responde. Huésped llegando a un piso sucio. Objeto olvidado que descubres semanas después. Hostlyb lo resuelve todo — desde tu móvil.",
