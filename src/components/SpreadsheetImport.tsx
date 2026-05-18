@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Upload, FileSpreadsheet, X, Download, AlertCircle, CheckCircle2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { parseSpreadsheet, type ParsedSpreadsheet } from "@/lib/spreadsheet-parser";
+import { parseSpreadsheet, applyMapping, TARGET_FIELDS, type ParsedSpreadsheet, type ImportType } from "@/lib/spreadsheet-parser";
 import { downloadGuestTemplate, downloadPropertyTemplate, downloadFinancialTemplate } from "@/lib/spreadsheet-templates";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -225,6 +225,35 @@ export function SpreadsheetImport({ onClose }: { onClose: () => void }) {
               </p>
             </div>
 
+            {preview.type !== "unknown" && (
+              <div className="hostly-card mb-3">
+                <p className="text-xs font-semibold mb-2">MAPEAMENTO DE COLUNAS</p>
+                <p className="text-[11px] text-muted-foreground mb-2">Confira se cada coluna da planilha está associada ao campo correto.</p>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {preview.headers.map((h) => (
+                    <div key={h} className="flex items-center gap-2 text-xs">
+                      <span className="flex-1 truncate font-medium" title={h}>{h || "(sem nome)"}</span>
+                      <span className="text-muted-foreground">→</span>
+                      <select
+                        value={preview.mapping[h] ?? "__ignore__"}
+                        onChange={(e) => {
+                          const next = { ...preview.mapping, [h]: e.target.value };
+                          const re = applyMapping(preview.headers, preview.rawRows, next, preview.type);
+                          setPreview({ ...preview, ...re, mapping: next });
+                        }}
+                        className="flex-1 px-2 py-1 rounded border border-card-border bg-background text-xs"
+                      >
+                        <option value="__ignore__">— Ignorar —</option>
+                        {TARGET_FIELDS[preview.type as ImportType].map((f) => (
+                          <option key={f.v} value={f.v}>{f.l}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {preview.errors.length > 0 && (
               <div className="rounded-xl p-3 mb-3 text-xs" style={{ background: "var(--color-warning-soft, #fef3c7)" }}>
                 <p className="font-semibold flex items-center gap-1 mb-1"><AlertCircle size={13} /> Linhas ignoradas:</p>
@@ -237,10 +266,10 @@ export function SpreadsheetImport({ onClose }: { onClose: () => void }) {
 
             {preview.validRows > 0 && (
               <div className="hostly-card mb-3">
-                <p className="text-xs text-muted-foreground font-semibold mb-2">PRÉ-VISUALIZAÇÃO</p>
-                {preview.rows.slice(0, 3).map((row, i) => (
+                <p className="text-xs text-muted-foreground font-semibold mb-2">PRÉ-VISUALIZAÇÃO (5 primeiras)</p>
+                {preview.rows.slice(0, 5).map((row, i) => (
                   <div key={i} className="text-xs py-1.5 border-b border-card-border last:border-0">
-                    {Object.entries(row).slice(0, 4).map(([k, v]) => (
+                    {Object.entries(row).slice(0, 5).map(([k, v]) => (
                       <span key={k} className="mr-3"><span className="text-muted-foreground">{k}:</span> {String(v)}</span>
                     ))}
                   </div>
