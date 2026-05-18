@@ -541,6 +541,8 @@ export type Database = {
           document_country: string | null
           email: string | null
           had_issue: boolean
+          ical_source: string | null
+          ical_uid: string | null
           id: string
           is_vip: boolean
           name: string
@@ -568,6 +570,8 @@ export type Database = {
           document_country?: string | null
           email?: string | null
           had_issue?: boolean
+          ical_source?: string | null
+          ical_uid?: string | null
           id?: string
           is_vip?: boolean
           name: string
@@ -595,6 +599,8 @@ export type Database = {
           document_country?: string | null
           email?: string | null
           had_issue?: boolean
+          ical_source?: string | null
+          ical_uid?: string | null
           id?: string
           is_vip?: boolean
           name?: string
@@ -627,6 +633,54 @@ export type Database = {
             referencedColumns: ["property_id"]
           },
         ]
+      }
+      ical_feeds: {
+        Row: {
+          created_at: string
+          events_imported: number
+          id: string
+          is_active: boolean
+          label: string | null
+          last_error: string | null
+          last_status: string | null
+          last_sync_at: string | null
+          platform: string
+          property_id: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          events_imported?: number
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          last_error?: string | null
+          last_status?: string | null
+          last_sync_at?: string | null
+          platform?: string
+          property_id: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          events_imported?: number
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          last_error?: string | null
+          last_status?: string | null
+          last_sync_at?: string | null
+          platform?: string
+          property_id?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       maintenance_issues: {
         Row: {
