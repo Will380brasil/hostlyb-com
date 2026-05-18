@@ -1,30 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  Home as HomeIcon, Check, X, ArrowRight, Star, Menu, Plus, Minus,
-  Building2, Sparkles, Users, CalendarDays, Smartphone, Download, Share2,
-} from "lucide-react";
-import { useT, useLocale, formatPrice } from "@/lib/i18n";
+import { Home as HomeIcon, Check, X, ArrowRight, Plus, Minus, Star } from "lucide-react";
+import { useLocale, PLAN_PRICE, type Currency } from "@/lib/i18n";
+import { LANDING_COPY } from "@/lib/landing-copy";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import heroWoman from "@/assets/hero-woman-phone.jpg";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 
-
-const FAQ_KEYS = [
-  ["faq.q1", "faq.a1"],
-  ["faq.q2", "faq.a2"],
-  ["faq.q3", "faq.a3"],
-  ["faq.q4", "faq.a4"],
-  ["faq.q5", "faq.a5"],
-  ["faq.q6", "faq.a6"],
-  ["faq.q7", "faq.a7"],
-  ["faq.q8", "faq.a8"],
-] as const;
-// Static FAQ items for JSON-LD (SEO crawler reads PT)
 const FAQ_ITEMS_SEO = [
-  { q: "Preciso de cartão de crédito para testar o Hostlyb?", a: "Não. Os 7 dias de teste são totalmente gratuitos e não exigem cadastro de cartão." },
-  { q: "Posso importar minhas reservas existentes?", a: "Sim. Importe uma planilha (Excel ou CSV) com seus hóspedes, imóveis e finanças em segundos." },
+  { q: "Preciso de cartão de crédito para começar?", a: "Não. O plano grátis é permanente e não exige cartão." },
+  { q: "Posso importar minhas reservas existentes?", a: "Sim. Importe uma planilha (Excel ou CSV) em segundos." },
   { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. Recebe um link único e acessa direto pelo navegador." },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
@@ -35,26 +20,11 @@ const JSON_LD = {
     {
       "@type": "SoftwareApplication",
       "name": "Hostlyb",
-      "description": "App de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário.",
+      "description": "App de gestão para donos de aluguel por temporada. Controle limpezas com checklist e fotos, hóspedes, equipe e calendário.",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web, iOS, Android",
-      "offers": { "@type": "Offer", "price": "59.90", "priceCurrency": "BRL" },
-      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "847", "bestRating": "5", "worstRating": "1" },
-      "featureList": [
-        "Checklist de limpeza com fotos por cômodo",
-        "Controle de hóspedes com histórico",
-        "Cadastro de profissionais de limpeza",
-        "Registro de objetos esquecidos com fotos",
-        "Calendário integrado com Google Calendar",
-        "Importação rápida de hóspedes e imóveis por planilha",
-        "Portal para faxineira sem necessidade de login",
-        "Dashboard em tempo real",
-      ],
-    },
-    {
-      "@type": "Organization",
-      "name": "Hostlyb",
-      "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "availableLanguage": ["Portuguese", "English", "Spanish", "French", "Italian", "German"] },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "2400", "bestRating": "5", "worstRating": "1" },
     },
     {
       "@type": "FAQPage",
@@ -70,34 +40,27 @@ const JSON_LD = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hostlyb — Gestão de Airbnb Simplificada | Controle Limpezas e Hóspedes" },
-      { name: "description", content: "Hostlyb é o app de gestão para donos de Airbnb. Controle limpezas com checklist e fotos, gerencie hóspedes, profissionais e calendário. 7 dias grátis. R$ 59,90/mês." },
-      { name: "keywords", content: "gestão airbnb, app anfitrião, controle limpeza airbnb, software airbnb brasil, gerenciar aluguel por temporada, checklist limpeza airbnb, gestão hóspedes" },
+      { title: "Hostlyb — Seu aluguel por temporada organizado em 2 minutos por dia" },
+      { name: "description", content: "Pare de gerenciar limpezas pelo WhatsApp. Controle checklist com fotos, hóspedes e calendário. Plano grátis para sempre." },
       { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
       { name: "theme-color", content: "#FF6B6B" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Hostlyb — Gestão de Airbnb Simplificada" },
-      { property: "og:description", content: "Pare de gerenciar seu Airbnb pelo WhatsApp. Controle limpezas com checklist e fotos, hóspedes e profissionais. 7 dias grátis, sem cartão." },
-      { property: "og:locale", content: "pt_BR" },
-      { property: "og:locale:alternate", content: "en_US" },
+      { property: "og:title", content: "Hostlyb — Aluguel por temporada organizado" },
+      { property: "og:description", content: "Controle limpezas, hóspedes e calendário em um só lugar. Grátis para sempre até 2 imóveis." },
       { property: "og:site_name", content: "Hostlyb" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Hostlyb — Gestão de Airbnb Simplificada" },
-      { name: "twitter:description", content: "Controle limpezas com checklist, gerencie hóspedes e profissionais. 7 dias grátis." },
     ],
-    scripts: [
-      { type: "application/ld+json", children: JSON.stringify(JSON_LD) },
-    ],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(JSON_LD) }],
   }),
   component: LandingPage,
 });
 
 const C = {
-  coral: "#FF6B6B", coralDark: "#E85555", coralLight: "#FF6B6B18", coralGlow: "#FF6B6B40",
+  coral: "#FF6B6B", coralDark: "#E85555", coralLight: "#FFE8E8", coralGlow: "rgba(255,107,107,0.28)",
   white: "#FFFFFF", offWhite: "#FAFAFA",
   g50: "#F7F7F7", g100: "#EFEFEF", g200: "#E0E0E0", g300: "#CFCFCF",
   g400: "#9E9E9E", g600: "#616161", g800: "#212121", black: "#111111",
-  emerald: "#00C896",
+  emerald: "#00C896", emeraldLight: "#E6FAF4",
 };
 
 const displayFont = `'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif`;
@@ -120,706 +83,554 @@ function useAnalytics() {
     initAnalytics();
     initScrollDepth();
     const onClick = (e: MouseEvent) => {
-      const a = (e.target as HTMLElement)?.closest?.<HTMLAnchorElement>('a[href="/signup"]');
+      const a = (e.target as HTMLElement)?.closest?.<HTMLAnchorElement>('a[href="/signup"], a[href^="/signup"]');
       if (a) trackEvent("cta_click", { location: a.dataset.ctaLocation || "unknown" });
     };
-    const onToggle = (e: Event) => {
-      const d = e.target as HTMLDetailsElement;
-      if (d.tagName === "DETAILS" && d.open) {
-        const q = d.querySelector("summary span")?.textContent || "";
-        trackEvent("faq_open", { question: q.slice(0, 80) });
-      }
-    };
     document.addEventListener("click", onClick);
-    document.addEventListener("toggle", onToggle, true);
-    return () => {
-      document.removeEventListener("click", onClick);
-      document.removeEventListener("toggle", onToggle, true);
-    };
+    return () => document.removeEventListener("click", onClick);
   }, []);
 }
 
-function useScrolled(threshold = 80) {
-  const [s, setS] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setS(window.scrollY > threshold);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [threshold]);
-  return s;
-}
-
-function CoralButton({ children, href, big, asLink, onClick }: {
-  children: React.ReactNode; href?: string; big?: boolean; asLink?: boolean; onClick?: () => void;
-}) {
-  const style: React.CSSProperties = {
-    background: C.coral, color: "#fff", borderRadius: 999,
-    padding: big ? "16px 36px" : "10px 24px",
-    fontWeight: 700, fontSize: big ? 16 : 14,
-    boxShadow: big ? `0 8px 32px ${C.coralGlow}` : `0 4px 20px ${C.coralGlow}`,
-    display: "inline-flex", alignItems: "center", gap: 8,
-    transition: "all .2s ease", cursor: "pointer", border: 0,
-  };
-  if (asLink && href) return <Link to={href as any} className="btn-coral" style={style}>{children}</Link>;
-  if (href) return <a href={href} className="btn-coral" style={style}>{children}</a>;
-  return <button onClick={onClick} className="btn-coral" style={style}>{children}</button>;
+function StartFreeButton({ big, location }: { big?: boolean; location: string }) {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
+  return (
+    <Link
+      to={"/signup" as any}
+      data-cta-location={location}
+      className="btn-coral"
+      style={{
+        background: C.coral, color: "#fff", borderRadius: 999,
+        padding: big ? "18px 36px" : "12px 24px",
+        fontWeight: 800, fontSize: big ? 17 : 14,
+        boxShadow: big ? `0 14px 40px ${C.coralGlow}` : `0 6px 22px ${C.coralGlow}`,
+        display: "inline-flex", alignItems: "center", gap: 10,
+        textDecoration: "none", border: 0, transition: "all .2s ease",
+      }}
+    >
+      {big ? copy.hero.cta : copy.ctaPrimary} <ArrowRight size={big ? 20 : 16} />
+    </Link>
+  );
 }
 
 function Navbar() {
-  const t = useT();
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   const { session } = useAuth();
-  const scrolled = useScrolled(40);
-  const [open, setOpen] = useState(false);
-  const logoHref = session ? "/app" : "/";
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const scrollTop = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   return (
     <header style={{
-      position: "sticky", top: 0, zIndex: 50, height: 72,
-      background: scrolled ? "rgba(255,255,255,0.85)" : "#fff",
-      backdropFilter: scrolled ? "blur(12px)" : "none",
-      WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+      position: "sticky", top: 0, zIndex: 50, height: 68,
+      background: scrolled ? "rgba(255,255,255,0.92)" : "#fff",
+      backdropFilter: scrolled ? "blur(14px)" : "none",
+      WebkitBackdropFilter: scrolled ? "blur(14px)" : "none",
       boxShadow: scrolled ? `0 1px 0 ${C.g100}` : "none",
       transition: "all .2s ease",
     }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link to={logoHref as any} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 700, color: C.black }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href="#" onClick={scrollTop} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 800, color: C.black, textDecoration: "none" }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
           Host<span style={{ color: C.coral }}>lyb</span>
-        </Link>
-
-        <nav className="nav-desktop" style={{ display: "flex", gap: 32 }}>
-          <a href="#features" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.features")}</a>
-          <a href="#como-funciona" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.howItWorks")}</a>
-          <a href="#precos" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.pricing")}</a>
-          <a href="#faq" className="nav-link" style={{ color: C.g600, fontSize: 14, fontWeight: 500 }}>{t("nav.faq")}</a>
-        </nav>
-
-        <div className="nav-desktop" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <LanguageSelector />
-          <Link to={"/login" as any} style={{ color: C.g800, fontSize: 14, fontWeight: 600, padding: "10px 18px", borderRadius: 999, border: `1px solid ${C.g200}` }}>
-            {t("nav.signin")}
-          </Link>
-          <CoralButton href="/signup">{t("nav.cta")} <ArrowRight size={16} /></CoralButton>
-        </div>
-
-        <div className="nav-mobile-btn" style={{ display: "none", alignItems: "center", gap: 8 }}>
+        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <LanguageSelector compact />
-          <button aria-label="Menu" onClick={() => setOpen((v) => !v)} style={{ background: "transparent", border: 0, color: C.g800 }}>
-            <Menu size={24} />
-          </button>
+          <Link
+            to={session ? ("/app" as any) : ("/login" as any)}
+            style={{
+              color: C.g800, fontSize: 14, fontWeight: 700,
+              padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${C.g200}`,
+              textDecoration: "none", transition: "all .15s ease",
+            }}
+            className="login-link"
+          >
+            {copy.loginBtn}
+          </Link>
         </div>
       </div>
-
-      {open && (
-        <div className="nav-mobile-drawer" style={{ borderTop: `1px solid ${C.g100}`, background: "#fff", padding: 16 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <a href="#features" onClick={() => setOpen(false)} style={{ color: C.g800, padding: "12px 8px", fontWeight: 600 }}>{t("nav.features")}</a>
-            <a href="#precos" onClick={() => setOpen(false)} style={{ color: C.g800, padding: "12px 8px", fontWeight: 600 }}>{t("nav.pricing")}</a>
-            <a href="#faq" onClick={() => setOpen(false)} style={{ color: C.g800, padding: "12px 8px", fontWeight: 600 }}>{t("nav.faq")}</a>
-            <Link to={"/login" as any} onClick={() => setOpen(false)} style={{ color: C.g800, padding: "12px 8px", fontWeight: 600 }}>{t("nav.signin")}</Link>
-            <CoralButton href="/signup">{t("nav.cta")} <ArrowRight size={16} /></CoralButton>
-          </div>
-        </div>
-      )}
+      <style>{`.login-link:hover { border-color: ${C.coral}; color: ${C.coral}; }`}</style>
     </header>
   );
 }
 
-function Hero() {
-  const t = useT();
+/* ============ HERO with animated phone mockup ============ */
+function PhoneMockup({ labels }: { labels: { d: string; c: string; cal: string } }) {
+  const [screen, setScreen] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setScreen((s) => (s + 1) % 3), 2800);
+    return () => clearInterval(id);
+  }, []);
   return (
-    <section id="top" style={{ padding: "48px 24px 64px", background: "#fff" }}>
-      <div className="hero-grid" style={{
-        maxWidth: 1200, margin: "0 auto",
-        display: "grid", gap: 40, alignItems: "center",
+    <div style={{
+      position: "relative", width: "min(280px, 80vw)", height: 560,
+      borderRadius: 44, background: "#1a1a1a", padding: 12,
+      boxShadow: `0 40px 80px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.04)`,
+      margin: "0 auto",
+    }}>
+      {/* notch */}
+      <div style={{ position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)", width: 100, height: 22, background: "#000", borderRadius: 12, zIndex: 3 }} />
+      <div style={{
+        position: "relative", width: "100%", height: "100%",
+        borderRadius: 34, overflow: "hidden", background: "#fff",
       }}>
-        <div data-reveal className="reveal hero-copy">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 999, background: C.coralLight, color: C.coral, fontSize: 13, fontWeight: 600 }}>
-            {t("hero.badge")}
-          </span>
-
-          <h1 style={{ fontFamily: displayFont, fontWeight: 800, color: C.black, lineHeight: 1.05, margin: "20px 0 18px", letterSpacing: "-0.02em", fontSize: "clamp(38px, 6vw, 64px)" }}>
-            {t("hero.title.a")}{" "}
-            <span style={{ position: "relative", color: C.coral, whiteSpace: "nowrap" }}>
-              {t("hero.title.b")}
-              <svg viewBox="0 0 120 12" preserveAspectRatio="none" style={{ position: "absolute", left: 0, right: 0, bottom: -8, width: "100%", height: 12 }}>
-                <path d="M2 8 Q 30 -2, 60 6 T 118 4" fill="none" stroke={C.coral} strokeWidth="3" strokeLinecap="round" />
-              </svg>
-            </span>{" "}
-            {t("hero.title.c")}
-          </h1>
-
-          <p style={{ fontSize: 18, color: C.g600, maxWidth: 540, margin: "0 0 28px", lineHeight: 1.6 }}>
-            {t("hero.subtitle")}
-          </p>
-
-          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-            <CoralButton big href="/signup">{t("hero.cta")} <ArrowRight size={18} /></CoralButton>
+        {[0, 1, 2].map((i) => (
+          <div key={i} style={{
+            position: "absolute", inset: 0, opacity: screen === i ? 1 : 0,
+            transition: "opacity .6s ease",
+          }}>
+            {i === 0 && <ScreenDashboard label={labels.d} />}
+            {i === 1 && <ScreenCleanings label={labels.c} />}
+            {i === 2 && <ScreenCalendar label={labels.cal} />}
           </div>
+        ))}
+      </div>
+      {/* tab dots */}
+      <div style={{ position: "absolute", bottom: -28, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 6 }}>
+        {[0, 1, 2].map((i) => (
+          <div key={i} style={{
+            width: screen === i ? 20 : 6, height: 6, borderRadius: 999,
+            background: screen === i ? C.coral : C.g200, transition: "all .3s ease",
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          <p style={{ marginTop: 20, color: C.g400, fontSize: 13, display: "flex", gap: 18, flexWrap: "wrap" }}>
-            <span>{t("hero.bullet1")}</span>
-            <span>{t("hero.bullet3")}</span>
+function ScreenHeader({ label }: { label: string }) {
+  return (
+    <div style={{ padding: "40px 18px 12px", borderBottom: `1px solid ${C.g100}` }}>
+      <p style={{ fontSize: 11, color: C.g400, margin: 0, fontWeight: 600 }}>Hostlyb</p>
+      <h4 style={{ fontFamily: displayFont, fontSize: 19, fontWeight: 800, color: C.black, margin: "2px 0 0" }}>{label}</h4>
+    </div>
+  );
+}
+
+function ScreenDashboard({ label }: { label: string }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: C.offWhite }}>
+      <ScreenHeader label={label} />
+      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+        {[
+          { name: "Lisbon Loft", status: "✓ Limpo", color: C.emerald },
+          { name: "Beach Villa", status: "🧹 Limpando", color: C.coral },
+          { name: "Downtown #2", status: "✓ Limpo", color: C.emerald },
+        ].map((p) => (
+          <div key={p.name} style={{ background: "#fff", borderRadius: 12, padding: 12, border: `1px solid ${C.g100}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.g800 }}>{p.name}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: p.color }}>{p.status}</span>
+          </div>
+        ))}
+        <div style={{ background: "linear-gradient(135deg,#FF6B6B,#FF8E53)", borderRadius: 14, padding: 14, color: "#fff", marginTop: 6 }}>
+          <p style={{ margin: 0, fontSize: 11, opacity: 0.9 }}>Receita do mês</p>
+          <p style={{ margin: "2px 0 0", fontFamily: displayFont, fontSize: 22, fontWeight: 800 }}>R$ 8.420</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScreenCleanings({ label }: { label: string }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: C.offWhite }}>
+      <ScreenHeader label={label} />
+      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ background: "#fff", borderRadius: 12, padding: 12, border: `1px solid ${C.g100}` }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: C.g800, margin: 0 }}>Beach Villa · Quarto</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 8 }}>
+            {[1, 2].map((i) => (
+              <div key={i} style={{ aspectRatio: "1", borderRadius: 8, background: `linear-gradient(135deg, #FFD9D9, #FF9999)`, display: "grid", placeItems: "center", color: "#fff", fontSize: 18 }}>📷</div>
+            ))}
+          </div>
+        </div>
+        {["Quarto principal", "Cozinha", "Banheiro"].map((r) => (
+          <div key={r} style={{ background: "#fff", borderRadius: 10, padding: "10px 12px", border: `1px solid ${C.g100}`, display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 18, height: 18, borderRadius: 6, background: C.emerald, display: "grid", placeItems: "center" }}>
+              <Check size={12} color="#fff" />
+            </div>
+            <span style={{ fontSize: 12, color: C.g800, fontWeight: 600 }}>{r}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ScreenCalendar({ label }: { label: string }) {
+  const days = Array.from({ length: 28 }, (_, i) => i + 1);
+  const booked = new Set([3, 4, 5, 11, 12, 17, 18, 19, 25, 26]);
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: C.offWhite }}>
+      <ScreenHeader label={label} />
+      <div style={{ padding: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 6 }}>
+          {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+            <div key={i} style={{ fontSize: 9, color: C.g400, textAlign: "center", fontWeight: 700 }}>{d}</div>
+          ))}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+          {days.map((d) => (
+            <div key={d} style={{
+              aspectRatio: "1", borderRadius: 6,
+              background: booked.has(d) ? C.coral : "#fff",
+              color: booked.has(d) ? "#fff" : C.g600,
+              border: booked.has(d) ? "none" : `1px solid ${C.g100}`,
+              fontSize: 10, fontWeight: 700, display: "grid", placeItems: "center",
+            }}>{d}</div>
+          ))}
+        </div>
+        <div style={{ background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 10, padding: 10, marginTop: 10 }}>
+          <p style={{ margin: 0, fontSize: 10, color: C.g400, fontWeight: 700 }}>Próximo check-out</p>
+          <p style={{ margin: "2px 0 0", fontSize: 12, color: C.g800, fontWeight: 700 }}>Beach Villa · Hoje 11:00</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Hero() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
+  return (
+    <section style={{ padding: "56px 20px 72px", background: "#fff", position: "relative", overflow: "hidden" }}>
+      <div className="hero-grid" style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gap: 40, alignItems: "center" }}>
+        <div data-reveal className="reveal">
+          <h1 style={{
+            fontFamily: displayFont, fontWeight: 800, color: C.black,
+            lineHeight: 1.04, margin: "0 0 22px", letterSpacing: "-0.025em",
+            fontSize: "clamp(36px, 5.4vw, 60px)",
+          }}>
+            {copy.hero.headline}
+          </h1>
+          <p style={{ fontSize: 18, color: C.g600, maxWidth: 560, margin: "0 0 32px", lineHeight: 1.6 }}>
+            {copy.hero.subheadline}
+          </p>
+          <StartFreeButton big location="hero" />
+          <p style={{ marginTop: 18, color: C.g600, fontSize: 13, display: "flex", gap: 20, flexWrap: "wrap", fontWeight: 600 }}>
+            {copy.hero.bullets.map((b) => <span key={b}>{b}</span>)}
           </p>
         </div>
-
-        <div data-reveal className="reveal hero-image-wrap" style={{ position: "relative" }}>
+        <div data-reveal className="reveal" style={{ position: "relative", display: "grid", placeItems: "center" }}>
           <div style={{
-            position: "absolute", inset: -20, borderRadius: 36,
-            background: `radial-gradient(60% 60% at 70% 40%, ${C.coralGlow}, transparent 70%)`,
-            filter: "blur(20px)", zIndex: 0,
+            position: "absolute", inset: -40, borderRadius: 36,
+            background: `radial-gradient(60% 60% at 60% 40%, ${C.coralGlow}, transparent 70%)`,
+            filter: "blur(30px)", zIndex: 0,
           }} />
-          <img
-            src={heroWoman}
-            alt={t("hero.imageAlt")}
-            width={1024}
-            height={1024}
-            style={{
-              position: "relative", zIndex: 1,
-              width: "100%", height: "auto", display: "block",
-              borderRadius: 28, objectFit: "cover", aspectRatio: "1 / 1",
-              boxShadow: "0 40px 80px rgba(0,0,0,0.18)",
-              border: `1px solid ${C.g100}`,
-            }}
-          />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <PhoneMockup labels={{ d: copy.hero.phoneDashboard, c: copy.hero.phoneCleanings, cal: copy.hero.phoneCalendar }} />
+          </div>
         </div>
       </div>
 
+      {/* Social proof bar */}
+      <div style={{ maxWidth: 1100, margin: "56px auto 0", textAlign: "center" }}>
+        <p style={{ color: C.g600, fontSize: 14, fontWeight: 600, margin: 0 }}>{copy.hero.social}</p>
+      </div>
+
       <style>{`
-        .hero-grid { grid-template-columns: 1.05fr 1fr; }
+        .hero-grid { grid-template-columns: 1.1fr 1fr; }
         @media (max-width: 900px) {
           .hero-grid { grid-template-columns: 1fr; }
-          .hero-image-wrap { order: -1; max-width: 420px; margin: 0 auto; }
+          .hero-grid > div:last-child { order: -1; }
         }
       `}</style>
     </section>
   );
 }
 
-const ROTATING_TESTIMONIALS = [
-  { ini: "MS", color: "#FF6B6B", name: "Mariana S.", meta: "4 imóveis · São Paulo", text: "Em 5 minutos sei o status de todos os imóveis. Antes era WhatsApp e planilha." },
-  { ini: "JT", color: "#4A9EFF", name: "James T.", meta: "2 properties · Miami", text: "The cleaning checklist with photos is a game changer for me." },
-  { ini: "SL", color: "#00C896", name: "Sophie L.", meta: "2 propriétés · Paris", text: "Hostlyb fait tout ce dont j'ai besoin à un prix imbattable." },
-  { ini: "RG", color: "#FFB347", name: "Rafael G.", meta: "6 imóveis · Florianópolis", text: "O link da faxineira sem login resolveu meu maior problema operacional." },
-  { ini: "AC", color: "#A78BFA", name: "Ana C.", meta: "3 imóveis · Rio de Janeiro", text: "Os alertas de checkout e objetos esquecidos me salvaram várias vezes." },
-  { ini: "LP", color: "#06B6D4", name: "Luca P.", meta: "5 appartamenti · Milano", text: "Importazione da Excel mi ha fatto risparmiare ore di lavoro." },
-  { ini: "EM", color: "#F472B6", name: "Elena M.", meta: "3 propiedades · Madrid", text: "Mis huéspedes y limpiezas en un solo lugar. Por fin." },
-  { ini: "DK", color: "#34D399", name: "Daniel K.", meta: "4 properties · Lisbon", text: "I cancelled three other tools after trying Hostlyb for a week." },
-  { ini: "PB", color: "#F59E0B", name: "Patrícia B.", meta: "7 imóveis · Salvador", text: "Relatório de receita por imóvel me deu clareza que eu nunca tive." },
-  { ini: "OM", color: "#8B5CF6", name: "Olivier M.", meta: "2 logements · Lyon", text: "Mon équipe a adopté l'app sans aucune formation." },
-];
-
-function SocialProof() {
-  const t = useT();
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setIdx((i) => (i + 1) % ROTATING_TESTIMONIALS.length), 2000);
-    return () => clearInterval(id);
-  }, []);
-  const visible = [0, 1, 2].map((o) => ROTATING_TESTIMONIALS[(idx + o) % ROTATING_TESTIMONIALS.length]);
-  const initials = ROTATING_TESTIMONIALS.slice(0, 5);
-
+/* ============ PROBLEM (Before vs After) ============ */
+function Problem() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   return (
-    <section style={{ background: C.g50, padding: "40px 24px" }}>
+    <section style={{ padding: "88px 20px", background: C.g50 }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", justifyContent: "center", marginBottom: 22 }}>
-          <div style={{ display: "flex" }}>
-            {initials.map((it, i) => (
-              <div key={it.ini} style={{
-                width: 36, height: 36, borderRadius: 999, background: it.color,
-                color: "#fff", fontSize: 12, fontWeight: 700, display: "grid", placeItems: "center",
-                marginLeft: i === 0 ? 0 : -10, border: "2px solid #fff",
-              }}>{it.ini}</div>
-            ))}
-          </div>
-          <p style={{ color: C.g600, fontSize: 14, fontWeight: 600, margin: 0 }}>★★★★★ 4.9 / 847 · {t("social.proof")}</p>
-        </div>
-
-        <div className="proofs-row" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-          {visible.map((tt, i) => (
-            <div
-              key={`${idx}-${i}-${tt.ini}`}
-              style={{
-                background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 14,
-                padding: "14px 16px", display: "flex", gap: 12, alignItems: "center",
-                animation: "proofIn .5s ease both",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
-              }}
-            >
-              <div style={{
-                width: 36, height: 36, borderRadius: 999, background: tt.color,
-                color: "#fff", fontWeight: 700, fontSize: 12, display: "grid", placeItems: "center", flexShrink: 0,
-              }}>{tt.ini}</div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ margin: 0, fontSize: 13, color: C.g800, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                  "{tt.text}"
-                </p>
-                <p style={{ margin: "4px 0 0", fontSize: 11, color: C.g400, fontWeight: 600 }}>{tt.name} · {tt.meta}</p>
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          {copy.problem.title}
+        </h2>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 980, margin: "0 auto" }}>
+          {copy.problem.rows.map((row, i) => (
+            <div key={i} data-reveal className="reveal problem-row" style={{
+              display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14,
+            }}>
+              <div className="bad-card" style={{
+                background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 16,
+                padding: "18px 20px", display: "flex", gap: 12, alignItems: "flex-start",
+              }}>
+                <div style={{ width: 28, height: 28, borderRadius: 999, background: "#FFE8E8", display: "grid", placeItems: "center", flexShrink: 0 }}>
+                  <X size={16} color={C.coral} />
+                </div>
+                <p style={{ margin: 0, color: C.g600, fontSize: 15, lineHeight: 1.5 }}>{row.bad}</p>
+              </div>
+              <div className="good-card" style={{
+                background: "#fff", border: `1.5px solid ${C.emerald}55`, borderRadius: 16,
+                padding: "18px 20px", display: "flex", gap: 12, alignItems: "flex-start",
+              }}>
+                <div style={{ width: 28, height: 28, borderRadius: 999, background: C.emeraldLight, display: "grid", placeItems: "center", flexShrink: 0 }}>
+                  <Check size={16} color={C.emerald} />
+                </div>
+                <p style={{ margin: 0, color: C.g800, fontSize: 15, lineHeight: 1.5, fontWeight: 600 }}>{row.good}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
       <style>{`
-        @keyframes proofIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-        @media (max-width: 900px) { .proofs-row { grid-template-columns: 1fr !important; } .proofs-row > div:nth-child(n+2) { display: none; } }
+        .problem-row .bad-card { opacity: 0; transform: translateX(-20px); transition: all .5s ease; }
+        .problem-row .good-card { opacity: 0; transform: translateX(20px); transition: all .5s ease .15s; }
+        .problem-row.is-visible .bad-card,
+        .problem-row.is-visible .good-card { opacity: 1; transform: translateX(0); }
+        @media (max-width: 720px) { .problem-row { grid-template-columns: 1fr !important; } }
       `}</style>
     </section>
   );
 }
 
-function StartInFourSteps() {
-  const steps = [
-    { n: 1, icon: Building2, title: "Cadastre seu imóvel", desc: "Endereço, fotos, regras de check-in.", to: "/imoveis", cta: "Ir para Imóveis" },
-    { n: 2, icon: Sparkles, title: "Agende uma limpeza", desc: "Checklist + link único para a faxineira, sem login.", to: "/limpezas", cta: "Ir para Limpezas" },
-    { n: 3, icon: Users, title: "Registre hóspedes", desc: "Quem chega, valor e objetos esquecidos.", to: "/hospedes", cta: "Ir para Hóspedes" },
-    { n: 4, icon: CalendarDays, title: "Acompanhe pelo calendário", desc: "Reservas, limpezas e checkouts num só lugar.", to: "/calendario", cta: "Ir para Calendário" },
-  ];
+/* ============ HOW IT WORKS ============ */
+function HowItWorks() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   return (
-    <section id="comece" style={{ padding: "96px 24px", background: "#fff" }}>
+    <section style={{ padding: "96px 20px", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.coral, fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
-          Onboarding em minutos
-        </p>
-        <h2 data-reveal className="reveal section-title" style={{
-          fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800,
-          marginBottom: 14, letterSpacing: "-0.02em", lineHeight: 1.1, fontSize: "clamp(28px, 4vw, 44px)",
-        }}>
-          Comece em 4 passos
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 56, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)", maxWidth: 800, marginLeft: "auto", marginRight: "auto" }}>
+          {copy.how.title}
         </h2>
-        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.g600, fontSize: 17, marginBottom: 40, maxWidth: 560, marginLeft: "auto", marginRight: "auto" }}>
-          Configure sua operação completa em menos de 10 minutos. Sem treinamento, sem complicação.
-        </p>
-        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
-          {steps.map((s) => {
-            const Icon = s.icon;
-            return (
-              <Link
-                key={s.n}
-                to={s.to as any}
-                data-reveal
-                className="reveal step-card"
-                style={{
-                  display: "flex", flexDirection: "column", gap: 10,
-                  padding: 24, borderRadius: 20, background: "#fff",
-                  border: `1px solid ${C.g100}`, transition: "all .2s ease",
-                  textDecoration: "none", color: C.g800, position: "relative",
-                }}
-              >
-                <span style={{
-                  position: "absolute", top: 16, right: 16,
-                  width: 28, height: 28, borderRadius: 999, background: C.coralLight,
-                  color: C.coral, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 13,
-                  fontFamily: displayFont,
-                }}>{s.n}</span>
-                <div style={{
-                  width: 48, height: 48, borderRadius: 14, background: C.coralLight,
-                  color: C.coral, display: "grid", placeItems: "center",
-                }}>
-                  <Icon size={22} />
-                </div>
-                <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 17, color: C.black, margin: "6px 0 0" }}>{s.title}</h3>
-                <p style={{ color: C.g600, fontSize: 13.5, lineHeight: 1.5, margin: 0, flex: 1 }}>{s.desc}</p>
-                <span style={{ marginTop: 6, color: C.coral, fontWeight: 700, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                  {s.cta} <ArrowRight size={14} />
-                </span>
-              </Link>
-            );
-          })}
+        <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          {copy.how.steps.map((s) => (
+            <div key={s.number} data-reveal className="reveal" style={{
+              padding: 28, borderRadius: 22, background: C.g50, border: `1px solid ${C.g100}`,
+              transition: "all .3s ease",
+            }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: 18, background: C.coral, color: "#fff",
+                fontFamily: displayFont, fontWeight: 800, fontSize: 24,
+                display: "grid", placeItems: "center", marginBottom: 18,
+                boxShadow: `0 10px 24px ${C.coralGlow}`,
+              }}>{s.number}</div>
+              <h3 style={{ fontFamily: displayFont, fontWeight: 800, fontSize: 20, color: C.black, marginBottom: 10 }}>{s.title}</h3>
+              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+            </div>
+          ))}
         </div>
-        <div style={{ textAlign: "center", marginTop: 32 }}>
-          <CoralButton big href="/signup">Começar grátis agora <ArrowRight size={18} /></CoralButton>
+        <div style={{ textAlign: "center", marginTop: 48 }}>
+          <StartFreeButton big location="how_it_works" />
+        </div>
+      </div>
+      <style>{`@media (max-width: 820px) { .hiw-grid { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
+
+/* ============ FEATURES (Bento) ============ */
+function Features() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
+  return (
+    <section style={{ padding: "96px 20px", background: C.g50 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 56, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          {copy.features.title}
+        </h2>
+        <div className="bento-grid" style={{
+          display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16,
+        }}>
+          {copy.features.cards.map((f, i) => (
+            <div key={i} data-reveal className="reveal feature-card" style={{
+              background: "#fff", borderRadius: 20, padding: 24,
+              border: `1px solid ${C.g100}`, transition: "all .25s ease",
+              gridColumn: i === 0 ? "span 2" : "span 1",
+            }}>
+              <div style={{ fontSize: 30, marginBottom: 12 }}>{f.icon}</div>
+              <h3 style={{ fontFamily: displayFont, fontWeight: 800, fontSize: 17, color: C.black, marginBottom: 6, lineHeight: 1.25 }}>{f.title}</h3>
+              <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
       <style>{`
-        .step-card:hover { transform: translateY(-3px); border-color: ${C.coral}; box-shadow: 0 16px 36px ${C.coralGlow}; }
-        @media (max-width: 980px) { .steps-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 520px) { .steps-grid { grid-template-columns: 1fr !important; } }
+        .feature-card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(0,0,0,0.06); border-color: ${C.coralLight}; }
+        @media (max-width: 980px) { .bento-grid { grid-template-columns: repeat(2, 1fr) !important; } .bento-grid > div { grid-column: span 1 !important; } }
+        @media (max-width: 560px) { .bento-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </section>
   );
 }
 
-function PwaInstallBanner() {
-  const [deferred, setDeferred] = useState<any>(null);
-  const [installed, setInstalled] = useState(false);
-  const [showIos, setShowIos] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (localStorage.getItem("pwa_install_dismissed")) setDismissed(true);
-    const standalone = window.matchMedia?.("(display-mode: standalone)").matches || (window.navigator as any).standalone;
-    if (standalone) setInstalled(true);
-    const onPrompt = (e: any) => { e.preventDefault(); setDeferred(e); };
-    const onInstalled = () => setInstalled(true);
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
-  }, []);
-
-  if (installed || dismissed) return null;
-
-  const isIos = typeof navigator !== "undefined" && /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const dismiss = () => { localStorage.setItem("pwa_install_dismissed", "1"); setDismissed(true); };
-  const install = async () => {
-    if (deferred) {
-      deferred.prompt();
-      const choice = await deferred.userChoice.catch(() => null);
-      if (choice?.outcome === "accepted") setInstalled(true);
-      setDeferred(null);
-    } else if (isIos) {
-      setShowIos(true);
-    } else {
-      setShowIos(true);
-    }
-  };
-
+/* ============ SOCIAL PROOF (testimonials) ============ */
+function SocialProof() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   return (
-    <>
-      <section style={{ padding: "16px 24px 0" }}>
-        <div style={{
-          maxWidth: 1100, margin: "0 auto",
-          background: "linear-gradient(135deg, #111 0%, #2a2a2a 100%)",
-          color: "#fff", borderRadius: 18, padding: "16px 20px",
-          display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
-          boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
-        }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 12, background: C.coral,
-            display: "grid", placeItems: "center", color: "#fff", flexShrink: 0,
-          }}>
-            <Smartphone size={22} />
-          </div>
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <p style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>Instale o Hostlyb na tela inicial</p>
-            <p style={{ margin: "2px 0 0", fontSize: 13, color: "#bbb" }}>
-              Acesse mais rápido, funciona offline, ícone próprio. Grátis.
-            </p>
-          </div>
-          <button
-            onClick={install}
-            style={{
-              background: C.coral, color: "#fff", border: 0, borderRadius: 999,
-              padding: "10px 18px", fontWeight: 700, fontSize: 14,
-              display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
-            }}
-          >
-            <Download size={16} /> Instalar app
-          </button>
-          <button
-            onClick={dismiss}
-            aria-label="Dispensar"
-            style={{ background: "transparent", border: 0, color: "#888", cursor: "pointer" }}
-          >
-            <X size={18} />
-          </button>
-        </div>
-      </section>
-
-      {showIos && (
-        <div onClick={() => setShowIos(false)} style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
-          display: "grid", placeItems: "center", zIndex: 100, padding: 16,
-        }}>
-          <div onClick={(e) => e.stopPropagation()} style={{
-            background: "#fff", borderRadius: 18, padding: 24, maxWidth: 380, width: "100%",
-          }}>
-            <h3 style={{ margin: "0 0 8px", fontFamily: displayFont, fontWeight: 800, color: C.black }}>
-              {isIos ? "Instalar no iPhone/iPad" : "Como instalar"}
-            </h3>
-            <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.6 }}>
-              {isIos ? (
-                <>1. Toque em <Share2 size={14} style={{ display: "inline", verticalAlign: "middle" }} /> <strong>Compartilhar</strong>.<br />
-                2. Escolha <strong>"Adicionar à Tela de Início"</strong>.<br />
-                3. Confirme com <strong>Adicionar</strong>.</>
-              ) : (
-                <>No menu do navegador, escolha <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</>
-              )}
-            </p>
-            <button onClick={() => setShowIos(false)} className="btn-coral" style={{
-              background: C.coral, color: "#fff", border: 0, borderRadius: 999,
-              padding: "12px 22px", fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 8,
-            }}>Entendi</button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-function ObjectionBreaker() {
-  const t = useT();
-  const items = [
-    { q: t("obj.q1"), a: t("obj.a1") },
-    { q: t("obj.q2"), a: t("obj.a2") },
-    { q: t("obj.q3"), a: t("obj.a3") },
-    { q: t("obj.q4"), a: t("obj.a4") },
-  ];
-  return (
-    <section style={{ padding: "72px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.coral, fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
-          {t("obj.eyebrow")}
-        </p>
-        <h2 data-reveal className="reveal" style={{
-          fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800,
-          marginBottom: 40, letterSpacing: "-0.02em", lineHeight: 1.1,
-          fontSize: "clamp(26px, 3.8vw, 38px)",
-        }}>
-          {t("obj.title")}
+    <section style={{ padding: "96px 20px", background: "#fff" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 56, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)", maxWidth: 820, marginLeft: "auto", marginRight: "auto" }}>
+          {copy.social.title}
         </h2>
-        <div className="obj-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-          {items.map((it) => (
-            <div key={it.q} data-reveal className="reveal" style={{
-              background: C.g50, borderRadius: 18, padding: "22px 24px",
-              border: `1px solid ${C.g100}`,
+        <div className="testimonial-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+          {copy.social.testimonials.map((t, i) => (
+            <div key={i} data-reveal className="reveal" style={{
+              background: C.g50, borderRadius: 20, padding: 22,
+              border: `1px solid ${C.g100}`, display: "flex", flexDirection: "column", gap: 14,
             }}>
-              <p style={{ color: C.g800, fontWeight: 700, fontSize: 16, marginBottom: 8, fontStyle: "italic" }}>{it.q}</p>
-              <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.55, display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} />
-                <span>{it.a}</span>
+              <div style={{ display: "flex", gap: 2 }}>
+                {Array.from({ length: 5 }).map((_, k) => (
+                  <Star key={k} size={14} fill="#FFB347" stroke="none" />
+                ))}
+              </div>
+              <p style={{ margin: 0, color: C.g800, fontSize: 14, lineHeight: 1.55, flex: 1, fontStyle: "italic" }}>
+                "{t.quote}"
               </p>
+              <div>
+                <p style={{ margin: 0, fontSize: 13, color: C.black, fontWeight: 700 }}>{t.name} {t.flag}</p>
+                <p style={{ margin: "2px 0 0", fontSize: 12, color: C.g600 }}>{t.props}</p>
+              </div>
             </div>
           ))}
         </div>
       </div>
-      <style>{`@media (max-width: 768px) { .obj-grid { grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`
+        @media (max-width: 980px) { .testimonial-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 560px) { .testimonial-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
     </section>
   );
 }
 
-function Features() {
-  const t = useT();
-  const features = [
-    { icon: "🧹", title: t("feat.cleanings"), desc: t("feat.cleanings.d") },
-    { icon: "🏠", title: t("feat.properties"), desc: t("feat.properties.d") },
-    { icon: "👷", title: t("feat.team"), desc: t("feat.team.d") },
-    { icon: "📅", title: t("feat.calendar"), desc: t("feat.calendar.d") },
-    { icon: "👥", title: t("feat.guests"), desc: t("feat.guests.d") },
-    { icon: "📊", title: t("feat.dashboard"), desc: t("feat.dashboard.d") },
-  ];
-  return (
-    <section id="features" style={{ padding: "96px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, lineHeight: 1.1, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("feat.title")}
-        </h2>
-        <div className="features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
-          {features.map((f) => (
-            <div key={f.title} data-reveal className="reveal feature-card" style={{
-              background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 20, padding: 28,
-              transition: "all .2s ease",
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 14 }}>{f.icon}</div>
-              <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 18, color: C.black, marginBottom: 8 }}>{f.title}</h3>
-              <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.6 }}>{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+/* ============ PRICING ============ */
+function fmt(currency: Currency, lang: string, amount: number) {
+  const localeMap: Record<string, string> = { pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE" };
+  try {
+    return new Intl.NumberFormat(localeMap[lang] ?? "en-US", { style: "currency", currency, minimumFractionDigits: currency === "BRL" ? 2 : 0 }).format(amount);
+  } catch {
+    const sym = currency === "BRL" ? "R$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : "$";
+    return `${sym} ${amount.toFixed(2)}`;
+  }
 }
 
 function Pricing() {
-  const { lang, currency, country } = useLocale();
-  const t = useT();
+  const { lang, currency } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
+  const proPrice = fmt(currency, lang, PLAN_PRICE.pro[currency]);
+  const premiumPrice = fmt(currency, lang, PLAN_PRICE.premium[currency]);
 
-  // Display currency: SA → SAR (equivalent ~€19.90); else use detected currency.
-  const isSA = (country || "").toUpperCase() === "SA";
-  const displayCurrency = isSA ? "SAR" : currency;
-  // Premium price: 19.90 in BRL/EUR/USD; ~79.90 SAR (≈€19.90).
-  const premiumAmount = displayCurrency === "SAR" ? 79.9 : 19.9;
-  const localeMap: Record<string, string> = {
-    pt: "pt-BR", en: displayCurrency === "EUR" ? "en-GB" : "en-US",
-    es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE",
-  };
-  const formatted = (() => {
-    try {
-      return new Intl.NumberFormat(localeMap[lang] ?? "en-US", {
-        style: "currency", currency: displayCurrency, minimumFractionDigits: 2,
-      }).format(premiumAmount);
-    } catch {
-      const sym = displayCurrency === "BRL" ? "R$" : displayCurrency === "EUR" ? "€"
-        : displayCurrency === "SAR" ? "ر.س" : "$";
-      return `${sym} ${premiumAmount.toFixed(2)}`;
-    }
-  })();
-
-  const freeFeatures = [
-    t("pricing.free.f1"), t("pricing.free.f2"), t("pricing.free.f3"),
-    t("pricing.free.f4"), t("pricing.free.f5"),
-  ];
-  const premiumFeatures = [
-    t("pricing.premium.f1"), t("pricing.premium.f2"), t("pricing.premium.f3"),
-    t("pricing.premium.f4"), t("pricing.premium.f5"),
+  const plans = [
+    { ...copy.pricing.free, price: copy.pricing.free.price, bg: "#fff", border: C.g200, accent: false, ctaBg: C.g100, ctaColor: C.black, signupTo: "/signup" },
+    { ...copy.pricing.pro, price: proPrice, bg: "#fff", border: C.coral, accent: true, ctaBg: C.coral, ctaColor: "#fff", signupTo: "/signup?plan=pro" },
+    { ...copy.pricing.premium, price: premiumPrice, bg: "#fff", border: C.g200, accent: false, ctaBg: "#111", ctaColor: "#fff", signupTo: "/signup?plan=premium" },
   ];
 
   return (
-    <section id="precos" style={{ padding: "96px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 980, margin: "0 auto", textAlign: "center" }}>
-        <h2 className="reveal section-title" style={{ fontFamily: displayFont, color: C.black, fontWeight: 800, marginBottom: 12, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("pricing.title.a")} <span style={{ color: C.coral }}>{t("pricing.title.b")}</span>
-        </h2>
-        <p className="reveal" style={{ color: C.g600, fontSize: 18, marginBottom: 36 }}>{t("pricing.subtitle")}</p>
-
-        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          {/* FREE */}
-          <div className="reveal" style={{
-            background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 22,
-            padding: "28px 24px", textAlign: "left", boxShadow: "0 4px 14px rgba(0,0,0,0.04)",
-          }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: C.g600, letterSpacing: 1, marginBottom: 8 }}>
-              {t("pricing.free.tag").toUpperCase()}
-            </div>
-            <div style={{ fontFamily: displayFont, fontSize: 22, fontWeight: 800, color: C.black, marginBottom: 12 }}>
-              {t("pricing.free.name")}
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 18 }}>
-              <span style={{ fontFamily: displayFont, fontSize: 40, fontWeight: 800, color: C.black, lineHeight: 1 }}>
-                {t("pricing.free.price")}
-              </span>
-            </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 22px", display: "flex", flexDirection: "column", gap: 10 }}>
-              {freeFeatures.map((f) => (
-                <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14 }}>
-                  <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} /><span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <Link to={"/signup" as any} onClick={() => trackEvent("pricing_cta", { plan: "free", currency: displayCurrency })} style={{
-              display: "block", textAlign: "center", padding: "12px 16px", borderRadius: 999,
-              background: "#F4F4F5", color: C.black, textDecoration: "none", fontWeight: 700, fontSize: 14,
-            }}>{t("pricing.free.cta")}</Link>
-          </div>
-
-          {/* PREMIUM */}
-          <div className="reveal" style={{
-            background: "#fff", border: `2px solid ${C.coral}`, borderRadius: 22,
-            padding: "28px 24px", textAlign: "left", position: "relative",
-            boxShadow: `0 16px 40px ${C.coralGlow}`,
-          }}>
-            <div style={{
-              position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
-              background: C.coral, color: "#fff", padding: "4px 12px", borderRadius: 999,
-              fontSize: 11, fontWeight: 800, letterSpacing: 0.5, whiteSpace: "nowrap",
-            }}>{t("pricing.popular")}</div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: C.coral, letterSpacing: 1, marginBottom: 8 }}>
-              {t("pricing.premium.tag").toUpperCase()}
-            </div>
-            <div style={{ fontFamily: displayFont, fontSize: 22, fontWeight: 800, color: C.black, marginBottom: 12 }}>
-              {t("pricing.premium.name")}
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 18 }}>
-              <span style={{ fontFamily: displayFont, fontSize: 40, fontWeight: 800, color: C.black, lineHeight: 1 }}>
-                {formatted}
-              </span>
-              <span style={{ color: C.g400, fontSize: 13 }}>{t("pricing.suffix")}</span>
-            </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 22px", display: "flex", flexDirection: "column", gap: 10 }}>
-              {premiumFeatures.map((f) => (
-                <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14 }}>
-                  <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} /><span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <Link to={"/signup" as any} onClick={() => trackEvent("pricing_cta", { plan: "premium", currency: displayCurrency })} style={{
-              display: "block", textAlign: "center", padding: "12px 16px", borderRadius: 999,
-              background: C.coral, color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 14,
-            }}>🎁 {t("pricing.cta")}</Link>
-          </div>
-        </div>
-
-        <p style={{ marginTop: 24, color: C.g400, fontSize: 13 }}>{t("pricing.note")}</p>
-      </div>
-      <style>{`@media (max-width: 720px) { .pricing-grid { grid-template-columns: 1fr !important; } }`}</style>
-    </section>
-  );
-}
-
-function Testimonials() {
-  const items = [
-    { stars: 5, text: "Antes eu controlava tudo por WhatsApp e planilha. Agora em 5 minutos já sei o status de todos os imóveis.", name: "Mariana S.", meta: "4 imóveis · São Paulo", color: C.coral, ini: "MS" },
-    { stars: 5, text: "The cleaning checklist feature is a game changer. My cleaner completes it on her phone and I get the photos instantly.", name: "James T.", meta: "2 properties · Miami", color: "#4A9EFF", ini: "JT" },
-    { stars: 5, text: "Hostlyb fait tout ce dont j'ai besoin à un prix imbattable.", name: "Sophie L.", meta: "2 propriétés · Paris", color: C.emerald, ini: "SL" },
-  ];
-  return (
-    <section style={{ padding: "96px 24px", background: "#fff" }}>
+    <section style={{ padding: "96px 20px", background: C.g50 }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          ★★★★★
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 12, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          {copy.pricing.title}
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
-          {items.map((tt) => (
-            <div key={tt.name} data-reveal className="reveal" style={{
-              border: `1px solid ${C.g100}`, borderRadius: 20, padding: 28, background: "#fff",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.g600, fontSize: 17, marginBottom: 48, maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
+          {copy.pricing.subtitle}
+        </p>
+        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, alignItems: "stretch" }}>
+          {plans.map((p, i) => (
+            <div key={i} data-reveal className="reveal" style={{
+              position: "relative", background: p.bg,
+              border: p.accent ? `2.5px solid ${C.coral}` : `1.5px solid ${p.border}`,
+              borderRadius: 24, padding: "32px 26px",
+              transform: p.accent ? "translateY(-8px)" : "none",
+              boxShadow: p.accent ? `0 24px 60px ${C.coralGlow}` : `0 4px 16px rgba(0,0,0,0.04)`,
+              display: "flex", flexDirection: "column",
             }}>
-              <div style={{ display: "flex", gap: 2, color: "#FFB347", marginBottom: 14 }}>
-                {Array.from({ length: tt.stars }).map((_, i) => <Star key={i} size={16} fill="#FFB347" stroke="none" />)}
+              {p.accent && (
+                <div style={{
+                  position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
+                  background: C.coral, color: "#fff", padding: "6px 14px", borderRadius: 999,
+                  fontSize: 11, fontWeight: 800, letterSpacing: 0.5, whiteSpace: "nowrap",
+                  boxShadow: `0 8px 20px ${C.coralGlow}`,
+                }}>{copy.pricing.popular}</div>
+              )}
+              <p style={{ fontSize: 11, fontWeight: 800, color: p.accent ? C.coral : C.g600, letterSpacing: 1.2, marginBottom: 8, textTransform: "uppercase", margin: 0 }}>{p.tag}</p>
+              <h3 style={{ fontFamily: displayFont, fontSize: 24, fontWeight: 800, color: C.black, margin: "6px 0 14px" }}>{p.name}</h3>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 22 }}>
+                <span style={{ fontFamily: displayFont, fontSize: 38, fontWeight: 800, color: C.black, lineHeight: 1 }}>{p.price}</span>
+                {p.price !== copy.pricing.free.price && (
+                  <span style={{ color: C.g400, fontSize: 14, fontWeight: 600 }}>{copy.pricing.perMo}</span>
+                )}
               </div>
-              <p style={{ color: C.g800, fontSize: 15, lineHeight: 1.6, marginBottom: 20 }}>"{tt.text}"</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 999, background: tt.color, color: "#fff", display: "grid", placeItems: "center", fontWeight: 700, fontSize: 14 }}>{tt.ini}</div>
-                <div>
-                  <p style={{ fontWeight: 700, color: C.g800, fontSize: 14 }}>{tt.name}</p>
-                  <p style={{ color: C.g400, fontSize: 12 }}>{tt.meta}</p>
-                </div>
-              </div>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
+                {p.features.map((f) => (
+                  <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14, lineHeight: 1.45 }}>
+                    <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} /><span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to={p.signupTo as any}
+                data-cta-location={`pricing_${p.name}`}
+                onClick={() => trackEvent("pricing_cta", { plan: p.name })}
+                style={{
+                  display: "block", textAlign: "center", padding: "13px 16px", borderRadius: 999,
+                  background: p.ctaBg, color: p.ctaColor, textDecoration: "none",
+                  fontWeight: 800, fontSize: 14,
+                  boxShadow: p.accent ? `0 10px 24px ${C.coralGlow}` : "none",
+                }}
+              >{p.cta}</Link>
             </div>
           ))}
         </div>
+        <p style={{ textAlign: "center", marginTop: 32, color: C.g600, fontSize: 13, fontWeight: 600 }}>
+          {copy.pricing.micro}
+        </p>
       </div>
+      <style>{`@media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr !important; } .pricing-grid > div { transform: none !important; } }`}</style>
     </section>
   );
 }
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
+/* ============ FAQ ============ */
+function FAQItem({ q, a, open, onClick }: { q: string; a: string; open: boolean; onClick: () => void }) {
   return (
     <div style={{ borderBottom: `1px solid ${C.g100}` }}>
-      <button onClick={() => setOpen((v) => !v)} style={{
+      <button onClick={onClick} style={{
         width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "20px 0", background: "transparent", border: 0, cursor: "pointer", textAlign: "left",
+        padding: "22px 4px", background: "transparent", border: 0, cursor: "pointer", textAlign: "left", gap: 16,
       }}>
         <span style={{ fontWeight: 700, color: C.g800, fontSize: 16 }}>{q}</span>
         {open ? <Minus size={20} color={C.coral} /> : <Plus size={20} color={C.g600} />}
       </button>
-      <div style={{ maxHeight: open ? 240 : 0, overflow: "hidden", transition: "max-height .3s ease, padding .3s ease", paddingBottom: open ? 20 : 0 }}>
-        <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6 }}>{a}</p>
+      <div style={{
+        maxHeight: open ? 260 : 0, overflow: "hidden",
+        transition: "max-height .35s ease, padding .35s ease",
+        paddingBottom: open ? 20 : 0,
+      }}>
+        <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.65, margin: 0 }}>{a}</p>
       </div>
     </div>
   );
 }
 
 function FAQ() {
-  const t = useT();
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
+  const [openIdx, setOpenIdx] = useState<number | null>(0);
   return (
-    <section id="faq" style={{ padding: "96px 24px", background: C.g50 }}>
+    <section style={{ padding: "96px 20px", background: "#fff" }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 32, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("faq.title")}
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 40, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          {copy.faq.title}
         </h2>
-        <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: "8px 24px", border: `1px solid ${C.g100}` }}>
-          {FAQ_KEYS.map(([qk, ak]) => (
-            <details key={qk} className="faq-item" style={{ borderBottom: `1px solid ${C.g100}` }}>
-              <summary style={{
-                listStyle: "none", cursor: "pointer", padding: "20px 0",
-                display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16,
-                fontWeight: 700, color: C.g800, fontSize: 16,
-              }}>
-                <span>{t(qk)}</span>
-                <Plus size={20} color={C.g600} className="faq-icon-closed" />
-                <Minus size={20} color={C.coral} className="faq-icon-open" />
-              </summary>
-              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, paddingBottom: 20, margin: 0 }}>{t(ak)}</p>
-            </details>
+        <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 22, padding: "8px 28px", border: `1px solid ${C.g100}`, boxShadow: "0 4px 16px rgba(0,0,0,0.03)" }}>
+          {copy.faq.items.map((it, i) => (
+            <FAQItem key={i} q={it.q} a={it.a} open={openIdx === i} onClick={() => setOpenIdx(openIdx === i ? null : i)} />
           ))}
         </div>
       </div>
@@ -827,116 +638,139 @@ function FAQ() {
   );
 }
 
-function ProblemSolution() {
-  const t = useT();
-  const without = [t("ps.w1"), t("ps.w2"), t("ps.w3"), t("ps.w4"), t("ps.w5")];
-  const withHostlyb = [t("ps.h1"), t("ps.h2"), t("ps.h3"), t("ps.h4"), t("ps.h5")];
+/* ============ PROGRESS BAR ============ */
+function ProgressBar() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
+  const sectionRef = useRef<HTMLElement>(null);
+  const [pct, setPct] = useState(0);
+  const [active, setActive] = useState<number>(-1);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting && pct === 0) {
+          // animate to 94%
+          let i = 0;
+          const total = copy.progress.items.length;
+          const interval = setInterval(() => {
+            i += 1;
+            setActive(i - 1);
+            setPct(Math.min(94, Math.round((i / total) * 94)));
+            if (i >= total) {
+              clearInterval(interval);
+              setPct(94);
+            }
+          }, 420);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.35 });
+    io.observe(sectionRef.current);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <section id="problema" style={{ padding: "96px 24px", background: C.g50 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("ps.title")}
+    <section ref={sectionRef} style={{ padding: "96px 20px", background: C.g50 }}>
+      <div style={{ maxWidth: 880, margin: "0 auto" }}>
+        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 36, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
+          {copy.progress.title}
         </h2>
-        <div className="ps-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-          <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.g100}` }}>
-            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>❌ {t("ps.without")}</h3>
-            <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {without.map((tx) => (
-                <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g600, fontSize: 15 }}>
-                  <X size={18} color={C.coral} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
-                </li>
-              ))}
-            </ul>
+
+        <div style={{ background: "#fff", borderRadius: 24, padding: "32px 28px", border: `1px solid ${C.g100}`, boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+            <span style={{ fontSize: 13, color: C.g600, fontWeight: 700 }}>Hostlyb Score</span>
+            <span style={{ fontFamily: displayFont, fontSize: 40, fontWeight: 800, color: C.coral, lineHeight: 1 }}>{pct}%</span>
           </div>
-          <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 20, padding: 28, border: `2px solid ${C.emerald}33` }}>
-            <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.g800, marginBottom: 18 }}>✅ {t("ps.with")}</h3>
-            <ul style={{ display: "flex", flexDirection: "column", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-              {withHostlyb.map((tx) => (
-                <li key={tx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 15 }}>
-                  <Check size={18} color={C.emerald} style={{ marginTop: 2, flexShrink: 0 }} /><span>{tx}</span>
-                </li>
-              ))}
-            </ul>
+          <div style={{ width: "100%", height: 14, borderRadius: 999, background: C.g100, overflow: "hidden" }}>
+            <div style={{
+              width: `${pct}%`, height: "100%",
+              background: `linear-gradient(90deg, ${C.coral}, #FF8E53)`,
+              borderRadius: 999, transition: "width .5s ease",
+            }} />
           </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: "26px 0 0", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }} className="progress-items">
+            {copy.progress.items.map((it, i) => {
+              const done = i <= active;
+              return (
+                <li key={i} style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  color: done ? C.g800 : C.g400,
+                  fontSize: 14, fontWeight: done ? 700 : 500,
+                  transition: "all .3s ease",
+                }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 999,
+                    background: done ? C.emerald : C.g200,
+                    display: "grid", placeItems: "center", flexShrink: 0,
+                    transition: "all .3s ease",
+                  }}>
+                    {done && <Check size={14} color="#fff" />}
+                  </div>
+                  <span>{it}</span>
+                </li>
+              );
+            })}
+          </ul>
         </div>
+        <p style={{ textAlign: "center", marginTop: 24, color: C.g600, fontSize: 15, fontStyle: "italic" }}>{copy.progress.copy}</p>
       </div>
-      <style>{`@media (max-width: 768px) { .ps-grid { grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`@media (max-width: 600px) { .progress-items { grid-template-columns: 1fr !important; } }`}</style>
     </section>
   );
 }
 
-function HowItWorks() {
-  const t = useT();
-  const steps = [
-    { n: "1", t: t("hiw.s1.t"), d: t("hiw.s1.d") },
-    { n: "2", t: t("hiw.s2.t"), d: t("hiw.s2.d") },
-    { n: "3", t: t("hiw.s3.t"), d: t("hiw.s3.d") },
-  ];
+/* ============ FINAL CTA ============ */
+function FinalCTA() {
+  const { lang } = useLocale();
+  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   return (
-    <section id="como-funciona" style={{ padding: "96px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal section-title" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("hiw.title")}
-        </h2>
-        <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
-          {steps.map((s) => (
-            <div key={s.n} data-reveal className="reveal" style={{ textAlign: "center", padding: 16 }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: "50%", background: C.coralLight,
-                color: C.coral, fontFamily: displayFont, fontWeight: 800, fontSize: 28,
-                display: "grid", placeItems: "center", margin: "0 auto 18px",
-              }}>{s.n}</div>
-              <h3 style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 20, color: C.black, marginBottom: 8 }}>{s.t}</h3>
-              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, maxWidth: 280, margin: "0 auto" }}>{s.d}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      <style>{`@media (max-width: 768px) { .hiw-grid { grid-template-columns: 1fr !important; } }`}</style>
-    </section>
-  );
-}
-
-function CTABanner() {
-  const t = useT();
-  return (
-    <section style={{ padding: "32px 24px" }}>
+    <section style={{ padding: "32px 20px 64px" }}>
       <div data-reveal className="reveal" style={{
         position: "relative", overflow: "hidden",
-        maxWidth: 1100, margin: "0 auto", borderRadius: 32,
+        maxWidth: 1100, margin: "0 auto", borderRadius: 36,
         background: "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)",
-        padding: "72px 32px", textAlign: "center", color: "#fff",
+        padding: "80px 32px", textAlign: "center", color: "#fff",
       }}>
-        <h2 style={{ fontFamily: displayFont, fontWeight: 800, color: "#fff", marginBottom: 14, letterSpacing: "-0.02em", lineHeight: 1.1, fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {t("cta.title")}
+        <h2 style={{ fontFamily: displayFont, fontWeight: 800, color: "#fff", margin: "0 0 14px", letterSpacing: "-0.02em", lineHeight: 1.1, fontSize: "clamp(30px, 4.4vw, 48px)" }}>
+          {copy.finalCta.title}
         </h2>
-        <p style={{ fontSize: 18, color: "rgba(255,255,255,0.9)", marginBottom: 28 }}>{t("cta.subtitle")}</p>
-        <a href="/signup" style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          background: "#fff", color: C.coral, padding: "16px 32px",
-          borderRadius: 999, fontWeight: 800, fontSize: 16,
-          boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
-        }}>
-          {t("cta.btn")} <ArrowRight size={18} />
-        </a>
+        <p style={{ fontSize: 18, color: "rgba(255,255,255,0.92)", margin: "0 auto 32px", maxWidth: 560 }}>{copy.finalCta.subtitle}</p>
+        <Link
+          to={"/signup" as any}
+          data-cta-location="final"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 10,
+            background: "#fff", color: C.coral, padding: "18px 36px",
+            borderRadius: 999, fontWeight: 800, fontSize: 17,
+            boxShadow: "0 16px 40px rgba(0,0,0,0.22)",
+            textDecoration: "none",
+          }}
+        >
+          {copy.finalCta.cta}
+        </Link>
+        <p style={{ marginTop: 24, color: "rgba(255,255,255,0.85)", fontSize: 13, display: "flex", justifyContent: "center", gap: 18, flexWrap: "wrap", fontWeight: 600 }}>
+          {copy.finalCta.micro}
+        </p>
       </div>
     </section>
   );
 }
 
 function Footer() {
-  const t = useT();
   return (
-    <footer style={{ background: C.black, color: C.g300, padding: "48px 24px 32px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, alignItems: "center", textAlign: "center" }}>
-        <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 700, color: "#fff" }}>
+    <footer style={{ background: C.black, color: C.g300, padding: "48px 20px 32px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20, alignItems: "center", textAlign: "center" }}>
+        <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 800, color: "#fff", textDecoration: "none" }}>
           <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
             <HomeIcon size={18} color={C.coral} />
           </span>
           Host<span style={{ color: C.coral }}>lyb</span>
         </Link>
         <LanguageSelector />
-        <p style={{ fontSize: 13, color: C.g400 }}>{t("footer.rights")}</p>
+        <p style={{ fontSize: 13, color: C.g400, margin: 0 }}>© 2026 Hostlyb. All rights reserved.</p>
       </div>
     </footer>
   );
@@ -948,39 +782,21 @@ function LandingPage() {
   return (
     <div style={{ background: "#fff", color: C.g800, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       <style>{`
-        /* Always render content visible. Reveal class only adds a tiny lift-in once observed. */
-        [data-reveal] { opacity: 1; transform: none; transition: transform .5s ease; }
-        [data-reveal].is-visible { transform: translateY(0); }
-        .btn-coral:hover { transform: translateY(-1px); filter: brightness(1.04); }
-        .nav-link { transition: color .15s ease; } .nav-link:hover { color: ${C.coral}; }
-        .feature-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: ${C.coralLight}; }
-        details.faq-item summary::-webkit-details-marker { display: none; }
-        details.faq-item .faq-icon-open { display: none; }
-        details.faq-item[open] .faq-icon-closed { display: none; }
-        details.faq-item[open] .faq-icon-open { display: inline-block; }
-        @media (max-width: 768px) {
-          .nav-desktop { display: none !important; }
-          .nav-mobile-btn { display: inline-flex !important; }
-        }
-        @media (min-width: 769px) {
-          .nav-mobile-btn { display: none !important; }
-          .nav-mobile-drawer { display: none !important; }
-        }
+        [data-reveal] { opacity: 0; transform: translateY(12px); transition: opacity .6s ease, transform .6s ease; }
+        [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+        .btn-coral:hover { transform: translateY(-2px); filter: brightness(1.04); }
+        html { scroll-behavior: smooth; }
       `}</style>
-
       <Navbar />
-      <PwaInstallBanner />
       <Hero />
-      <SocialProof />
-      <StartInFourSteps />
-      <ObjectionBreaker />
-      <ProblemSolution />
-      <Features />
+      <Problem />
       <HowItWorks />
+      <Features />
+      <SocialProof />
       <Pricing />
-      <Testimonials />
       <FAQ />
-      <CTABanner />
+      <ProgressBar />
+      <FinalCTA />
       <Footer />
     </div>
   );
