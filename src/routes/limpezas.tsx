@@ -136,7 +136,14 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
           {filterDate ? "Nenhuma limpeza nesta data." : "Nenhuma limpeza ainda. Toque em \u201cAgendar\u201d."}
         </p>
       ) : (
-        <ul className="flex flex-col gap-3">
+          {(() => {
+            const completed = filtered.filter((j: any) => j.status === "concluido" && j.duration_minutes);
+            const avg = completed.length ? Math.round(completed.reduce((s: number, j: any) => s + (j.duration_minutes || 0), 0) / completed.length) : null;
+            return avg ? (
+              <p className="text-xs text-muted-foreground mb-3">⏱️ Tempo médio: <span className="font-semibold">{avg} min</span> ({completed.length} concluídas)</p>
+            ) : null;
+          })()}
+          <ul className="flex flex-col gap-3">
           {filtered.map((j: any) => {
             const cl = (j.checklist ?? []) as { item: string; done: boolean }[];
             const done = cl.filter((c) => c.done).length;
@@ -159,7 +166,7 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><Clock size={12} /> {j.scheduled_date} · {j.scheduled_time?.slice(0,5)}</span>
+                    <span className="inline-flex items-center gap-1"><Clock size={12} /> {j.scheduled_date} · {j.scheduled_time?.slice(0,5)}{j.duration_minutes ? ` · ${j.duration_minutes} min` : ""}</span>
                     <span className="font-mono">{formatMoney(Number(j.payment_amount ?? 0), currency, lang)}</span>
                   </div>
                   <div>
