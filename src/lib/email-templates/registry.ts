@@ -19,6 +19,7 @@ export interface TemplateEntry {
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'invite-employee': inviteEmployee,
+  'invite-accepted': inviteAccepted,
   'cleaning-photo': cleaningPhoto,
   'cleaning-problem': cleaningProblem,
   'welcome': welcome,
