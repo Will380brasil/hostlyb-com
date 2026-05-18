@@ -92,48 +92,10 @@ const JSON_LD = {
   ],
 };
 
+import { buildLandingHead } from "@/lib/landing-head";
+
 export const Route = createFileRoute("/")({
-  head: () => {
-    const m = META_BY_LANG.pt;
-    return {
-      meta: [
-        { title: m.title },
-        { name: "description", content: m.description },
-        { name: "keywords", content: m.keywords },
-        { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
-        { name: "theme-color", content: "#FF6B6B" },
-        { property: "og:type", content: "website" },
-        { property: "og:title", content: m.title },
-        { property: "og:description", content: m.description },
-        { property: "og:url", content: BASE_URL + "/" },
-        { property: "og:site_name", content: "Hostlyb" },
-        { property: "og:image", content: OG_IMAGE },
-        { property: "og:image:width", content: "1200" },
-        { property: "og:image:height", content: "630" },
-        { property: "og:locale", content: "pt_PT" },
-        { property: "og:locale:alternate", content: "en_US" },
-        { property: "og:locale:alternate", content: "fr_FR" },
-        { property: "og:locale:alternate", content: "de_DE" },
-        { property: "og:locale:alternate", content: "it_IT" },
-        { property: "og:locale:alternate", content: "es_ES" },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: m.title },
-        { name: "twitter:description", content: m.description },
-        { name: "twitter:image", content: OG_IMAGE },
-      ],
-      links: [
-        { rel: "canonical", href: BASE_URL + "/" },
-        ...LANGS.map((l) => ({
-          rel: "alternate",
-          hreflang: l === "pt" ? "pt-PT" : l,
-          href: `${BASE_URL}/?lang=${l}`,
-        })),
-        { rel: "alternate", hreflang: "pt-BR", href: `${BASE_URL}/?lang=pt` },
-        { rel: "alternate", hreflang: "x-default", href: BASE_URL + "/" },
-      ],
-      scripts: [{ type: "application/ld+json", children: JSON.stringify(JSON_LD) }],
-    };
-  },
+  head: () => buildLandingHead("pt"),
   component: LandingPage,
 });
 
