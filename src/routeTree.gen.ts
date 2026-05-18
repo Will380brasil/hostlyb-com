@@ -43,6 +43,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksIcalSyncRouteImport } from './routes/api/public/hooks/ical-sync'
 import { Route as ApiPublicHooksCleanupThumbnailsRouteImport } from './routes/api/public/hooks/cleanup-thumbnails'
+import { Route as ApiPublicHooksAutomatedEmailsRouteImport } from './routes/api/public/hooks/automated-emails'
 import { Route as ApiPublicCleanerNotifyRouteImport } from './routes/api/public/cleaner/notify'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
@@ -220,6 +221,12 @@ const ApiPublicHooksCleanupThumbnailsRoute =
     path: '/api/public/hooks/cleanup-thumbnails',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAutomatedEmailsRoute =
+  ApiPublicHooksAutomatedEmailsRouteImport.update({
+    id: '/api/public/hooks/automated-emails',
+    path: '/api/public/hooks/automated-emails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCleanerNotifyRoute = ApiPublicCleanerNotifyRouteImport.update({
   id: '/api/public/cleaner/notify',
   path: '/api/public/cleaner/notify',
@@ -256,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
+  '/api/public/hooks/automated-emails': typeof ApiPublicHooksAutomatedEmailsRoute
   '/api/public/hooks/cleanup-thumbnails': typeof ApiPublicHooksCleanupThumbnailsRoute
   '/api/public/hooks/ical-sync': typeof ApiPublicHooksIcalSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
+  '/api/public/hooks/automated-emails': typeof ApiPublicHooksAutomatedEmailsRoute
   '/api/public/hooks/cleanup-thumbnails': typeof ApiPublicHooksCleanupThumbnailsRoute
   '/api/public/hooks/ical-sync': typeof ApiPublicHooksIcalSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -331,6 +340,7 @@ export interface FileRoutesById {
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
+  '/api/public/hooks/automated-emails': typeof ApiPublicHooksAutomatedEmailsRoute
   '/api/public/hooks/cleanup-thumbnails': typeof ApiPublicHooksCleanupThumbnailsRoute
   '/api/public/hooks/ical-sync': typeof ApiPublicHooksIcalSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
+    | '/api/public/hooks/automated-emails'
     | '/api/public/hooks/cleanup-thumbnails'
     | '/api/public/hooks/ical-sync'
     | '/api/public/payments/webhook'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
+    | '/api/public/hooks/automated-emails'
     | '/api/public/hooks/cleanup-thumbnails'
     | '/api/public/hooks/ical-sync'
     | '/api/public/payments/webhook'
@@ -444,6 +456,7 @@ export interface FileRouteTypes {
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
     | '/api/public/cleaner/notify'
+    | '/api/public/hooks/automated-emails'
     | '/api/public/hooks/cleanup-thumbnails'
     | '/api/public/hooks/ical-sync'
     | '/api/public/payments/webhook'
@@ -481,6 +494,7 @@ export interface RootRouteChildren {
   ApiPublicGeoRoute: typeof ApiPublicGeoRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicCleanerNotifyRoute: typeof ApiPublicCleanerNotifyRoute
+  ApiPublicHooksAutomatedEmailsRoute: typeof ApiPublicHooksAutomatedEmailsRoute
   ApiPublicHooksCleanupThumbnailsRoute: typeof ApiPublicHooksCleanupThumbnailsRoute
   ApiPublicHooksIcalSyncRoute: typeof ApiPublicHooksIcalSyncRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -729,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCleanupThumbnailsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/automated-emails': {
+      id: '/api/public/hooks/automated-emails'
+      path: '/api/public/hooks/automated-emails'
+      fullPath: '/api/public/hooks/automated-emails'
+      preLoaderRoute: typeof ApiPublicHooksAutomatedEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cleaner/notify': {
       id: '/api/public/cleaner/notify'
       path: '/api/public/cleaner/notify'
@@ -780,6 +801,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicGeoRoute: ApiPublicGeoRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicCleanerNotifyRoute: ApiPublicCleanerNotifyRoute,
+  ApiPublicHooksAutomatedEmailsRoute: ApiPublicHooksAutomatedEmailsRoute,
   ApiPublicHooksCleanupThumbnailsRoute: ApiPublicHooksCleanupThumbnailsRoute,
   ApiPublicHooksIcalSyncRoute: ApiPublicHooksIcalSyncRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
