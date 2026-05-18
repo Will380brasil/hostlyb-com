@@ -263,6 +263,18 @@ function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }
       .select("id, scheduled_date, status, payment_amount, properties(name)")
       .eq("cleaner_id", id).order("scheduled_date", { ascending: false }).limit(10)).data ?? [],
   });
+  const jobIds = (history as any[]).map((h) => h.id);
+  const { data: thumbs = [] } = useQuery({
+    queryKey: ["cleaner-history-thumbs", id, jobIds.join(",")],
+    enabled: jobIds.length > 0,
+    queryFn: async () => (await supabase.from("cleaning_photo_thumbnails")
+      .select("cleaning_job_id, thumbnail_path")
+      .in("cleaning_job_id", jobIds)).data ?? [],
+  });
+  const thumbsByJob = (thumbs as any[]).reduce((acc, t) => {
+    (acc[t.cleaning_job_id] ??= []).push(t.thumbnail_path);
+    return acc;
+  }, {} as Record<string, string[]>);
 
   const toggleActive = useMutation({
     mutationFn: async () => {
