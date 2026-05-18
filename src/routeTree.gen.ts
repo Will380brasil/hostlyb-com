@@ -15,6 +15,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
+import { Route as ItRouteImport } from './routes/it'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as FrRouteImport } from './routes/fr'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
@@ -84,6 +85,11 @@ const LoginRoute = LoginRouteImport.update({
 const LimpezasRoute = LimpezasRouteImport.update({
   id: '/limpezas',
   path: '/limpezas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItRoute = ItRouteImport.update({
+  id: '/it',
+  path: '/it',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HospedesRoute = HospedesRouteImport.update({
@@ -308,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
@@ -404,6 +412,7 @@ export interface FileRoutesById {
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/pwa-check': typeof PwaCheckRoute
@@ -454,6 +463,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/fr'
     | '/hospedes'
+    | '/it'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
@@ -501,6 +511,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/fr'
     | '/hospedes'
+    | '/it'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
@@ -549,6 +560,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/fr'
     | '/hospedes'
+    | '/it'
     | '/limpezas'
     | '/login'
     | '/pwa-check'
@@ -598,6 +610,7 @@ export interface RootRouteChildren {
   FinanceiroRoute: typeof FinanceiroRoute
   FrRoute: typeof FrRoute
   HospedesRoute: typeof HospedesRoute
+  ItRoute: typeof ItRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   PwaCheckRoute: typeof PwaCheckRoute
@@ -667,6 +680,13 @@ declare module '@tanstack/react-router' {
       path: '/limpezas'
       fullPath: '/limpezas'
       preLoaderRoute: typeof LimpezasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/it': {
+      id: '/it'
+      path: '/it'
+      fullPath: '/it'
+      preLoaderRoute: typeof ItRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hospedes': {
@@ -999,6 +1019,7 @@ const rootRouteChildren: RootRouteChildren = {
   FinanceiroRoute: FinanceiroRoute,
   FrRoute: FrRoute,
   HospedesRoute: HospedesRoute,
+  ItRoute: ItRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   PwaCheckRoute: PwaCheckRoute,
