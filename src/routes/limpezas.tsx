@@ -342,7 +342,7 @@ function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }
                       </div>
                       {tlist.length > 0 && (
                         <div className="flex gap-1.5 flex-wrap">
-                          {tlist.slice(0, 6).map((p, i) => (
+                          {tlist.slice(0, 6).map((p: string, i: number) => (
                             <SignedImage key={i} bucket="cleaning-thumbnails" path={p} alt=""
                               className="w-12 h-12 rounded object-cover border border-card-border" />
                           ))}
