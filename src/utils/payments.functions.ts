@@ -110,7 +110,17 @@ export const createPortalSession = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+
+    const { data: member } = await supabase
+      .from("organization_members")
+      .select("role")
+      .eq("organization_id", data.organizationId)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!member || !["owner", "admin"].includes(member.role)) {
+      throw new Error("Only org owners/admins can manage billing");
+    }
 
     const { data: sub } = await supabase
       .from("subscriptions")
