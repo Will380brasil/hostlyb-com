@@ -101,6 +101,8 @@ function Dashboard() {
       <GuestChart />
 
       {/* New: Operation progress */}
+      <IcalExportCard />
+
       <OperationProgress />
 
       <section className="grid grid-cols-2 gap-3 mt-6">
