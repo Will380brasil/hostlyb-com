@@ -25,7 +25,7 @@ function PropertyDetail() {
   const t = useT();
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"overview" | "guidebook" | "maintenance" | "performance">("overview");
+  const [tab, setTab] = useState<"overview" | "guidebook" | "maintenance" | "performance" | "channels">("overview");
 
   const archive = useMutation({
     mutationFn: async () => {
