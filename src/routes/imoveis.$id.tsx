@@ -111,6 +111,7 @@ function PropertyDetail() {
 
       {tab === "maintenance" && <PremiumGate><MaintenanceTab propertyId={id} /></PremiumGate>}
       {tab === "performance" && <PremiumGate><PerformanceTab propertyId={id} propertyName={p.name} /></PremiumGate>}
+      {tab === "compliance" && <PremiumGate><LegalComplianceTab propertyId={id} propertyName={p.name} /></PremiumGate>}
 
       {tab === "overview" && <>
       <section className="hostly-card mb-4">
