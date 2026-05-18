@@ -16,6 +16,7 @@ const BodySchema = z.object({
   urgency: z.enum(["low", "medium", "high"]).optional(),
   bucket: z.enum(["cleaning-photos", "forgotten-items"]).optional(),
   path: z.string().max(500).optional(),
+  recordIssue: z.boolean().optional(),
 });
 
 export const Route = createFileRoute("/api/public/cleaner/notify")({
