@@ -1322,6 +1322,7 @@ export type Database = {
         Returns: number
       }
       get_invite_by_token: { Args: { p_token: string }; Returns: Json }
+      get_public_guidebook: { Args: { p_slug: string }; Returns: Json }
       guest_checkin_get: { Args: { p_token: string }; Returns: Json }
       guest_checkin_submit: {
         Args: {
