@@ -332,12 +332,25 @@ function CleanerDetailModal({ id, onClose }: { id: string; onClose: () => void }
             <h3 className="font-bold text-sm mb-2">Histórico recente · total R$ {totalEarnings.toFixed(2)}</h3>
             {history.length === 0 ? <p className="text-xs text-muted-foreground">Sem limpezas.</p> : (
               <ul className="space-y-1.5">
-                {history.map((h: any) => (
-                  <li key={h.id} className="text-xs flex justify-between gap-2 p-2 rounded bg-background">
-                    <span className="truncate">{h.scheduled_date.split("-").reverse().join("/")} · {h.properties?.name ?? "—"}</span>
-                    <span className="text-muted-foreground capitalize shrink-0">{h.status}</span>
-                  </li>
-                ))}
+                {history.map((h: any) => {
+                  const tlist = thumbsByJob[h.id] ?? [];
+                  return (
+                    <li key={h.id} className="text-xs p-2 rounded bg-background space-y-1.5">
+                      <div className="flex justify-between gap-2">
+                        <span className="truncate">{h.scheduled_date.split("-").reverse().join("/")} · {h.properties?.name ?? "—"}</span>
+                        <span className="text-muted-foreground capitalize shrink-0">{h.status}</span>
+                      </div>
+                      {tlist.length > 0 && (
+                        <div className="flex gap-1.5 flex-wrap">
+                          {tlist.slice(0, 6).map((p, i) => (
+                            <SignedImage key={i} bucket="cleaning-thumbnails" path={p} alt=""
+                              className="w-12 h-12 rounded object-cover border border-card-border" />
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
