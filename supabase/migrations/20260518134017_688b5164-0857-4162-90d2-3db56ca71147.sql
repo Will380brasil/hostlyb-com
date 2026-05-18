@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ALTER COLUMN property_tier SET DEFAULT 1;

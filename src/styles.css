@@ -48,6 +48,10 @@ html { scroll-behavior: smooth; }
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-text-sub: var(--text-sub);
+  --color-income: var(--success);
+  --color-income-soft: var(--success-soft);
+  --color-expense: var(--destructive);
+  --color-expense-soft: oklch(0.65 0.24 27 / 0.13);
 }
 
 :root,
