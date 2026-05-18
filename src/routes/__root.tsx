@@ -147,10 +147,13 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <LocaleProvider>
         <AuthProvider>
-          <Outlet />
-          <Toaster />
-          <CookieConsent />
-          <SupportFAB />
+          <InstallProvider>
+            <Outlet />
+            <Toaster />
+            <CookieConsent />
+            <SupportFAB />
+            <InstallModal />
+          </InstallProvider>
         </AuthProvider>
       </LocaleProvider>
     </QueryClientProvider>
