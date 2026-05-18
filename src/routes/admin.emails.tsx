@@ -14,12 +14,36 @@ export const Route = createFileRoute("/admin/emails")({
 function EmailsPage() {
   const fetch = useServerFn(getEmailStats);
   const blast = useServerFn(sendManualBlast);
+  const sendAuthTest = useServerFn(sendAuthTestEmail);
   const { data } = useQuery({ queryKey: ["admin-email-stats"], queryFn: () => fetch(), refetchInterval: 60_000 });
 
   const [audience, setAudience] = useState<"all" | "free" | "pro" | "premium" | "inactive7">("all");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
+  const [testingType, setTestingType] = useState<string | null>(null);
+
+  const AUTH_TYPES: { key: string; label: string }[] = [
+    { key: "signup", label: "Signup (confirmar e-mail)" },
+    { key: "magiclink", label: "Magic link" },
+    { key: "recovery", label: "Reset de senha" },
+    { key: "invite", label: "Convite" },
+    { key: "email_change", label: "Mudança de e-mail" },
+    { key: "reauthentication", label: "Reautenticação (OTP)" },
+  ];
+
+  const sendTest = async (type: string) => {
+    setTestingType(type);
+    try {
+      const r: any = await sendAuthTest({ data: { type, recipientEmail: testEmail || undefined } });
+      toast.success(`Enviado para ${r.recipient}`);
+    } catch (e: any) {
+      toast.error(e.message || "Falhou");
+    } finally {
+      setTestingType(null);
+    }
+  };
 
   const send = async () => {
     if (!subject || !body) return toast.error("Subject and body required");
