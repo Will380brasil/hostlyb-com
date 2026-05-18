@@ -137,28 +137,6 @@ function GuestsPage() {
                     )}
                   </div>
                 </div>
-                  <span>{g.nights ?? "—"} noites</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="hostly-pill" style={{ background: "var(--color-info-soft)", color: "var(--color-info)" }}>
-                    {platformLabel[g.platform] ?? g.platform}
-                  </span>
-                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <span className="font-mono text-sm" style={{ color: "var(--color-success)" }}>
-                      {formatMoney(Number(g.total_value ?? 0), currency, lang)}
-                    </span>
-                    {g.phone && (
-                      <>
-                        <a href={`tel:+${g.phone}`} className="grid place-items-center w-8 h-8 rounded-full bg-secondary"><Phone size={13} /></a>
-                        <a href={`https://wa.me/${g.phone}`} target="_blank" rel="noreferrer"
-                           className="grid place-items-center w-8 h-8 rounded-full"
-                           style={{ background: "var(--color-success-soft)", color: "var(--color-success)" }}>
-                          <MessageCircle size={13} />
-                        </a>
-                      </>
-                    )}
-                  </div>
-                </div>
               </button>
             </li>
           ))}
