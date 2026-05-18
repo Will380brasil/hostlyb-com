@@ -16,27 +16,9 @@ function PublicGuidebook() {
   const { data, isLoading } = useQuery({
     queryKey: ["public-guidebook", slug],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id,name,address,city,user_id,guidebook_data,guidebook_enabled")
-        .eq("guidebook_slug", slug)
-        .eq("guidebook_enabled", true)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc("get_public_guidebook", { p_slug: slug });
       if (error) throw error;
-      if (!data) return null;
-      // fetch plan tier of owner via org members → subscriptions
-      const { data: m } = await supabase.from("organization_members").select("organization_id").eq("user_id", data.user_id).limit(1).maybeSingle();
-      let tier = "free";
-      if (m) {
-        const { data: s } = await supabase.from("subscriptions").select("plan_tier,status,current_period_end")
-          .eq("organization_id", m.organization_id).order("created_at", { ascending: false }).limit(1).maybeSingle();
-        if (s) {
-          const active = s.status === "active" || s.status === "trialing" ||
-            ((s.status === "canceled" || s.status === "past_due") && s.current_period_end && new Date(s.current_period_end) > new Date());
-          if (active) tier = s.plan_tier ?? "free";
-        }
-      }
-      return { ...data, ownerTier: tier };
+      return (data as any) ?? null;
     },
   });
 
