@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { TrialBanner, TrialGate } from "@/components/TrialGate";
+import { InstallButton } from "@/components/InstallButton";
 
 const tabs = [
   { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
@@ -85,6 +86,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          <InstallButton compact />
           {isAdmin && (
             <Link
               to={"/admin" as any}

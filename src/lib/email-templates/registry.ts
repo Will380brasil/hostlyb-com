@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { template as inviteEmployee } from './invite-employee'
+import { template as inviteAccepted } from './invite-accepted'
 import { template as cleaningPhoto } from './cleaning-photo'
 import { template as cleaningProblem } from './cleaning-problem'
 import { template as welcome } from './welcome'
@@ -18,6 +19,7 @@ export interface TemplateEntry {
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'invite-employee': inviteEmployee,
+  'invite-accepted': inviteAccepted,
   'cleaning-photo': cleaningPhoto,
   'cleaning-problem': cleaningProblem,
   'welcome': welcome,

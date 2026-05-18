@@ -932,6 +932,7 @@ export type Database = {
           current_property_count: number
           display_name: string | null
           email: string | null
+          ical_export_token: string
           id: string
           locale: string
           property_tier: number
@@ -946,6 +947,7 @@ export type Database = {
           current_property_count?: number
           display_name?: string | null
           email?: string | null
+          ical_export_token?: string
           id: string
           locale?: string
           property_tier?: number
@@ -960,6 +962,7 @@ export type Database = {
           current_property_count?: number
           display_name?: string | null
           email?: string | null
+          ical_export_token?: string
           id?: string
           locale?: string
           property_tier?: number
@@ -1320,6 +1323,18 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_ical_export: {
+        Args: { p_token: string }
+        Returns: {
+          checkin_date: string
+          checkout_date: string
+          guest_id: string
+          guest_name: string
+          platform: string
+          property_name: string
+          user_display_name: string
+        }[]
       }
       get_invite_by_token: { Args: { p_token: string }; Returns: Json }
       get_public_guidebook: { Args: { p_slug: string }; Returns: Json }

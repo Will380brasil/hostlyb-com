@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { sendTransactionalEmail } from "@/lib/email/send";
 
 export const Route = createFileRoute("/convite/$token")({
   head: () => ({ meta: [{ title: "Convite — Hostlyb" }] }),
@@ -43,6 +44,35 @@ function ConvitePage() {
       return;
     }
     setDone(true);
+    try {
+      const { data: inv } = await supabase
+        .from("organization_invites")
+        .select("invited_by, email, id")
+        .eq("token", token)
+        .maybeSingle();
+      if (inv?.invited_by) {
+        const { data: inviter } = await supabase
+          .from("profiles")
+          .select("email, display_name")
+          .eq("id", inv.invited_by)
+          .maybeSingle();
+        const { data: me } = await supabase.auth.getUser();
+        if (inviter?.email) {
+          await sendTransactionalEmail({
+            templateName: "invite-accepted",
+            recipientEmail: inviter.email,
+            idempotencyKey: `invite-accept-${inv.id}`,
+            templateData: {
+              inviteeName: me.user?.user_metadata?.full_name ?? me.user?.email ?? inv.email,
+              inviteeEmail: inv.email,
+              organizationName: invite.organization_name,
+            },
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("invite-accept notify failed", e);
+    }
     setTimeout(() => navigate({ to: "/app" as any }), 1200);
   };
 

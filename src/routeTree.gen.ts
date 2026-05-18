@@ -57,6 +57,7 @@ import { Route as ApiPublicHooksIcalSyncRouteImport } from './routes/api/public/
 import { Route as ApiPublicHooksCleanupThumbnailsRouteImport } from './routes/api/public/hooks/cleanup-thumbnails'
 import { Route as ApiPublicHooksAutomatedEmailsRouteImport } from './routes/api/public/hooks/automated-emails'
 import { Route as ApiPublicCleanerNotifyRouteImport } from './routes/api/public/cleaner/notify'
+import { Route as ApiPublicCalendarTokenRouteImport } from './routes/api/public/calendar/$token'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -304,6 +305,11 @@ const ApiPublicCleanerNotifyRoute = ApiPublicCleanerNotifyRouteImport.update({
   path: '/api/public/cleaner/notify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCalendarTokenRoute = ApiPublicCalendarTokenRouteImport.update({
+  id: '/api/public/calendar/$token',
+  path: '/api/public/calendar/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -346,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/calendar/$token': typeof ApiPublicCalendarTokenRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/hooks/automated-emails': typeof ApiPublicHooksAutomatedEmailsRoute
   '/api/public/hooks/cleanup-thumbnails': typeof ApiPublicHooksCleanupThumbnailsRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/calendar/$token': typeof ApiPublicCalendarTokenRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/hooks/automated-emails': typeof ApiPublicHooksAutomatedEmailsRoute
   '/api/public/hooks/cleanup-thumbnails': typeof ApiPublicHooksCleanupThumbnailsRoute
@@ -446,6 +454,7 @@ export interface FileRoutesById {
   '/api/public/geo': typeof ApiPublicGeoRoute
   '/imoveis/$id/guia': typeof ImoveisIdGuiaRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/calendar/$token': typeof ApiPublicCalendarTokenRoute
   '/api/public/cleaner/notify': typeof ApiPublicCleanerNotifyRoute
   '/api/public/hooks/automated-emails': typeof ApiPublicHooksAutomatedEmailsRoute
   '/api/public/hooks/cleanup-thumbnails': typeof ApiPublicHooksCleanupThumbnailsRoute
@@ -498,6 +507,7 @@ export interface FileRouteTypes {
     | '/api/public/geo'
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
+    | '/api/public/calendar/$token'
     | '/api/public/cleaner/notify'
     | '/api/public/hooks/automated-emails'
     | '/api/public/hooks/cleanup-thumbnails'
@@ -547,6 +557,7 @@ export interface FileRouteTypes {
     | '/api/public/geo'
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
+    | '/api/public/calendar/$token'
     | '/api/public/cleaner/notify'
     | '/api/public/hooks/automated-emails'
     | '/api/public/hooks/cleanup-thumbnails'
@@ -597,6 +608,7 @@ export interface FileRouteTypes {
     | '/api/public/geo'
     | '/imoveis/$id/guia'
     | '/lovable/email/suppression'
+    | '/api/public/calendar/$token'
     | '/api/public/cleaner/notify'
     | '/api/public/hooks/automated-emails'
     | '/api/public/hooks/cleanup-thumbnails'
@@ -641,6 +653,7 @@ export interface RootRouteChildren {
   ImoveisIndexRoute: typeof ImoveisIndexRoute
   ApiPublicGeoRoute: typeof ApiPublicGeoRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicCalendarTokenRoute: typeof ApiPublicCalendarTokenRoute
   ApiPublicCleanerNotifyRoute: typeof ApiPublicCleanerNotifyRoute
   ApiPublicHooksAutomatedEmailsRoute: typeof ApiPublicHooksAutomatedEmailsRoute
   ApiPublicHooksCleanupThumbnailsRoute: typeof ApiPublicHooksCleanupThumbnailsRoute
@@ -989,6 +1002,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCleanerNotifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/calendar/$token': {
+      id: '/api/public/calendar/$token'
+      path: '/api/public/calendar/$token'
+      fullPath: '/api/public/calendar/$token'
+      preLoaderRoute: typeof ApiPublicCalendarTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1058,6 +1078,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImoveisIndexRoute: ImoveisIndexRoute,
   ApiPublicGeoRoute: ApiPublicGeoRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicCalendarTokenRoute: ApiPublicCalendarTokenRoute,
   ApiPublicCleanerNotifyRoute: ApiPublicCleanerNotifyRoute,
   ApiPublicHooksAutomatedEmailsRoute: ApiPublicHooksAutomatedEmailsRoute,
   ApiPublicHooksCleanupThumbnailsRoute: ApiPublicHooksCleanupThumbnailsRoute,
