@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
+import { sendTransactionalEmail } from "@/lib/email/send";
 
 type SignupSearch = { plan?: "free" | "pro" | "premium" };
 
@@ -69,6 +70,15 @@ function SignupPage() {
     });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
+    // Fire welcome email (best-effort, non-blocking)
+    if (data.user?.id) {
+      sendTransactionalEmail({
+        templateName: "welcome",
+        recipientEmail: email,
+        idempotencyKey: `welcome-${data.user.id}`,
+        templateData: { name, lang: "pt" },
+      }).catch((e) => console.warn("[welcome email] failed", e));
+    }
     if (data.session) {
       toast.success(t("signup.success"));
       const planParam = plan ?? (typeof window !== "undefined" ? localStorage.getItem("selected_plan") : null);
