@@ -48,15 +48,22 @@ function SubscribePage() {
   const navigate = useNavigate();
   const { currency, lang, country } = useLocale();
   const t = useT();
+  const search = useSearch({ from: "/assinar" }) as AssinarSearch;
+  const isOnboarding = search.onboarding === "1";
   const [orgId, setOrgId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
+    search.plan === "pro" || search.plan === "premium" ? (search.plan as Plan) : null
+  );
+  const [continuingFree, setContinuingFree] = useState(false);
   const { subscription, isActive, loading } = useSubscription(orgId);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { navigate({ to: "/login" }); return; }
+      setUserId(user.id);
       const { data: m } = await supabase
         .from("organization_members")
         .select("organization_id, role")
@@ -64,6 +71,32 @@ function SubscribePage() {
       if (m) { setOrgId(m.organization_id); setRole(m.role); }
     })();
   }, [navigate]);
+
+  // When user becomes active via Stripe during onboarding, mark complete and go to /app
+  useEffect(() => {
+    if (!isOnboarding || !isActive || !userId) return;
+    (async () => {
+      await supabase.from("profiles").update({
+        onboarding_completed: true,
+        plan_selected_at: new Date().toISOString(),
+      }).eq("id", userId);
+      try { localStorage.removeItem("selected_plan"); } catch {}
+      navigate({ to: "/app" as any });
+    })();
+  }, [isOnboarding, isActive, userId, navigate]);
+
+  const continueFree = async () => {
+    if (!userId) return;
+    setContinuingFree(true);
+    const { error } = await supabase.from("profiles").update({
+      onboarding_completed: true,
+      plan_selected_at: new Date().toISOString(),
+    }).eq("id", userId);
+    setContinuingFree(false);
+    if (error) { toast.error(error.message); return; }
+    try { localStorage.removeItem("selected_plan"); } catch {}
+    navigate({ to: "/app" as any });
+  };
 
   const isSA = (country || "").toUpperCase() === "SA";
   const billedCurrency: "BRL" | "EUR" | "USD" | "GBP" = isSA ? "EUR" : currency;
