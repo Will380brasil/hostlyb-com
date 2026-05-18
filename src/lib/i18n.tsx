@@ -256,6 +256,25 @@ const pt: Dict = {
   "perf.period.6m": "Últimos 6 meses",
   "perf.period.ytd": "Ano em curso",
 
+  "legal.tab": "Compliance",
+  "legal.export": "Exportar checklist",
+  "legal.disclaimer": "Esta informação é orientativa e não substitui aconselhamento jurídico.",
+  "legal.generic.title": "Compliance legal",
+  "legal.generic.subtitle": "Verifique as obrigações do seu país.",
+  "legal.generic.body": "Este módulo tem conteúdo legal específico para Portugal (mercado AL). Em outros países, use a checklist como base e confirme as exigências locais.",
+  "legal.pt.title": "Compliance legal (Portugal — AL)",
+  "legal.pt.subtitle": "Checklist das principais obrigações para Alojamento Local em Portugal.",
+  "legal.pt.aima.t": "Registo de hóspedes AIMA (ex-SEF)",
+  "legal.pt.aima.b": "Obrigatório comunicar a entrada de cidadãos estrangeiros à AIMA no prazo de 3 dias úteis. Use o portal SIBA/AIMA para reportar cada hóspede.",
+  "legal.pt.aima.link": "Abrir portal AIMA/SIBA",
+  "legal.pt.complaints.t": "Livro de Reclamações Eletrónico",
+  "legal.pt.complaints.b": "Todo o estabelecimento de AL é obrigado a disponibilizar o Livro de Reclamações Eletrónico e a afixar o cartaz informativo em local visível.",
+  "legal.pt.complaints.link": "Aceder ao Livro de Reclamações",
+  "legal.pt.license.t": "Afixação do número de registo de AL",
+  "legal.pt.license.b": "O número de registo AL emitido pelo Turismo de Portugal deve estar visível no exterior do imóvel e em toda a publicidade (Booking, Airbnb, site próprio, etc.).",
+  "legal.pt.insurance.t": "Seguro de responsabilidade civil",
+  "legal.pt.insurance.b": "É obrigatório ter seguro de responsabilidade civil multirriscos que cubra danos a hóspedes e a terceiros, conforme o Decreto-Lei n.º 128/2014.",
+
 };
 
 const en: Dict = {
@@ -480,6 +499,25 @@ const en: Dict = {
   "perf.period.3m": "Last 3 months",
   "perf.period.6m": "Last 6 months",
   "perf.period.ytd": "Year to date",
+
+  "legal.tab": "Compliance",
+  "legal.export": "Export checklist",
+  "legal.disclaimer": "This information is guidance only and does not replace legal advice.",
+  "legal.generic.title": "Legal compliance",
+  "legal.generic.subtitle": "Check the obligations for your country.",
+  "legal.generic.body": "This module contains legal content specific to Portugal (short-term-rental market). In other countries, use the checklist as a baseline and confirm local requirements.",
+  "legal.pt.title": "Legal compliance (Portugal — AL)",
+  "legal.pt.subtitle": "Checklist of the main obligations for short-term rental in Portugal.",
+  "legal.pt.aima.t": "AIMA guest registration (formerly SEF)",
+  "legal.pt.aima.b": "Foreign guests must be reported to AIMA within 3 business days. Use the SIBA/AIMA portal to file each stay.",
+  "legal.pt.aima.link": "Open AIMA/SIBA portal",
+  "legal.pt.complaints.t": "Electronic Complaint Book",
+  "legal.pt.complaints.b": "Every AL property must offer the Electronic Complaint Book and display the official poster in a visible location.",
+  "legal.pt.complaints.link": "Open Complaint Book",
+  "legal.pt.license.t": "AL licence number display",
+  "legal.pt.license.b": "The AL registration number issued by Turismo de Portugal must be visible outside the property and on every listing (Booking, Airbnb, your own site, etc.).",
+  "legal.pt.insurance.t": "Civil liability insurance",
+  "legal.pt.insurance.b": "Multi-risk civil liability insurance covering harm to guests and third parties is mandatory under Decree-Law 128/2014.",
 
 };
 
@@ -706,6 +744,25 @@ const es: Dict = {
   "perf.period.6m": "Últimos 6 meses",
   "perf.period.ytd": "Año en curso",
 
+  "legal.tab": "Compliance",
+  "legal.export": "Exportar checklist",
+  "legal.disclaimer": "Esta información es orientativa y no sustituye asesoramiento legal.",
+  "legal.generic.title": "Cumplimiento legal",
+  "legal.generic.subtitle": "Comprueba las obligaciones de tu país.",
+  "legal.generic.body": "Este módulo contiene contenido legal específico para Portugal (alojamiento local). En otros países, usa la checklist como base y verifica los requisitos locales.",
+  "legal.pt.title": "Cumplimiento legal (Portugal — AL)",
+  "legal.pt.subtitle": "Checklist de las principales obligaciones del alojamiento local en Portugal.",
+  "legal.pt.aima.t": "Registro de huéspedes AIMA (antes SEF)",
+  "legal.pt.aima.b": "Obligatorio comunicar la entrada de extranjeros a AIMA en 3 días hábiles. Usa el portal SIBA/AIMA para reportar a cada huésped.",
+  "legal.pt.aima.link": "Abrir portal AIMA/SIBA",
+  "legal.pt.complaints.t": "Libro de Reclamaciones Electrónico",
+  "legal.pt.complaints.b": "Todo establecimiento AL debe ofrecer el Libro de Reclamaciones Electrónico y exhibir el cartel oficial en lugar visible.",
+  "legal.pt.complaints.link": "Acceder al Libro de Reclamaciones",
+  "legal.pt.license.t": "Mostrar el número de registro AL",
+  "legal.pt.license.b": "El número AL emitido por Turismo de Portugal debe estar visible en el exterior y en toda la publicidad (Booking, Airbnb, web propia, etc.).",
+  "legal.pt.insurance.t": "Seguro de responsabilidad civil",
+  "legal.pt.insurance.b": "Es obligatorio un seguro multirriesgo de responsabilidad civil que cubra daños a huéspedes y terceros (Decreto-Ley 128/2014).",
+
 };
 
 const fr: Dict = {
@@ -930,6 +987,25 @@ const fr: Dict = {
   "perf.period.3m": "3 derniers mois",
   "perf.period.6m": "6 derniers mois",
   "perf.period.ytd": "Année en cours",
+
+  "legal.tab": "Conformité",
+  "legal.export": "Exporter la checklist",
+  "legal.disclaimer": "Ces informations sont indicatives et ne remplacent pas un conseil juridique.",
+  "legal.generic.title": "Conformité légale",
+  "legal.generic.subtitle": "Vérifiez les obligations de votre pays.",
+  "legal.generic.body": "Ce module contient du contenu juridique propre au Portugal (location courte durée). Dans les autres pays, utilisez la checklist comme base et confirmez les exigences locales.",
+  "legal.pt.title": "Conformité légale (Portugal — AL)",
+  "legal.pt.subtitle": "Checklist des principales obligations pour la location courte durée au Portugal.",
+  "legal.pt.aima.t": "Enregistrement des voyageurs AIMA (ex-SEF)",
+  "legal.pt.aima.b": "Obligation de déclarer les voyageurs étrangers à l'AIMA sous 3 jours ouvrés via le portail SIBA/AIMA.",
+  "legal.pt.aima.link": "Ouvrir le portail AIMA/SIBA",
+  "legal.pt.complaints.t": "Livre de Réclamations électronique",
+  "legal.pt.complaints.b": "Chaque logement AL doit proposer le Livre de Réclamations électronique et afficher l'affiche officielle en évidence.",
+  "legal.pt.complaints.link": "Accéder au Livre de Réclamations",
+  "legal.pt.license.t": "Affichage du numéro de licence AL",
+  "legal.pt.license.b": "Le numéro AL délivré par Turismo de Portugal doit être visible à l'extérieur du logement et sur toutes les annonces (Booking, Airbnb, site propre).",
+  "legal.pt.insurance.t": "Assurance responsabilité civile",
+  "legal.pt.insurance.b": "Une assurance multirisques responsabilité civile couvrant les dommages aux voyageurs et tiers est obligatoire (Décret-loi 128/2014).",
 
 };
 
@@ -1156,6 +1232,25 @@ const it: Dict = {
   "perf.period.6m": "Ultimi 6 mesi",
   "perf.period.ytd": "Anno in corso",
 
+  "legal.tab": "Compliance",
+  "legal.export": "Esporta checklist",
+  "legal.disclaimer": "Queste informazioni sono indicative e non sostituiscono una consulenza legale.",
+  "legal.generic.title": "Compliance legale",
+  "legal.generic.subtitle": "Verifica gli obblighi del tuo paese.",
+  "legal.generic.body": "Questo modulo contiene contenuti legali specifici per il Portogallo (affitto breve). Negli altri paesi usa la checklist come base e verifica i requisiti locali.",
+  "legal.pt.title": "Compliance legale (Portogallo — AL)",
+  "legal.pt.subtitle": "Checklist dei principali obblighi per l'affitto breve in Portogallo.",
+  "legal.pt.aima.t": "Registrazione ospiti AIMA (ex SEF)",
+  "legal.pt.aima.b": "Obbligo di comunicare gli ospiti stranieri ad AIMA entro 3 giorni lavorativi tramite il portale SIBA/AIMA.",
+  "legal.pt.aima.link": "Apri portale AIMA/SIBA",
+  "legal.pt.complaints.t": "Registro elettronico dei reclami",
+  "legal.pt.complaints.b": "Ogni struttura AL deve offrire il Registro elettronico dei reclami ed esporre il manifesto ufficiale in modo visibile.",
+  "legal.pt.complaints.link": "Apri Registro dei reclami",
+  "legal.pt.license.t": "Esposizione del numero di licenza AL",
+  "legal.pt.license.b": "Il numero AL rilasciato da Turismo de Portugal deve essere visibile all'esterno dell'immobile e in tutti gli annunci (Booking, Airbnb, sito proprio).",
+  "legal.pt.insurance.t": "Assicurazione responsabilità civile",
+  "legal.pt.insurance.b": "È obbligatoria un'assicurazione multirischio per responsabilità civile verso ospiti e terzi (Decreto-Legge 128/2014).",
+
 };
 
 const de: Dict = {
@@ -1380,6 +1475,25 @@ const de: Dict = {
   "perf.period.3m": "Letzte 3 Monate",
   "perf.period.6m": "Letzte 6 Monate",
   "perf.period.ytd": "Jahr bis heute",
+
+  "legal.tab": "Compliance",
+  "legal.export": "Checkliste exportieren",
+  "legal.disclaimer": "Diese Hinweise sind unverbindlich und ersetzen keine Rechtsberatung.",
+  "legal.generic.title": "Rechtliche Compliance",
+  "legal.generic.subtitle": "Prüfe die Pflichten in deinem Land.",
+  "legal.generic.body": "Dieses Modul enthält rechtliche Inhalte speziell für Portugal (Ferienwohnungs-Markt). In anderen Ländern dient die Checkliste als Orientierung — bestätige die lokalen Anforderungen.",
+  "legal.pt.title": "Rechtliche Compliance (Portugal — AL)",
+  "legal.pt.subtitle": "Checkliste der wichtigsten Pflichten für Kurzzeitvermietung in Portugal.",
+  "legal.pt.aima.t": "Gästemeldung AIMA (vormals SEF)",
+  "legal.pt.aima.b": "Ausländische Gäste müssen innerhalb von 3 Werktagen über das SIBA/AIMA-Portal an AIMA gemeldet werden.",
+  "legal.pt.aima.link": "AIMA/SIBA-Portal öffnen",
+  "legal.pt.complaints.t": "Elektronisches Beschwerdebuch",
+  "legal.pt.complaints.b": "Jede AL-Unterkunft muss das elektronische Beschwerdebuch anbieten und das offizielle Plakat sichtbar aushängen.",
+  "legal.pt.complaints.link": "Beschwerdebuch öffnen",
+  "legal.pt.license.t": "Aushang der AL-Registernummer",
+  "legal.pt.license.b": "Die von Turismo de Portugal vergebene AL-Nummer muss außen am Objekt und in jeder Anzeige (Booking, Airbnb, eigene Website) sichtbar sein.",
+  "legal.pt.insurance.t": "Haftpflichtversicherung",
+  "legal.pt.insurance.b": "Eine Multi-Risiko-Haftpflichtversicherung, die Schäden an Gästen und Dritten abdeckt, ist nach Gesetzesdekret 128/2014 Pflicht.",
 
 };
 
