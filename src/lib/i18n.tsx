@@ -4,13 +4,32 @@ export type Lang = "pt" | "en" | "es" | "fr" | "it" | "de";
 export type Currency = "BRL" | "USD" | "EUR" | "GBP";
 
 export const LANGS: { code: Lang; label: string; flag: string }[] = [
-  { code: "pt", label: "Português", flag: "🇧🇷" },
-  { code: "en", label: "English",   flag: "🇺🇸" },
+  { code: "pt", label: "Português", flag: "🇵🇹" },
+  { code: "en", label: "English",   flag: "🇬🇧" },
   { code: "es", label: "Español",   flag: "🇪🇸" },
   { code: "fr", label: "Français",  flag: "🇫🇷" },
   { code: "it", label: "Italiano",  flag: "🇮🇹" },
   { code: "de", label: "Deutsch",   flag: "🇩🇪" },
 ];
+
+// Synchronously guess locale from the browser before any network call so
+// the very first render shows the right currency/language (no R$ flash for EU users).
+function guessFromNavigator(): { lang: Lang; currency: Currency } {
+  if (typeof navigator === "undefined") return { lang: "pt", currency: "EUR" };
+  const raw = (navigator.language || (navigator.languages && navigator.languages[0]) || "pt-PT").toLowerCase();
+  const base = raw.slice(0, 2) as Lang;
+  // Currency
+  let currency: Currency = "EUR";
+  if (raw === "pt-br" || raw.startsWith("pt-br")) currency = "BRL";
+  else if (raw === "en-gb" || raw === "en-ie" || raw.startsWith("en-gb")) currency = "GBP";
+  else if (raw.startsWith("en-us") || raw.startsWith("en-ca") || raw.startsWith("en-au") || raw.startsWith("en-nz")) currency = "USD";
+  else if (raw.startsWith("pt") || raw.startsWith("fr") || raw.startsWith("de") || raw.startsWith("it") || raw.startsWith("es") || raw.startsWith("nl") || raw.startsWith("pl") || raw.startsWith("el") || raw.startsWith("ro") || raw.startsWith("ga") || raw.startsWith("sv") || raw.startsWith("fi") || raw.startsWith("da")) currency = "EUR";
+  else if (raw.startsWith("en")) currency = "USD";
+  // Language (map to supported set; unsupported → en)
+  const supported: Lang[] = ["pt","en","es","fr","it","de"];
+  const lang: Lang = supported.includes(base) ? base : "en";
+  return { lang, currency };
+}
 
 // Permanent 3-tier pricing (per month). Currency selected per visitor locale.
 export const PLAN_PRICE: Record<"pro" | "premium", Record<Currency, number>> = {
