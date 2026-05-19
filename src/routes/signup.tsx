@@ -125,14 +125,7 @@ function SignupPage() {
     else toast.success("E-mail reenviado!");
   };
 
-  const signUpWithGoogle = async () => {
-    try { localStorage.setItem("selected_plan", selectedPlan); } catch {}
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-    if (error) toast.error(`${t("signup.googleFail")}: ${error.message}`);
-  };
+  // Google OAuth removed until provider is configured in Supabase.
 
   const inputCls = "px-4 py-3 rounded-xl bg-card border border-card-border";
 
