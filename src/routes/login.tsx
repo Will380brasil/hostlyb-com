@@ -31,13 +31,7 @@ function LoginPage() {
     else navigate({ to: "/app" as any });
   };
 
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-    if (error) toast.error(`${t("login.googleFail")}: ${error.message}`);
-  };
+  // Google OAuth removed until provider is configured in Supabase.
 
   return (
     <div className="min-h-screen grid place-items-center px-5 bg-background">
