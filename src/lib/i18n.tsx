@@ -1531,27 +1531,36 @@ interface LocaleCtx {
 }
 
 const Ctx = createContext<LocaleCtx>({
-  lang: "pt", setLang: () => {}, currency: "BRL", setCurrency: () => {},
-  country: "BR", t: (k) => k, loading: true,
+  lang: "pt", setLang: () => {}, currency: "EUR", setCurrency: () => {},
+  country: "PT", t: (k) => k, loading: true,
 });
 
 const STORAGE_LANG = "hostly_lang";
 const STORAGE_CURRENCY = "hostly_currency";
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("pt");
-  const [currency, setCurrencyState] = useState<Currency>("BRL");
-  const [country, setCountry] = useState<string>("BR");
+  // Synchronously pick lang+currency from localStorage (saved pref) or browser locale.
+  // This guarantees the FIRST render never shows BRL to a European user.
+  const initial = (() => {
+    if (typeof window === "undefined") return { lang: "pt" as Lang, currency: "EUR" as Currency };
+    const storedLang = localStorage.getItem(STORAGE_LANG) as Lang | null;
+    const storedCurr = localStorage.getItem(STORAGE_CURRENCY) as Currency | null;
+    const guess = guessFromNavigator();
+    return {
+      lang: storedLang ?? guess.lang,
+      currency: storedCurr ?? guess.currency,
+    };
+  })();
+
+  const [lang, setLangState] = useState<Lang>(initial.lang);
+  const [currency, setCurrencyState] = useState<Currency>(initial.currency);
+  const [country, setCountry] = useState<string>("PT");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const storedLang = (localStorage.getItem(STORAGE_LANG) as Lang | null);
     const storedCurr = (localStorage.getItem(STORAGE_CURRENCY) as Currency | null);
-
-    // Apply stored preferences immediately so UI doesn't flash in another language
-    if (storedLang) setLangState(storedLang);
-    if (storedCurr) setCurrencyState(storedCurr);
 
     // Skip geo lookup entirely if user already chose both
     if (storedLang && storedCurr) {
@@ -1562,31 +1571,21 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     fetch("/api/public/geo")
       .then((r) => r.json())
       .then((d: { country: string; currency: Currency; language: Lang }) => {
-        setCountry(d.country || "BR");
-        if (!storedLang) {
-          const l = (d.language as Lang) || "pt";
+        setCountry(d.country || "PT");
+        if (!storedLang && d.language) {
+          const l = d.language as Lang;
           setLangState(l);
-          // Persist so subsequent pages don't flip language while user navigates.
           try { localStorage.setItem(STORAGE_LANG, l); } catch {}
         }
-        if (!storedCurr) {
-          const c = d.currency || "BRL";
-          setCurrencyState(c);
-          try { localStorage.setItem(STORAGE_CURRENCY, c); } catch {}
+        if (!storedCurr && d.currency) {
+          setCurrencyState(d.currency);
+          try { localStorage.setItem(STORAGE_CURRENCY, d.currency); } catch {}
         }
       })
       .catch(() => {
-        const nav = (navigator.language || "pt").slice(0, 2).toLowerCase() as Lang;
-        const isLang = (["pt","en","es","fr","it","de"] as Lang[]).includes(nav);
-        if (!storedLang) {
-          const l = isLang ? nav : "en";
-          setLangState(l);
-          try { localStorage.setItem(STORAGE_LANG, l); } catch {}
-        }
-        if (!storedCurr) {
-          setCurrencyState("USD");
-          try { localStorage.setItem(STORAGE_CURRENCY, "USD"); } catch {}
-        }
+        // Browser-locale fallback already applied via initial state; just persist.
+        if (!storedLang) { try { localStorage.setItem(STORAGE_LANG, initial.lang); } catch {} }
+        if (!storedCurr) { try { localStorage.setItem(STORAGE_CURRENCY, initial.currency); } catch {} }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -1594,15 +1593,16 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const setLang = (l: Lang) => {
     setLangState(l);
     if (typeof window !== "undefined") localStorage.setItem(STORAGE_LANG, l);
+    // Only auto-flip currency if user hasn't explicitly chosen one for this session.
+    const hasExplicitCurrency = typeof window !== "undefined" && localStorage.getItem(STORAGE_CURRENCY);
+    if (hasExplicitCurrency) return;
     const co = (country || "").toUpperCase();
-    // Country wins for BR/SA; GB → GBP. Otherwise pick by language.
     let next: Currency;
     if (co === "BR") next = "BRL";
-    else if (co === "SA") return; // SAR display handled elsewhere
+    else if (co === "SA") return;
     else if (co === "GB") next = "GBP";
-    else if (l === "pt") next = "BRL";
     else if (l === "en") next = "USD";
-    else next = "EUR"; // fr / it / de / es
+    else next = "EUR"; // pt / fr / it / de / es default to EUR
     setCurrencyState(next);
     if (typeof window !== "undefined") localStorage.setItem(STORAGE_CURRENCY, next);
   };
