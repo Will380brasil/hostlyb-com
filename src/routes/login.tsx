@@ -51,9 +51,7 @@ function LoginPage() {
             {loading ? t("login.submitting") : t("login.submit")}
           </button>
         </form>
-        <button
-          type="button"
-          onClick={signInWithGoogle}
+
           className="btn-secondary justify-center w-full mt-3"
         >
           {t("login.google")}
