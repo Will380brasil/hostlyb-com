@@ -85,7 +85,17 @@ function SignupPage() {
       },
     });
     setLoading(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      const msg = error.message || "";
+      if (/already registered|already exists|user.*exists/i.test(msg)) {
+        toast.error("Este email já está registado. Tente entrar em vez de criar conta.");
+      } else if (/database error|unexpected/i.test(msg)) {
+        toast.error("Erro ao criar conta. Por favor tente novamente ou contacte o suporte.");
+      } else {
+        toast.error("Erro ao criar conta: " + msg);
+      }
+      return;
+    }
     if (data.user?.id) {
       sendTransactionalEmail({
         templateName: "welcome",
