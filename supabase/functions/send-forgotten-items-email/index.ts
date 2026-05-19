@@ -52,15 +52,19 @@ Deno.serve(async (req) => {
       return { ...it, signed_url: signed };
     }));
 
+    const escHtml = (s: unknown) => String(s ?? "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
     const itemsHtml = itemsWithUrl.map((it: any) =>
-      `<li><strong>${it.description}</strong> — status: ${it.status}${it.signed_url ? ` — <a href="${it.signed_url}">ver foto</a>` : ""}</li>`
+      `<li><strong>${escHtml(it.description)}</strong> — status: ${escHtml(it.status)}${it.signed_url ? ` — <a href="${escHtml(it.signed_url)}">ver foto</a>` : ""}</li>`
     ).join("");
 
     const html = `
-      <h2>Objetos esquecidos — ${propName}</h2>
-      <p>Limpeza concluída em ${new Date(job.completed_at ?? Date.now()).toLocaleString("pt-BR")}</p>
-      <p>Profissional: ${cleanerName}</p>
-      <p>Endereço: ${(job as any).properties?.address ?? ""}, ${(job as any).properties?.city ?? ""}</p>
+      <h2>Objetos esquecidos — ${escHtml(propName)}</h2>
+      <p>Limpeza concluída em ${escHtml(new Date(job.completed_at ?? Date.now()).toLocaleString("pt-BR"))}</p>
+      <p>Profissional: ${escHtml(cleanerName)}</p>
+      <p>Endereço: ${escHtml((job as any).properties?.address ?? "")}, ${escHtml((job as any).properties?.city ?? "")}</p>
       <h3>Itens encontrados:</h3>
       <ul>${itemsHtml || "<li>Nenhum item</li>"}</ul>
     `;
