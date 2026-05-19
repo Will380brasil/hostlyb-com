@@ -88,31 +88,99 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
           )
         }
 
+        // SECURITY: Allowlist of templates callable from client code.
+        // Other templates (product-update, inactivity-*, etc.) are internal-only
+        // and must be sent via internalSendEmail() from trusted server code.
+        const CLIENT_ALLOWED = new Set(['welcome', 'invite-employee', 'invite-accepted'])
+        if (!CLIENT_ALLOWED.has(templateName)) {
+          return Response.json({ error: 'Template not allowed' }, { status: 403 })
+        }
+
         // 1. Look up template from registry (early — needed to resolve recipient)
         const template = TEMPLATES[templateName]
 
         if (!template) {
-          console.error('Template not found in registry', { templateName })
-          return Response.json(
-            {
-              error: `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(', ')}`,
-            },
-            { status: 404 }
-          )
+          return Response.json({ error: 'Template not found' }, { status: 404 })
         }
 
         // Resolve effective recipient: template-level `to` takes precedence over
-        // the caller-provided recipientEmail. This allows notification templates
-        // to always send to a fixed address (e.g., site owner from env var).
-        const effectiveRecipient = template.to || recipientEmail
+        // the caller-provided recipientEmail.
+        const effectiveRecipient = (template.to || recipientEmail || '').trim()
 
         if (!effectiveRecipient) {
           return Response.json(
-            {
-              error: 'recipientEmail is required (unless the template defines a fixed recipient)',
-            },
+            { error: 'recipientEmail is required' },
             { status: 400 }
           )
+        }
+
+        // SECURITY: Per-template recipient + data validation to prevent abuse
+        // (phishing emails, mass sends to arbitrary addresses, attacker-controlled URLs).
+        const userEmailLc = (user.email || '').toLowerCase()
+        const recipientLc = effectiveRecipient.toLowerCase()
+
+        if (templateName === 'welcome') {
+          // Welcome can only be sent to the authenticated user themselves.
+          if (recipientLc !== userEmailLc) {
+            return Response.json({ error: 'Recipient must be self' }, { status: 403 })
+          }
+          // Strip any attacker-supplied fields beyond display name/lang.
+          templateData = {
+            name: typeof templateData.name === 'string' ? templateData.name.slice(0, 120) : null,
+            lang: typeof templateData.lang === 'string' ? templateData.lang.slice(0, 5) : 'pt',
+          }
+        } else if (templateName === 'invite-employee') {
+          // Caller must have created an invite to this recipient. acceptUrl is
+          // rebuilt server-side from the invite token so attackers cannot inject URLs.
+          const { data: invite } = await supabase
+            .from('organization_invites')
+            .select('id, token, role, organization_id, organizations(name)')
+            .eq('invited_by', user.id)
+            .eq('email', recipientLc)
+            .is('accepted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (!invite) {
+            return Response.json({ error: 'No matching invite' }, { status: 403 })
+          }
+          const origin = new URL(request.url).origin
+          templateData = {
+            organizationName: (invite as any).organizations?.name ?? 'your team',
+            inviterName: typeof templateData.inviterName === 'string'
+              ? templateData.inviterName.slice(0, 120)
+              : (user.email ?? 'A teammate'),
+            acceptUrl: `${origin}/convite/${invite.token}`,
+            role: invite.role,
+          }
+        } else if (templateName === 'invite-accepted') {
+          // Caller must be the invitee (an open invite to their email exists),
+          // and recipient must be the inviter listed on that invite.
+          const { data: invite } = await supabase
+            .from('organization_invites')
+            .select('id, invited_by, email, organizations(name)')
+            .eq('email', userEmailLc)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (!invite) {
+            return Response.json({ error: 'No matching invite' }, { status: 403 })
+          }
+          const { data: inviter } = await supabase
+            .from('profiles')
+            .select('email')
+            .eq('id', invite.invited_by)
+            .maybeSingle()
+          if (!inviter?.email || inviter.email.toLowerCase() !== recipientLc) {
+            return Response.json({ error: 'Recipient must be inviter' }, { status: 403 })
+          }
+          templateData = {
+            inviteeName: typeof templateData.inviteeName === 'string'
+              ? templateData.inviteeName.slice(0, 120)
+              : (user.email ?? invite.email),
+            inviteeEmail: invite.email,
+            organizationName: (invite as any).organizations?.name ?? 'your team',
+          }
         }
 
         // 2. Check suppression list (fail-closed: if we can't verify, don't send)
