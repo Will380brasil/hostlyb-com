@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,7 @@ async function resolveDestination(userId: string, fallback?: string) {
 function LoginPage() {
   const t = useT();
   const navigate = useNavigate();
-  const { redirect } = useSearch({ from: "/login" });
+  const { redirect } = Route.useSearch();
   const { session, loading: authLoading } = useAuth();
 
   const [method, setMethod] = useState<"password" | "magic">("password");

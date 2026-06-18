@@ -13,6 +13,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
+import { Route as MinhaAgendaRouteImport } from './routes/minha-agenda'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as ItRouteImport } from './routes/it'
@@ -79,6 +80,11 @@ const SignupRoute = SignupRouteImport.update({
 const PwaCheckRoute = PwaCheckRouteImport.update({
   id: '/pwa-check',
   path: '/pwa-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhaAgendaRoute = MinhaAgendaRouteImport.update({
+  id: '/minha-agenda',
+  path: '/minha-agenda',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -342,6 +348,7 @@ export interface FileRoutesByFullPath {
   '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
+  '/minha-agenda': typeof MinhaAgendaRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -394,6 +401,7 @@ export interface FileRoutesByTo {
   '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
+  '/minha-agenda': typeof MinhaAgendaRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -448,6 +456,7 @@ export interface FileRoutesById {
   '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
+  '/minha-agenda': typeof MinhaAgendaRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -503,6 +512,7 @@ export interface FileRouteTypes {
     | '/it'
     | '/limpezas'
     | '/login'
+    | '/minha-agenda'
     | '/pwa-check'
     | '/signup'
     | '/sitemap.xml'
@@ -555,6 +565,7 @@ export interface FileRouteTypes {
     | '/it'
     | '/limpezas'
     | '/login'
+    | '/minha-agenda'
     | '/pwa-check'
     | '/signup'
     | '/sitemap.xml'
@@ -608,6 +619,7 @@ export interface FileRouteTypes {
     | '/it'
     | '/limpezas'
     | '/login'
+    | '/minha-agenda'
     | '/pwa-check'
     | '/signup'
     | '/sitemap.xml'
@@ -662,6 +674,7 @@ export interface RootRouteChildren {
   ItRoute: typeof ItRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
+  MinhaAgendaRoute: typeof MinhaAgendaRoute
   PwaCheckRoute: typeof PwaCheckRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -718,6 +731,13 @@ declare module '@tanstack/react-router' {
       path: '/pwa-check'
       fullPath: '/pwa-check'
       preLoaderRoute: typeof PwaCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minha-agenda': {
+      id: '/minha-agenda'
+      path: '/minha-agenda'
+      fullPath: '/minha-agenda'
+      preLoaderRoute: typeof MinhaAgendaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1103,6 +1123,7 @@ const rootRouteChildren: RootRouteChildren = {
   ItRoute: ItRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
+  MinhaAgendaRoute: MinhaAgendaRoute,
   PwaCheckRoute: PwaCheckRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
