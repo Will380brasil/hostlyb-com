@@ -1,67 +1,126 @@
-# Admin Panel + Automated Emails
+# Plano — Cadastro obrigatório da faxineira
 
-The current `/admin` is a single-page summary. I'll restructure it into a 6-section dashboard and wire up four automated email types plus a global floating support button.
+## Decisões assumidas (a partir das respostas)
+- **Obrigar conta**: link `/faxineira/$token` deixa de ser público; só funciona com sessão válida.
+- **DB**: reaproveitar o que já existe (`profiles`, `cleaners`, `organization_members`) em vez de criar `cleaner_invites` paralela. Adicionar apenas o mínimo: `profiles.role` e `profiles.cleaner_id`.
+- **Magic link**: ativar, com toggle senha ↔ magic link no `/login`.
 
-Scope is large — I'll ship in 3 phases. Confirm scope and I'll start with Phase 1.
+## 1. Migração de banco (mínima)
 
-## Phase 1 — Admin shell, Overview, Users, Plans & Revenue
+```sql
+-- role na profile (cleaner | owner)
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'owner'
+  CHECK (role IN ('owner','cleaner'));
 
-**Routing & access**
-- Convert `/admin` into a layout route (`src/routes/admin.tsx` → renders sidebar + `<Outlet/>`)
-- Children: `admin.index.tsx` (Overview), `admin.users.tsx`, `admin.revenue.tsx`, `admin.activity.tsx`, `admin.emails.tsx`, `admin.settings.tsx`
-- Access gate: `beforeLoad` checks `auth.user.email === 'brasgold1@gmail.com'` OR row exists in `admin_users`. Anyone else → redirect to `/app`.
-- Sidebar (dark, coral active): Overview · Users · Plans & Revenue · Activity · Emails · Settings
+-- vínculo profile ↔ cleaners (cadastro do dono)
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS cleaner_id uuid
+  REFERENCES public.cleaners(id) ON DELETE SET NULL;
 
-**Server functions** (`src/lib/admin.functions.ts`, all `requireSupabaseAuth` + admin email check, admin-client backed):
-- `getOverviewMetrics()` → totals (users, paying, free), MRR, active 7d, inactive 3d/7d, churn risk count, plan distribution, signup series (30d), revenue series (6m)
-- `listUsersAdmin({ search, plan, status, country, sort, limit, offset })` → joins auth.users + profiles + subscriptions + property/guest counts + last_sign_in_at
-- `getUserDetailAdmin({ userId })` → profile, plan, properties, guests, last 5 activities (recent transactions/cleaning_jobs/guests), payment history
-- `updateUserAdmin({ userId, action: 'suspend'|'delete'|'change_plan'|'note', payload })`
-- `getRevenueMetrics()` → MRR per plan, ARR, paying users list, upgrade history (from subscriptions ordering), conversion rates
-- `getActivityFeed({ limit })` → unioned recent rows across `cleaning_jobs`, `guests`, `transactions`, `maintenance_issues`, `alerts`
-- `getEmailCampaignStats()` → from `email_send_log` deduped by message_id, grouped by template_name
+-- coluna auth_user_id em cleaners (espelho)
+ALTER TABLE public.cleaners
+  ADD COLUMN IF NOT EXISTS auth_user_id uuid
+  REFERENCES auth.users(id) ON DELETE SET NULL;
 
-**Pages**
-- Overview: 3 stat rows + 4 charts (Recharts — already a dep? if not, use existing chart lib; signup line / revenue bar / plan pie / active-vs-inactive line)
-- Users: filter bar, paginated table, row click → right-side panel with actions
-- Plans & Revenue: MRR cards, paying users table, conversion %, popular plan trophy
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_cleaners_auth_user ON public.cleaners(auth_user_id);
 
-## Phase 2 — Activity, Emails, Settings + floating support button
+-- RPC pública para validar token e devolver o email do cleaner
+-- (precisa ser SECURITY DEFINER porque a rota agora é anônima até o cadastro)
+CREATE OR REPLACE FUNCTION public.cleaner_token_lookup(p_token uuid)
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER
+SET search_path = public AS $$
+DECLARE r jsonb;
+BEGIN
+  SELECT jsonb_build_object(
+    'cleaner_id', c.id,
+    'cleaner_email', c.email,
+    'cleaner_name', c.name,
+    'cleaner_auth_user_id', c.auth_user_id,
+    'property_name', p.name
+  ) INTO r
+  FROM public.cleaning_jobs j
+  JOIN public.properties p ON p.id = j.property_id
+  LEFT JOIN public.cleaners c ON c.id = j.cleaner_id
+  WHERE j.access_token = p_token;
+  RETURN r;
+END $$;
 
-- Activity: live feed (refetch 60s), top-10 lists, "never logged back in" list
-- Emails: list of automated emails with delivery stats + "Manual blast" panel (audience picker → subject → body textarea/Markdown → preview → confirm modal → fan out via `send-transactional-email`, capped at 50/min via existing queue)
-- Settings: existing admin list + HOSTLY_ADMIN_EMAIL info
-- **Floating support button**: `src/components/SupportFAB.tsx` mounted in `_authenticated` layout. Coral circle bottom-right, MessageCircle icon, tooltip i18n, click → modal with prefilled mailto including current URL. Hidden on `/admin/*` (admin already has email tools) and public routes.
+GRANT EXECUTE ON FUNCTION public.cleaner_token_lookup(uuid) TO anon, authenticated;
 
-## Phase 3 — Automated email pipeline
+-- RPC para vincular auth_user ao cleaner durante o signup (idempotente)
+CREATE OR REPLACE FUNCTION public.cleaner_claim_token(p_token uuid)
+RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public AS $$
+DECLARE v_cleaner_id uuid; v_email text;
+BEGIN
+  IF auth.uid() IS NULL THEN RAISE EXCEPTION 'auth_required'; END IF;
+  SELECT c.id, lower(coalesce(c.email,''))
+    INTO v_cleaner_id, v_email
+  FROM public.cleaning_jobs j
+  JOIN public.cleaners c ON c.id = j.cleaner_id
+  WHERE j.access_token = p_token;
+  IF v_cleaner_id IS NULL THEN RAISE EXCEPTION 'invalid_token'; END IF;
 
-**Templates** (`src/lib/email-templates/`):
-- `welcome.tsx`, `inactivity-3d.tsx`, `inactivity-7d.tsx`, `product-update.tsx`
-- Each: mobile responsive, coral header (#FF6B6B), white body, primary CTA button, dark support button (`#0F172A`, "💬 Support — brasgold1@gmail.com", mailto with subject pre-filled with user email), Hostlyb footer
-- Subject lines: function of `{ lang, name, monthYear }` — returns PT/EN/FR/DE/IT/ES per spec
-- Register all 4 in `registry.ts` with `previewData`
+  UPDATE public.cleaners SET auth_user_id = auth.uid()
+    WHERE id = v_cleaner_id AND auth_user_id IS NULL;
+  UPDATE public.profiles SET cleaner_id = v_cleaner_id, role = 'cleaner'
+    WHERE id = auth.uid();
+  RETURN jsonb_build_object('ok', true, 'cleaner_id', v_cleaner_id);
+END $$;
 
-**Triggers**:
-- Welcome: DB trigger on `auth.users` insert → `pg_net` POST to `/api/public/hooks/send-welcome` with user id (HMAC via existing `SUPABASE_ANON_KEY` apikey pattern). The route resolves email + locale and enqueues via `enqueue_email` → `transactional_emails` queue.
-- Inactivity 3d / 7d: `pg_cron` hourly → `/api/public/hooks/send-inactivity` → server scans `profiles` where `last_sign_in_at` is in the (3d−1h, 3d] or (7d−1h, 7d] window AND no prior send recorded in `email_send_log` for the same (template_name, recipient_email) within 30 days. For 3d email, builds the user's snapshot (properties count, upcoming checkouts in 7d, pending cleanings) by querying their own data with admin client.
-- Product update: manual blast from admin Emails page (Phase 2).
+GRANT EXECUTE ON FUNCTION public.cleaner_claim_token(uuid) TO authenticated;
+```
 
-**Locale**: pull preferred locale from `profiles` (add `locale TEXT` column defaulting to `'pt'`, populated from `i18n` setting at login).
+Não cria tabela nova: o "convite" é o próprio token da limpeza + a coluna `cleaners.email` que o dono já preenche.
 
-**Tracking**: every send goes through existing `enqueue_email` so `email_send_log` captures delivery; admin Emails page reads from it (dedup on message_id).
+## 2. Rotas (TanStack Start, não React Router)
 
-## Database changes
-- `profiles.locale TEXT NOT NULL DEFAULT 'pt'`
-- `profiles.suspended_at TIMESTAMPTZ` (for suspend action)
-- `admin_notes` table (user_id, note, created_by, created_at) with admin-only RLS via `is_admin(auth.uid())`
-- Seed `admin_users` with the brasgold1 row using `HOSTLY_ADMIN_EMAIL`
-- pg_cron: `send-inactivity-emails-hourly` (every hour at :05)
-- DB trigger on `auth.users` AFTER INSERT → pg_net POST to welcome hook
+- `src/routes/faxineira.$token.tsx` (existente, **público**) → vira página de verificação:
+  - chama `cleaner_token_lookup` para resolver o email do cleaner
+  - se não há sessão e o email existe em `auth.users` (via tentativa de magic link) → tela "fazer login"
+  - se não há sessão e email não existe → tela "criar conta" inline (nome + email pré-preenchido + telefone + senha)
+  - se há sessão → `cleaner_claim_token(token)` e redireciona para `/_authenticated/faxineira/$token` (área protegida com checklist).
+- Criar `src/routes/_authenticated/faxineira.$token.tsx` com o conteúdo do checklist atual (mover lógica de `faxineira.$token.tsx` para cá).
+- Criar `src/routes/_authenticated/minha-agenda.tsx`: lista limpezas atribuídas à faxineira logada (`cleaning_jobs` onde `cleaner_id = profile.cleaner_id`).
 
-## Out of scope (will confirm after Phase 1)
-- I will NOT implement open-tracking pixels — current infra logs delivery only (`email_send_log` doesn't capture opens). I'll show "Delivery rate" instead of "Open rate" and label it clearly. If you need open tracking, that's a separate provider-level change.
-- "Suspend" will set `suspended_at` and have RLS deny app writes; full session revocation requires service-role auth admin API call which I'll include.
-- "Delete user" calls `auth.admin.deleteUser` (cascades via existing FKs).
+## 3. Login (`src/routes/login.tsx`)
 
-## Confirm
-Reply **go** (or **go phase 1**) and I'll ship Phase 1 immediately. If you want a different split or any item dropped, tell me now.
+- Adicionar toggle "Senha / Link por e-mail".
+- Magic link via `supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } })`.
+- Após login, redirect respeita `?redirect=` ou usa role: `cleaner` → `/minha-agenda`, `owner` → `/app`.
+
+## 4. Trigger `handle_new_user`
+
+Atualizar para respeitar `raw_user_meta_data.role`: se `role = 'cleaner'`, não cria organização nova (faxineira não é dono de workspace).
+
+## 5. Fluxo do dono
+
+- Ao cadastrar faxineira (em `/equipe`), email + telefone passam a ser obrigatórios.
+- Mensagem do WhatsApp atualizada para avisar "na primeira vez você cria sua conta".
+
+## 6. Migração de dados existentes
+- Faxineiras já cadastradas sem `auth_user_id`: na próxima vez que abrirem o link, são levadas pelo fluxo de cadastro. Email já está em `cleaners.email`, então o form vem pré-preenchido.
+- Tokens antigos continuam válidos (mesmo `access_token`), só passam pela tela de auth.
+
+## Detalhes técnicos
+- Email auth templates já scaffoldados; magic link usa template existente.
+- `notify.hostlyb.com` ainda não verificado → magic link **só funciona depois que o DNS validar**. Comunicar ao usuário.
+- Tudo em pt-PT (idioma padrão do app).
+
+## Arquivos tocados
+- `supabase/migrations/<novo>.sql` (migration)
+- `src/routes/faxineira.$token.tsx` (rescrever como gate de auth)
+- `src/routes/_authenticated/faxineira.$token.tsx` (novo — checklist)
+- `src/routes/_authenticated/minha-agenda.tsx` (novo)
+- `src/routes/login.tsx` (toggle magic link + redirect por role)
+- `src/routes/equipe.tsx` (email/telefone obrigatórios + mensagem WhatsApp atualizada)
+- `src/hooks/useAuth.tsx` (expor `role` e `cleaner_id` da profile)
+
+## Fora de escopo
+- Tabela `cleaner_invites` separada (usamos o token da limpeza).
+- Página `/cadastro-profissional` standalone (cadastro é inline na própria rota do token, evita redirect extra).
+- Mudar React Router DOM → o projeto já é TanStack Start.
+
+Confirma para eu executar?

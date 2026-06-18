@@ -1,16 +1,301 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Sparkles, MapPin, Wifi, AlertTriangle, Camera, Loader2, BedDouble, Bath } from "lucide-react";
+import { Check, Sparkles, MapPin, Wifi, AlertTriangle, Camera, Loader2, BedDouble, Bath, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SignedImage } from "@/components/SignedImage";
 import { ReportProblemSheet } from "@/components/cleaner/ReportProblemSheet";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/faxineira/$token")({
   head: () => ({ meta: [{ title: "Limpeza — Hostlyb" }, { name: "robots", content: "noindex" }] }),
-  component: CleanerPortal,
+  component: CleanerGate,
 });
+
+type TokenInfo = {
+  cleaner_id: string | null;
+  cleaner_email: string | null;
+  cleaner_name: string | null;
+  cleaner_phone: string | null;
+  has_account: boolean;
+  property_name: string;
+};
+
+/* ----------------------------- Auth gate ----------------------------- */
+
+function CleanerGate() {
+  const { token } = Route.useParams();
+  const { session, loading: authLoading } = useAuth();
+
+  const { data: info, isLoading, error } = useQuery({
+    queryKey: ["cleaner-token-lookup", token],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("cleaner_token_lookup", { p_token: token });
+      if (error) throw error;
+      return data as unknown as TokenInfo;
+    },
+  });
+
+  // Once signed in, bind the auth user to the cleaner record (idempotent).
+  const claimed = useQuery({
+    queryKey: ["cleaner-claim", token, session?.user.id],
+    enabled: !!session?.user.id && !!info,
+    queryFn: async () => {
+      const { error } = await supabase.rpc("cleaner_claim_token", { p_token: token });
+      if (error && error.message !== "cleaner_already_bound") {
+        // Non-fatal: log but allow checklist if the user is the bound cleaner.
+        console.warn("claim failed", error);
+      }
+      return true;
+    },
+  });
+
+  if (authLoading || isLoading) {
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">A carregar…</div>;
+  }
+
+  if (error || !info || !info.cleaner_id) {
+    return (
+      <div className="min-h-screen grid place-items-center px-6 text-center">
+        <div>
+          <AlertTriangle className="mx-auto mb-3" />
+          <h1 className="text-lg font-bold">Link inválido</h1>
+          <p className="text-sm text-muted-foreground mt-1">Peça um novo link ao anfitrião.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return info.has_account
+      ? <CleanerLogin token={token} info={info} />
+      : <CleanerSignup token={token} info={info} />;
+  }
+
+  if (claimed.isLoading) {
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">A preparar a limpeza…</div>;
+  }
+
+  return <CleanerPortal token={token} />;
+}
+
+/* --------------------------- Signup screen --------------------------- */
+
+function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
+  const [name, setName] = useState(info.cleaner_name ?? "");
+  const [email, setEmail] = useState(info.cleaner_email ?? "");
+  const [phone, setPhone] = useState(info.cleaner_phone ?? "");
+  const [password, setPassword] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [mode, setMode] = useState<"signup" | "login">("signup");
+
+  if (mode === "login") return <CleanerLogin token={token} info={{ ...info, cleaner_email: email || info.cleaner_email }} />;
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: { data: { full_name: name.trim(), phone: phone.trim(), role: "cleaner" } },
+      });
+      if (error) {
+        const msg = (error.message || "").toLowerCase();
+        if (msg.includes("already registered") || msg.includes("already exists")) {
+          setErr("Já existe uma conta com este email. Faça login abaixo.");
+        } else if (msg.includes("password")) {
+          setErr("Palavra-passe inválida (mínimo 6 caracteres).");
+        } else {
+          setErr("Erro ao criar conta. Tente novamente.");
+        }
+        return;
+      }
+      // signUp also signs the user in when email confirmation is disabled.
+      // Page rerenders via useAuth and the gate takes over.
+      toast.success("Conta criada — a abrir o checklist…");
+    } catch {
+      setErr("Erro inesperado. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen px-5 py-8 mx-auto w-full max-w-[460px]">
+      <div className="text-center mb-6">
+        <div className="text-5xl mb-2">🧹</div>
+        <h1 className="text-2xl font-black">Criar a sua conta</h1>
+        <p className="text-sm text-muted-foreground mt-2">
+          A primeira vez que aceita uma limpeza precisa de criar uma conta rápida.
+          Depois fica com tudo guardado em <strong>Minha Agenda</strong>.
+        </p>
+        <p className="text-xs text-muted-foreground mt-3">
+          Limpeza em <strong>{info.property_name}</strong>
+        </p>
+      </div>
+
+      <form onSubmit={submit} className="flex flex-col gap-3">
+        <label className="text-xs font-semibold text-muted-foreground">Nome completo
+          <input required value={name} onChange={(e) => setName(e.target.value)}
+            className="mt-1 w-full px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
+        </label>
+        <label className="text-xs font-semibold text-muted-foreground">Email
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 w-full px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
+        </label>
+        <label className="text-xs font-semibold text-muted-foreground">Telefone / WhatsApp
+          <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+            className="mt-1 w-full px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
+        </label>
+        <label className="text-xs font-semibold text-muted-foreground">Palavra-passe (mín. 6)
+          <div className="relative mt-1">
+            <input type={showPwd ? "text" : "password"} required minLength={6} value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-3 pr-10 rounded-xl bg-card border border-card-border text-sm" />
+            <button type="button" onClick={() => setShowPwd(s => !s)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground">
+              {showPwd ? <EyeOff size={16}/> : <Eye size={16}/>}
+            </button>
+          </div>
+        </label>
+
+        {err && (
+          <div className="text-xs text-destructive bg-destructive/10 rounded-lg p-3">
+            {err}
+            {err.includes("Já existe") && (
+              <button type="button" onClick={() => setMode("login")} className="block mt-1 underline font-semibold">
+                Fazer login →
+              </button>
+            )}
+          </div>
+        )}
+
+        <button disabled={loading} className="mt-2 py-3 rounded-2xl font-bold text-white disabled:opacity-50"
+          style={{ background: "var(--color-accent)" }}>
+          {loading ? "A criar conta…" : "Criar conta e abrir checklist"}
+        </button>
+
+        <p className="text-xs text-center text-muted-foreground mt-2">
+          Já tem conta?{" "}
+          <button type="button" onClick={() => setMode("login")} className="font-semibold underline" style={{ color: "var(--color-accent)" }}>
+            Fazer login
+          </button>
+        </p>
+      </form>
+    </div>
+  );
+}
+
+/* ---------------------------- Login screen --------------------------- */
+
+function CleanerLogin({ token, info }: { token: string; info: TokenInfo }) {
+  const [method, setMethod] = useState<"password" | "magic">("password");
+  const [email, setEmail] = useState(info.cleaner_email ?? "");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [magicSent, setMagicSent] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function loginPwd(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null); setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+    setLoading(false);
+    if (error) setErr("Email ou palavra-passe inválidos.");
+  }
+
+  async function sendMagic() {
+    setErr(null);
+    if (!email) { setErr("Indique o seu email."); return; }
+    setLoading(true);
+    const redirectTo = `${window.location.origin}/faxineira/${token}`;
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: { emailRedirectTo: redirectTo },
+    });
+    setLoading(false);
+    if (error) setErr("Não foi possível enviar o link. Verifique o email.");
+    else setMagicSent(true);
+  }
+
+  if (magicSent) {
+    return (
+      <div className="min-h-screen grid place-items-center px-6 text-center">
+        <div>
+          <div className="text-5xl mb-3">📧</div>
+          <h1 className="text-lg font-bold">Verifique o seu email</h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Enviámos um link de acesso para <strong>{email}</strong>.
+          </p>
+          <button onClick={() => setMagicSent(false)} className="mt-4 text-xs underline text-muted-foreground">
+            Não recebeu? Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen px-5 py-8 mx-auto w-full max-w-[460px]">
+      <div className="text-center mb-6">
+        <div className="text-5xl mb-2">🧹</div>
+        <h1 className="text-2xl font-black">Entrar</h1>
+        <p className="text-sm text-muted-foreground mt-2">Faça login para abrir o checklist da limpeza em <strong>{info.property_name}</strong>.</p>
+      </div>
+
+      <div className="flex gap-1 p-1 rounded-xl bg-muted mb-4">
+        <button onClick={() => setMethod("password")}
+          className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "password" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
+          🔑 Palavra-passe
+        </button>
+        <button onClick={() => setMethod("magic")}
+          className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "magic" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
+          ✉️ Link por email
+        </button>
+      </div>
+
+      {method === "password" ? (
+        <form onSubmit={loginPwd} className="flex flex-col gap-3">
+          <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+            className="px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
+          <input type="password" required placeholder="Palavra-passe" value={password} onChange={(e) => setPassword(e.target.value)}
+            className="px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
+          {err && <p className="text-xs text-destructive">{err}</p>}
+          <button disabled={loading} className="py-3 rounded-2xl font-bold text-white disabled:opacity-50"
+            style={{ background: "var(--color-accent)" }}>
+            {loading ? "A entrar…" : "Entrar"}
+          </button>
+        </form>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+            className="px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
+          {err && <p className="text-xs text-destructive">{err}</p>}
+          <button disabled={loading} onClick={sendMagic}
+            className="py-3 rounded-2xl font-bold text-white disabled:opacity-50"
+            style={{ background: "var(--color-accent)" }}>
+            {loading ? "A enviar…" : "Enviar link de acesso"}
+          </button>
+          <p className="text-xs text-muted-foreground text-center">Receberá um link para entrar sem palavra-passe.</p>
+        </div>
+      )}
+
+      <p className="text-xs text-center text-muted-foreground mt-6">
+        Não tem conta?{" "}
+        <Link to="/faxineira/$token" params={{ token }} reloadDocument className="font-semibold underline" style={{ color: "var(--color-accent)" }}>
+          Criar agora
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+/* ----------------------- Checklist (authorised) ---------------------- */
 
 type ChecklistItem = { label: string; done: boolean };
 type ForgottenItem = { id: string; description: string; photo_url: string | null; status: string; notes: string | null };
@@ -37,8 +322,7 @@ function normalizeChecklist(raw: any): ChecklistItem[] {
   return raw.map((it) => typeof it === "string" ? { label: it, done: false } : { label: String(it.label ?? ""), done: !!it.done });
 }
 
-function CleanerPortal() {
-  const { token } = Route.useParams();
+function CleanerPortal({ token }: { token: string }) {
   const qc = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
@@ -76,7 +360,7 @@ function CleanerPortal() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["cleaner-job", token] }),
-    onError: (e: any) => toast.error(e.message ?? "Erro ao salvar"),
+    onError: (e: any) => toast.error(e.message ?? "Erro ao guardar"),
   });
 
   const addItem = useMutation({
@@ -90,7 +374,7 @@ function CleanerPortal() {
       qc.invalidateQueries({ queryKey: ["cleaner-job", token] });
       setNewItem({ description: "", notes: "" });
       setShowItemForm(false);
-      toast.success("Objeto registrado. Anfitrião notificado.");
+      toast.success("Objeto registado. Anfitrião notificado.");
     },
     onError: (e: any) => toast.error(e.message ?? "Erro"),
   });
@@ -101,25 +385,6 @@ function CleanerPortal() {
     const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false });
     if (error) throw error;
     return path;
-  }
-
-  async function notifyHost(payload: {
-    type: "photo" | "problem";
-    description?: string;
-    urgency?: "low" | "medium" | "high";
-    bucket?: "cleaning-photos" | "forgotten-items";
-    path?: string;
-  }) {
-    try {
-      const res = await fetch("/api/public/cleaner/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, ...payload }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-    } catch (e: any) {
-      console.warn("notifyHost failed", e);
-    }
   }
 
   async function makeThumbnail(file: File): Promise<string | null> {
@@ -135,7 +400,6 @@ function CleanerPortal() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return null;
       ctx.drawImage(bitmap, 0, 0, w, h);
-      // Iteratively reduce quality to stay under ~50KB.
       for (const q of [0.7, 0.55, 0.4, 0.3, 0.22]) {
         const dataUrl = canvas.toDataURL("image/jpeg", q);
         const b64 = dataUrl.split(",")[1] ?? "";
@@ -144,24 +408,6 @@ function CleanerPortal() {
       }
       return null;
     } catch { return null; }
-  }
-
-  async function onAddPhoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file || !data) return;
-    setUploading(true);
-    try {
-      const path = await uploadPhoto(file, "cleaning-photos");
-      const thumbnailBase64 = await makeThumbnail(file);
-      // Send to host by email and delete from storage immediately.
-      await notifyHostWithThumb({ type: "photo", bucket: "cleaning-photos", path, thumbnailBase64 });
-      toast.success("Foto enviada ao anfitrião");
-    } catch (err: any) {
-      toast.error(err.message ?? "Falha ao enviar");
-    } finally {
-      setUploading(false);
-      e.target.value = "";
-    }
   }
 
   async function notifyHostWithThumb(payload: {
@@ -184,6 +430,23 @@ function CleanerPortal() {
     }
   }
 
+  async function onAddPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !data) return;
+    setUploading(true);
+    try {
+      const path = await uploadPhoto(file, "cleaning-photos");
+      const thumbnailBase64 = await makeThumbnail(file);
+      await notifyHostWithThumb({ type: "photo", bucket: "cleaning-photos", path, thumbnailBase64 });
+      toast.success("Foto enviada ao anfitrião");
+    } catch (err: any) {
+      toast.error(err.message ?? "Falha ao enviar");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
   async function onAddForgottenWithPhoto(file: File | null) {
     if (!newItem.description.trim()) { toast.error("Descreva o objeto"); return; }
     setUploading(true);
@@ -192,7 +455,7 @@ function CleanerPortal() {
       if (file) photo_url = await uploadPhoto(file, "forgotten-items");
       await addItem.mutateAsync({ description: newItem.description.trim(), notes: newItem.notes.trim(), photo_url });
     } catch (err: any) {
-      toast.error(err.message ?? "Falha ao registrar");
+      toast.error(err.message ?? "Falha ao registar");
     } finally { setUploading(false); }
   }
 
@@ -200,7 +463,7 @@ function CleanerPortal() {
     try { await update.mutateAsync({ status: "problema", checklist, notes }); } catch {}
   }
 
-  if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando…</div>;
+  if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">A carregar…</div>;
   if (error || !data) return (
     <div className="min-h-screen grid place-items-center px-6 text-center">
       <div>
@@ -239,7 +502,7 @@ function CleanerPortal() {
           <div className="flex gap-3 mt-3 text-xs text-muted-foreground">
             {data.property.bedrooms != null && <span className="flex items-center gap-1"><BedDouble size={12} /> {data.property.bedrooms}</span>}
             {data.property.bathrooms != null && <span className="flex items-center gap-1"><Bath size={12} /> {data.property.bathrooms}</span>}
-            <span>📅 {new Date(data.scheduled_date + "T" + data.scheduled_time).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+            <span>📅 {new Date(data.scheduled_date + "T" + data.scheduled_time).toLocaleString("pt-PT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
           </div>
           {data.property.wifi_password && (
             <div className="mt-3 pt-3 border-t border-card-border text-xs flex items-center gap-2">
@@ -299,21 +562,21 @@ function CleanerPortal() {
 
           {showItemForm && (
             <div className="space-y-2 mb-3 p-3 rounded-xl bg-background border border-card-border">
-              <input value={newItem.description} onChange={(e) => setNewItem((n) => ({ ...n, description: e.target.value }))} placeholder="Ex.: Carregador de celular" className="w-full px-3 py-2 rounded-lg border border-card-border bg-card text-sm" />
+              <input value={newItem.description} onChange={(e) => setNewItem((n) => ({ ...n, description: e.target.value }))} placeholder="Ex.: Carregador de telemóvel" className="w-full px-3 py-2 rounded-lg border border-card-border bg-card text-sm" />
               <input value={newItem.notes} onChange={(e) => setNewItem((n) => ({ ...n, notes: e.target.value }))} placeholder="Onde foi encontrado (opcional)" className="w-full px-3 py-2 rounded-lg border border-card-border bg-card text-sm" />
               <label className="flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed border-card-border text-xs cursor-pointer">
-                <Camera size={14} /> Anexar foto e registrar
+                <Camera size={14} /> Anexar foto e registar
                 <input type="file" accept="image/*" capture="environment" className="hidden" disabled={uploading}
                   onChange={(e) => onAddForgottenWithPhoto(e.target.files?.[0] ?? null)} />
               </label>
               <button disabled={uploading} onClick={() => onAddForgottenWithPhoto(null)} className="w-full py-2 rounded-lg text-xs font-semibold text-white" style={{ background: "var(--color-accent)" }}>
-                Registrar sem foto
+                Registar sem foto
               </button>
             </div>
           )}
 
           {data.forgotten_items.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Nada registrado.</p>
+            <p className="text-xs text-muted-foreground">Nada registado.</p>
           ) : (
             <ul className="space-y-2">
               {data.forgotten_items.map((it) => (
@@ -348,7 +611,7 @@ function CleanerPortal() {
         {dirty && (
           <button onClick={() => update.mutate({ checklist, notes })} disabled={update.isPending}
             className="w-full py-2.5 rounded-xl text-sm font-semibold border border-card-border">
-            {update.isPending ? "Salvando…" : "Salvar progresso"}
+            {update.isPending ? "A guardar…" : "Guardar progresso"}
           </button>
         )}
         <button onClick={() => update.mutate({ status: "concluido", checklist, notes })}
