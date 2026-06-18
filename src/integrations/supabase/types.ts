@@ -178,6 +178,7 @@ export type Database = {
       }
       cleaners: {
         Row: {
+          auth_user_id: string | null
           created_at: string
           email: string | null
           id: string
@@ -196,6 +197,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          auth_user_id?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -214,6 +216,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          auth_user_id?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -928,6 +931,7 @@ export type Database = {
           avatar_url: string | null
           billing_currency: string
           billing_interval: string
+          cleaner_id: string | null
           created_at: string
           current_property_count: number
           display_name: string | null
@@ -938,6 +942,7 @@ export type Database = {
           onboarding_completed: boolean
           plan_selected_at: string | null
           property_tier: number
+          role: string
           suspended_at: string | null
           updated_at: string
         }
@@ -945,6 +950,7 @@ export type Database = {
           avatar_url?: string | null
           billing_currency?: string
           billing_interval?: string
+          cleaner_id?: string | null
           created_at?: string
           current_property_count?: number
           display_name?: string | null
@@ -955,6 +961,7 @@ export type Database = {
           onboarding_completed?: boolean
           plan_selected_at?: string | null
           property_tier?: number
+          role?: string
           suspended_at?: string | null
           updated_at?: string
         }
@@ -962,6 +969,7 @@ export type Database = {
           avatar_url?: string | null
           billing_currency?: string
           billing_interval?: string
+          cleaner_id?: string | null
           created_at?: string
           current_property_count?: number
           display_name?: string | null
@@ -972,10 +980,19 @@ export type Database = {
           onboarding_completed?: boolean
           plan_selected_at?: string | null
           property_tier?: number
+          role?: string
           suspended_at?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_cleaner_id_fkey"
+            columns: ["cleaner_id"]
+            isOneToOne: false
+            referencedRelation: "cleaners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       properties: {
         Row: {
@@ -1287,6 +1304,7 @@ export type Database = {
         }
         Returns: string
       }
+      cleaner_claim_token: { Args: { p_token: string }; Returns: Json }
       cleaner_get_job: { Args: { p_token: string }; Returns: Json }
       cleaner_report_problem: {
         Args: {
@@ -1297,6 +1315,7 @@ export type Database = {
         }
         Returns: string
       }
+      cleaner_token_lookup: { Args: { p_token: string }; Returns: Json }
       cleaner_update_job: {
         Args: {
           p_checklist?: Json
