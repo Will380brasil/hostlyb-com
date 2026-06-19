@@ -83,7 +83,7 @@ export const Route = createFileRoute("/api/public/calendar/$token")({
           status: 200,
           headers: {
             "Content-Type": "text/calendar; charset=utf-8",
-            "Cache-Control": "public, max-age=900",
+            "Cache-Control": "private, max-age=300",
             "Content-Disposition": `inline; filename="hostlyb.ics"`,
           },
         });
