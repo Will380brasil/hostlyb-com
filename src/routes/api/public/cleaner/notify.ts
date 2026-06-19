@@ -46,25 +46,43 @@ export const Route = createFileRoute("/api/public/cleaner/notify")({
           .maybeSingle();
         if (jobErr || !job) return Response.json({ error: "Invalid token" }, { status: 404 });
 
-        // Rate limit: max 30 notifications per token per hour, and a 5s cooldown.
-        const templateNameForLimit = body.type === "photo" ? "cleaning-photo" : "cleaning-problem";
-        const idemPrefix = `${templateNameForLimit}-${job.id}-`;
-        const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-        const { count: recentCount } = await admin
-          .from("email_send_log")
-          .select("message_id", { count: "exact", head: true })
-          .eq("template_name", templateNameForLimit)
-          .eq("recipient_email", "") // placeholder, replaced below
-          .gte("created_at", hourAgo);
-        // Re-query using owner email once loaded
-
-
         const { data: owner } = await admin
           .from("profiles")
           .select("email")
           .eq("id", job.user_id)
           .maybeSingle();
         if (!owner?.email) return Response.json({ error: "Owner email missing" }, { status: 422 });
+
+        // Rate limit per (template, recipient): max 30/hour, 5s cooldown.
+        const templateNameForLimit = body.type === "photo" ? "cleaning-photo" : "cleaning-problem";
+        const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const cooldownAgo = new Date(Date.now() - 5 * 1000).toISOString();
+        const { count: recentCount } = await admin
+          .from("email_send_log")
+          .select("message_id", { count: "exact", head: true })
+          .eq("template_name", templateNameForLimit)
+          .eq("recipient_email", owner.email)
+          .gte("created_at", hourAgo);
+        if ((recentCount ?? 0) >= 30) {
+          return Response.json(
+            { error: "Rate limit exceeded for this notification type" },
+            { status: 429 }
+          );
+        }
+        const { data: lastSend } = await admin
+          .from("email_send_log")
+          .select("message_id")
+          .eq("template_name", templateNameForLimit)
+          .eq("recipient_email", owner.email)
+          .gte("created_at", cooldownAgo)
+          .limit(1);
+        if (lastSend && lastSend.length > 0) {
+          return Response.json(
+            { error: "Please wait a few seconds before sending another notification" },
+            { status: 429 }
+          );
+        }
+
 
         // Generate a signed URL for the photo (24h) if provided
         let photoUrl: string | undefined;
