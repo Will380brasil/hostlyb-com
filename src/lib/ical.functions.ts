@@ -86,8 +86,8 @@ async function resolveAndAssertPublic(host: string): Promise<void> {
 const MAX_ICAL_BYTES = 5 * 1024 * 1024; // 5MB
 
 async function fetchAndParse(url: string): Promise<Array<{ uid: string; start: Date; end: Date; summary: string }>> {
-  const parsed = assertSafeFeedUrl(url);
-  await resolveAndAssertPublic(parsed.hostname.toLowerCase());
+  const safeUrl = assertSafeFeedUrl(url);
+  await resolveAndAssertPublic(safeUrl.hostname.toLowerCase());
   const res = await fetch(url, { headers: { "User-Agent": "Hostlyb/1.0 iCal-Sync" }, redirect: "error" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const lenHeader = Number(res.headers.get("content-length") ?? 0);
