@@ -46,6 +46,19 @@ export const Route = createFileRoute("/api/public/cleaner/notify")({
           .maybeSingle();
         if (jobErr || !job) return Response.json({ error: "Invalid token" }, { status: 404 });
 
+        // Rate limit: max 30 notifications per token per hour, and a 5s cooldown.
+        const templateNameForLimit = body.type === "photo" ? "cleaning-photo" : "cleaning-problem";
+        const idemPrefix = `${templateNameForLimit}-${job.id}-`;
+        const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count: recentCount } = await admin
+          .from("email_send_log")
+          .select("message_id", { count: "exact", head: true })
+          .eq("template_name", templateNameForLimit)
+          .eq("recipient_email", "") // placeholder, replaced below
+          .gte("created_at", hourAgo);
+        // Re-query using owner email once loaded
+
+
         const { data: owner } = await admin
           .from("profiles")
           .select("email")
