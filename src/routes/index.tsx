@@ -77,7 +77,7 @@ const JSON_LD = {
       "logo": `${BASE_URL}/icon-512.png`,
       "contactPoint": {
         "@type": "ContactPoint",
-        "email": "brasgold1@gmail.com",
+        "email": "support@hostlyb.com",
         "contactType": "customer support",
       },
     },

@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "@tanstack/react-router";
 import { useT } from "@/lib/i18n";
 
-const ADMIN_EMAIL = "brasgold1@gmail.com";
+const ADMIN_EMAIL = "support@hostlyb.com";
 
 const PUBLIC_PREFIXES = ["/", "/login", "/signup", "/demo", "/guia", "/checkin", "/faxineira", "/convite", "/unsubscribe", "/auth"];
 

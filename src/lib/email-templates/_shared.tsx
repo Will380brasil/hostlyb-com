@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Html, Head, Body, Container, Section, Heading, Text, Button, Hr, Link } from "@react-email/components";
 
-export const ADMIN_EMAIL = "brasgold1@gmail.com";
+export const ADMIN_EMAIL = "support@hostlyb.com";
 export const SITE = "https://hostlyb.com";
 
 export type Lang = "pt" | "en" | "fr" | "de" | "it" | "es";
