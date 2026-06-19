@@ -8,26 +8,86 @@ function toDateOnly(d: Date): string {
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
+function isPrivateIPv4(ip: string): boolean {
+  const parts = ip.split(".").map(Number);
+  if (parts.length !== 4 || parts.some((n) => Number.isNaN(n) || n < 0 || n > 255)) return false;
+  const [a, b] = parts;
+  if (a === 10) return true;
+  if (a === 127) return true;
+  if (a === 0) return true;
+  if (a === 169 && b === 254) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+  if (a >= 224) return true; // multicast/reserved
+  return false;
+}
+
+function isPrivateIPv6(ip: string): boolean {
+  const v = ip.toLowerCase().replace(/^\[|\]$/g, "");
+  if (v === "::1" || v === "::" || v === "0:0:0:0:0:0:0:1") return true;
+  if (v.startsWith("fe80:") || v.startsWith("fc") || v.startsWith("fd")) return true;
+  if (v.startsWith("ff")) return true; // multicast
+  // IPv4-mapped (::ffff:a.b.c.d)
+  const m = v.match(/^::ffff:([\d.]+)$/);
+  if (m) return isPrivateIPv4(m[1]);
+  return false;
+}
+
 function assertSafeFeedUrl(raw: string): URL {
   let parsed: URL;
   try { parsed = new URL(raw); } catch { throw new Error("Invalid URL"); }
   if (parsed.protocol !== "https:") throw new Error("Only HTTPS iCal URLs are allowed");
-  const host = parsed.hostname.toLowerCase();
-  // Block obvious internal / metadata targets
+  const host = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "");
   const blocked = [
-    "localhost", "127.0.0.1", "0.0.0.0", "::1",
-    "169.254.169.254", "metadata.google.internal",
+    "localhost", "ip6-localhost", "ip6-loopback",
+    "metadata.google.internal", "metadata", "metadata.goog",
+    "instance-data",
   ];
   if (blocked.includes(host)) throw new Error("Host not allowed");
-  if (/^(10\.|192\.168\.|169\.254\.|127\.)/.test(host)) throw new Error("Private hosts not allowed");
-  if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) throw new Error("Private hosts not allowed");
+  // Literal IPs in the URL itself
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(host) && isPrivateIPv4(host)) {
+    throw new Error("Private hosts not allowed");
+  }
+  if (host.includes(":") && isPrivateIPv6(host)) {
+    throw new Error("Private hosts not allowed");
+  }
   return parsed;
+}
+
+// DNS-over-HTTPS lookup via Cloudflare; blocks DNS-rebinding by resolving
+// the hostname ourselves and re-checking the resolved IPs against the
+// private-range blocklist before fetch().
+async function resolveAndAssertPublic(host: string): Promise<void> {
+  // If the URL already used a literal IP, assertSafeFeedUrl handled it.
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(host) || host.includes(":")) return;
+  const types = [{ t: "A", check: isPrivateIPv4 }, { t: "AAAA", check: isPrivateIPv6 }];
+  for (const { t, check } of types) {
+    try {
+      const r = await fetch(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(host)}&type=${t}`,
+        { headers: { accept: "application/dns-json" } }
+      );
+      if (!r.ok) continue;
+      const j: any = await r.json();
+      for (const ans of j?.Answer ?? []) {
+        const ip = String(ans?.data ?? "").trim();
+        if (!ip) continue;
+        if (check(ip)) throw new Error("Resolved host is private");
+      }
+    } catch (e: any) {
+      if (e?.message === "Resolved host is private") throw e;
+      // DoH failure → fail closed
+      throw new Error("Unable to validate iCal host");
+    }
+  }
 }
 
 const MAX_ICAL_BYTES = 5 * 1024 * 1024; // 5MB
 
 async function fetchAndParse(url: string): Promise<Array<{ uid: string; start: Date; end: Date; summary: string }>> {
-  assertSafeFeedUrl(url);
+  const parsed = assertSafeFeedUrl(url);
+  await resolveAndAssertPublic(parsed.hostname.toLowerCase());
   const res = await fetch(url, { headers: { "User-Agent": "Hostlyb/1.0 iCal-Sync" }, redirect: "error" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const lenHeader = Number(res.headers.get("content-length") ?? 0);
