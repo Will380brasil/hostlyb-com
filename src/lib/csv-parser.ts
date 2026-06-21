@@ -72,10 +72,10 @@ export function downloadCSVTemplate(
     exampleRow: string[],
     filename: string
     ): void {
-      const csvContent = [
-          headers.join(',''),
-              exampleRow.join(',')
-                ].join('\n')
+  const csvContent = [
+    headers.join(','),
+    exampleRow.join(','),
+  ].join('\n')
 
                   const blob = new Blob(['\uFEFF' + csvContent], {
                       type: 'text/csv;charset=utf-8;'
