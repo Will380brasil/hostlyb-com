@@ -106,12 +106,12 @@ function LoginPage() {
             <input type="{showPassword ? "text" : "password"}" required placeholder={t("login.password")} value={password}
                           <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9E9E9E" }}>
                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                          </button>button>
+                          </button>
               onChange={(e) => setPassword(e.target.value)}
               className="px-4 py-3 rounded-xl bg-card border border-card-border" />
                           <Link to="/esqueci-senha" className="text-xs text-muted-foreground text-right hover:underline" style={{ textDecoration: "none" }}>
                             {t("login.forgotPassword")}
-                          </Link>Link>
+                          </Link>
             <button disabled={loading || authLoading} className="btn-primary justify-center">
               {loading ? t("login.submitting") : t("login.submit")}
             </button>
