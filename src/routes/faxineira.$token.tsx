@@ -560,24 +560,11 @@ function CleanerPortal({ token }: { token: string }) {
 
         <section className="rounded-2xl bg-card border border-card-border p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold flex items-center gap-2"><AlertTriangle size={14} /> Objetos esquecidos</h3>
-            <button onClick={() => setShowItemForm((s) => !s)} className="text-xs font-semibold underline text-muted-foreground">{showItemForm ? "Cancelar" : "Adicionar"}</button>
+            <h3 className="font-bold flex items-center gap-2"><Package size={14} /> Objetos esquecidos</h3>
+            <button onClick={() => setShowItemForm(true)} className="text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1" style={{ background: "var(--color-accent)", color: "white" }}>
+              <Plus size={12} /> Registar objeto
+            </button>
           </div>
-
-          {showItemForm && (
-            <div className="space-y-2 mb-3 p-3 rounded-xl bg-background border border-card-border">
-              <input value={newItem.description} onChange={(e) => setNewItem((n) => ({ ...n, description: e.target.value }))} placeholder="Ex.: Carregador de telemóvel" className="w-full px-3 py-2 rounded-lg border border-card-border bg-card text-sm" />
-              <input value={newItem.notes} onChange={(e) => setNewItem((n) => ({ ...n, notes: e.target.value }))} placeholder="Onde foi encontrado (opcional)" className="w-full px-3 py-2 rounded-lg border border-card-border bg-card text-sm" />
-              <label className="flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed border-card-border text-xs cursor-pointer">
-                <Camera size={14} /> Anexar foto e registar
-                <input type="file" accept="image/*" capture="environment" className="hidden" disabled={uploading}
-                  onChange={(e) => onAddForgottenWithPhoto(e.target.files?.[0] ?? null)} />
-              </label>
-              <button disabled={uploading} onClick={() => onAddForgottenWithPhoto(null)} className="w-full py-2 rounded-lg text-xs font-semibold text-white" style={{ background: "var(--color-accent)" }}>
-                Registar sem foto
-              </button>
-            </div>
-          )}
 
           {data.forgotten_items.length === 0 ? (
             <p className="text-xs text-muted-foreground">Nada registado.</p>
@@ -588,7 +575,7 @@ function CleanerPortal({ token }: { token: string }) {
                   {it.photo_url && <SignedImage bucket="forgotten-items" path={it.photo_url} alt="" className="w-12 h-12 rounded-md object-cover" />}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{it.description}</p>
-                    {it.notes && <p className="text-xs text-muted-foreground truncate">{it.notes}</p>}
+                    {it.notes && <p className="text-xs text-muted-foreground truncate flex items-center gap-1"><MapPin size={10} /> {it.notes}</p>}
                     <span className="text-[10px] text-muted-foreground">{it.status}</span>
                   </div>
                 </li>
@@ -596,6 +583,50 @@ function CleanerPortal({ token }: { token: string }) {
             </ul>
           )}
         </section>
+
+        {showItemForm && (
+          <div className="fixed inset-0 z-50 bg-black/50 grid place-items-end sm:place-items-center px-4 py-6" onClick={() => !uploading && setShowItemForm(false)}>
+            <div className="w-full max-w-[460px] rounded-2xl bg-card border border-card-border p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold flex items-center gap-2"><Package size={16} /> Registar objeto esquecido</h3>
+                <button onClick={() => setShowItemForm(false)} disabled={uploading} className="p-1 text-muted-foreground"><X size={18} /></button>
+              </div>
+
+              <label className="block">
+                <span className="text-xs font-semibold text-muted-foreground">Descrição do objeto</span>
+                <input value={newItem.description} onChange={(e) => setNewItem((n) => ({ ...n, description: e.target.value }))} placeholder="Ex.: Carregador de telemóvel" autoFocus
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-card-border bg-background text-sm" />
+              </label>
+
+              <label className="block">
+                <span className="text-xs font-semibold text-muted-foreground">Localização no imóvel</span>
+                <input value={newItem.location} onChange={(e) => setNewItem((n) => ({ ...n, location: e.target.value }))} placeholder="Ex.: Quarto 1, casa de banho, sala"
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-card-border bg-background text-sm" />
+              </label>
+
+              <div>
+                <span className="text-xs font-semibold text-muted-foreground">Foto (opcional)</span>
+                <label className="mt-1 flex items-center justify-center gap-2 py-3 rounded-lg border border-dashed border-card-border text-xs cursor-pointer">
+                  <Camera size={14} /> {newItemFile ? newItemFile.name : "Tirar foto / escolher imagem"}
+                  <input type="file" accept="image/*" capture="environment" className="hidden" disabled={uploading}
+                    onChange={(e) => setNewItemFile(e.target.files?.[0] ?? null)} />
+                </label>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button onClick={() => setShowItemForm(false)} disabled={uploading}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-card-border">
+                  Cancelar
+                </button>
+                <button disabled={uploading || !newItem.description.trim()} onClick={() => onAddForgottenWithPhoto(newItemFile)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 flex items-center justify-center gap-2"
+                  style={{ background: "var(--color-accent)" }}>
+                  {uploading ? <><Loader2 size={14} className="animate-spin" /> A registar…</> : "Registar"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section className="rounded-2xl bg-card border border-card-border p-4">
           <h3 className="font-bold mb-2">Observações</h3>
