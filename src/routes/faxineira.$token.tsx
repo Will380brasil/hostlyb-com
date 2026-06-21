@@ -365,15 +365,18 @@ function CleanerPortal({ token }: { token: string }) {
   });
 
   const addItem = useMutation({
-    mutationFn: async (vars: { description: string; notes: string; photo_url: string | null }) => {
+    mutationFn: async (vars: { description: string; location: string; photo_url: string | null }) => {
       const { error } = await supabase.rpc("cleaner_add_forgotten_item", {
-        p_token: token, p_description: vars.description, p_photo_url: vars.photo_url ?? undefined, p_notes: vars.notes || undefined,
+        p_token: token, p_description: vars.description, p_photo_url: vars.photo_url ?? undefined, p_notes: vars.location || undefined,
       });
       if (error) throw error;
+      // Fire-and-forget: extra realtime notification to host (alert is also created by DB trigger)
+      void notifyHostWithThumb({ type: "photo", description: `Objeto esquecido: ${vars.description}${vars.location ? ` (${vars.location})` : ""}` });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["cleaner-job", token] });
-      setNewItem({ description: "", notes: "" });
+      setNewItem({ description: "", location: "" });
+      setNewItemFile(null);
       setShowItemForm(false);
       toast.success("Objeto registado. Anfitrião notificado.");
     },
