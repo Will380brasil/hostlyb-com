@@ -103,15 +103,23 @@ function LoginPage() {
             <input type="email" required placeholder={t("login.email")} value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="px-4 py-3 rounded-xl bg-card border border-card-border" />
-            <input type="{showPassword ? "text" : "password"}" required placeholder={t("login.password")} value={password}
-                          <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9E9E9E" }}>
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                          </button>
-              onChange={(e) => setPassword(e.target.value)}
-              className="px-4 py-3 rounded-xl bg-card border border-card-border" />
-                          <Link to="/esqueci-senha" className="text-xs text-muted-foreground text-right hover:underline" style={{ textDecoration: "none" }}>
-                            {t("login.forgotPassword")}
-                          </Link>
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder={t("login.password")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-card border border-card-border"
+                style={{ paddingRight: 44 }}
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9E9E9E" }}>
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            <Link to="/esqueci-senha" className="text-xs text-muted-foreground text-right hover:underline" style={{ textDecoration: "none" }}>
+              {t("login.forgotPassword")}
+            </Link>
             <button disabled={loading || authLoading} className="btn-primary justify-center">
               {loading ? t("login.submitting") : t("login.submit")}
             </button>
