@@ -176,8 +176,7 @@ function ResetPasswordPage() {
                                     {password && (
                     <div style={{ marginTop: 6 }}>
                                     <div style={{ display: "flex", gap: 4 }}>
-                                      {[1, 2, 3, 4, 5].m  
-                                        ap((i) => (
+                                      {[1, 2, 3, 4, 5].map((i) => (
                                           <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= strength.level ? strength.color : "#EFEFEF", transition: "background 0.3s" }} />
                                         ))}
                                     </div>
