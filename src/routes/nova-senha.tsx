@@ -138,7 +138,7 @@ function ResetPasswordPage() {
                           </div>
                   </div>
                 );
-    }</div>
+    }
 
         return (
           <div className="min-h-screen grid place-items-center px-5 bg-background">
