@@ -14,13 +14,16 @@ import { Route as TrustRouteImport } from './routes/trust'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
+import { Route as NovaSenhaRouteImport } from './routes/nova-senha'
 import { Route as MinhaAgendaRouteImport } from './routes/minha-agenda'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LimpezasRouteImport } from './routes/limpezas'
 import { Route as ItRouteImport } from './routes/it'
+import { Route as InscreverSeRouteImport } from './routes/inscrever-se'
 import { Route as HospedesRouteImport } from './routes/hospedes'
 import { Route as FrRouteImport } from './routes/fr'
 import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as EsRouteImport } from './routes/es'
 import { Route as EquipeRouteImport } from './routes/equipe'
 import { Route as EnRouteImport } from './routes/en'
@@ -88,6 +91,11 @@ const PwaCheckRoute = PwaCheckRouteImport.update({
   path: '/pwa-check',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NovaSenhaRoute = NovaSenhaRouteImport.update({
+  id: '/nova-senha',
+  path: '/nova-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MinhaAgendaRoute = MinhaAgendaRouteImport.update({
   id: '/minha-agenda',
   path: '/minha-agenda',
@@ -108,6 +116,11 @@ const ItRoute = ItRouteImport.update({
   path: '/it',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InscreverSeRoute = InscreverSeRouteImport.update({
+  id: '/inscrever-se',
+  path: '/inscrever-se',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HospedesRoute = HospedesRouteImport.update({
   id: '/hospedes',
   path: '/hospedes',
@@ -121,6 +134,11 @@ const FrRoute = FrRouteImport.update({
 const FinanceiroRoute = FinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
+  id: '/esqueci-senha',
+  path: '/esqueci-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EsRoute = EsRouteImport.update({
@@ -348,13 +366,16 @@ export interface FileRoutesByFullPath {
   '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
   '/es': typeof EsRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/inscrever-se': typeof InscreverSeRoute
   '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/minha-agenda': typeof MinhaAgendaRoute
+  '/nova-senha': typeof NovaSenhaRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -402,13 +423,16 @@ export interface FileRoutesByTo {
   '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
   '/es': typeof EsRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/inscrever-se': typeof InscreverSeRoute
   '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/minha-agenda': typeof MinhaAgendaRoute
+  '/nova-senha': typeof NovaSenhaRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -458,13 +482,16 @@ export interface FileRoutesById {
   '/en': typeof EnRoute
   '/equipe': typeof EquipeRoute
   '/es': typeof EsRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/financeiro': typeof FinanceiroRoute
   '/fr': typeof FrRoute
   '/hospedes': typeof HospedesRoute
+  '/inscrever-se': typeof InscreverSeRoute
   '/it': typeof ItRoute
   '/limpezas': typeof LimpezasRoute
   '/login': typeof LoginRoute
   '/minha-agenda': typeof MinhaAgendaRoute
+  '/nova-senha': typeof NovaSenhaRoute
   '/pwa-check': typeof PwaCheckRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -515,13 +542,16 @@ export interface FileRouteTypes {
     | '/en'
     | '/equipe'
     | '/es'
+    | '/esqueci-senha'
     | '/financeiro'
     | '/fr'
     | '/hospedes'
+    | '/inscrever-se'
     | '/it'
     | '/limpezas'
     | '/login'
     | '/minha-agenda'
+    | '/nova-senha'
     | '/pwa-check'
     | '/signup'
     | '/sitemap.xml'
@@ -569,13 +599,16 @@ export interface FileRouteTypes {
     | '/en'
     | '/equipe'
     | '/es'
+    | '/esqueci-senha'
     | '/financeiro'
     | '/fr'
     | '/hospedes'
+    | '/inscrever-se'
     | '/it'
     | '/limpezas'
     | '/login'
     | '/minha-agenda'
+    | '/nova-senha'
     | '/pwa-check'
     | '/signup'
     | '/sitemap.xml'
@@ -624,13 +657,16 @@ export interface FileRouteTypes {
     | '/en'
     | '/equipe'
     | '/es'
+    | '/esqueci-senha'
     | '/financeiro'
     | '/fr'
     | '/hospedes'
+    | '/inscrever-se'
     | '/it'
     | '/limpezas'
     | '/login'
     | '/minha-agenda'
+    | '/nova-senha'
     | '/pwa-check'
     | '/signup'
     | '/sitemap.xml'
@@ -680,13 +716,16 @@ export interface RootRouteChildren {
   EnRoute: typeof EnRoute
   EquipeRoute: typeof EquipeRoute
   EsRoute: typeof EsRoute
+  EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   FinanceiroRoute: typeof FinanceiroRoute
   FrRoute: typeof FrRoute
   HospedesRoute: typeof HospedesRoute
+  InscreverSeRoute: typeof InscreverSeRoute
   ItRoute: typeof ItRoute
   LimpezasRoute: typeof LimpezasRoute
   LoginRoute: typeof LoginRoute
   MinhaAgendaRoute: typeof MinhaAgendaRoute
+  NovaSenhaRoute: typeof NovaSenhaRoute
   PwaCheckRoute: typeof PwaCheckRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -753,6 +792,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PwaCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nova-senha': {
+      id: '/nova-senha'
+      path: '/nova-senha'
+      fullPath: '/nova-senha'
+      preLoaderRoute: typeof NovaSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/minha-agenda': {
       id: '/minha-agenda'
       path: '/minha-agenda'
@@ -781,6 +827,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inscrever-se': {
+      id: '/inscrever-se'
+      path: '/inscrever-se'
+      fullPath: '/inscrever-se'
+      preLoaderRoute: typeof InscreverSeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hospedes': {
       id: '/hospedes'
       path: '/hospedes'
@@ -800,6 +853,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/financeiro'
       preLoaderRoute: typeof FinanceiroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esqueci-senha': {
+      id: '/esqueci-senha'
+      path: '/esqueci-senha'
+      fullPath: '/esqueci-senha'
+      preLoaderRoute: typeof EsqueciSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/es': {
@@ -1137,13 +1197,16 @@ const rootRouteChildren: RootRouteChildren = {
   EnRoute: EnRoute,
   EquipeRoute: EquipeRoute,
   EsRoute: EsRoute,
+  EsqueciSenhaRoute: EsqueciSenhaRoute,
   FinanceiroRoute: FinanceiroRoute,
   FrRoute: FrRoute,
   HospedesRoute: HospedesRoute,
+  InscreverSeRoute: InscreverSeRoute,
   ItRoute: ItRoute,
   LimpezasRoute: LimpezasRoute,
   LoginRoute: LoginRoute,
   MinhaAgendaRoute: MinhaAgendaRoute,
+  NovaSenhaRoute: NovaSenhaRoute,
   PwaCheckRoute: PwaCheckRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
