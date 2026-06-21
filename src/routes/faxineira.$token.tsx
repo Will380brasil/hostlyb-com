@@ -336,7 +336,8 @@ function CleanerPortal({ token }: { token: string }) {
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [notes, setNotes] = useState("");
-  const [newItem, setNewItem] = useState({ description: "", notes: "" });
+  const [newItem, setNewItem] = useState({ description: "", location: "" });
+  const [newItemFile, setNewItemFile] = useState<File | null>(null);
   const [showItemForm, setShowItemForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showProblem, setShowProblem] = useState(false);
