@@ -240,5 +240,4 @@ function ResetPasswordPage() {
                 </div>
           </div>
       );
-      }
-      }</div>
+}
