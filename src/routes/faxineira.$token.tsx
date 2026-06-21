@@ -457,7 +457,7 @@ function CleanerPortal({ token }: { token: string }) {
     try {
       let photo_url: string | null = null;
       if (file) photo_url = await uploadPhoto(file, "forgotten-items");
-      await addItem.mutateAsync({ description: newItem.description.trim(), notes: newItem.notes.trim(), photo_url });
+      await addItem.mutateAsync({ description: newItem.description.trim(), location: newItem.location.trim(), photo_url });
     } catch (err: any) {
       toast.error(err.message ?? "Falha ao registar");
     } finally { setUploading(false); }
