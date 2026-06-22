@@ -117,10 +117,10 @@ function LoginPage() {
                     <div style={{ background: "#FFF8E6", border: "1px solid #FFB34740", padding: "12px 16px", borderRadius: "6px", marginBottom: "16px" }}>
                                       <p style={{ color: "#92600A", margin: 0, fontSize: "14px" }}>
                                                           🔗 Link mágico temporariamente indisponível. Use e-mail e senha.
-                                      </p>p>
-                    </div>div>
+                                      </p>
+                    </div>
                   )}
-                  {method === "p!MAGIC_LINK_ENABLED || method === "password"assword" ? (
+                  {!MAGIC_LINK_ENABLED || method === "password" ? (
           <form onSubmit={submit} className="flex flex-col gap-3">
             <input type="email" required placeholder={t("login.email")} value={email}
               onChange={(e) => setEmail(e.target.value)}
