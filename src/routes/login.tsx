@@ -2,166 +2,183 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
 type LoginSearch = { redirect?: string };
 
-const MAGIC_LINK_ENABLED = false;
-
 export const Route = createFileRoute("/login")({
-  validateSearch: (s: Record<string, unknown>): LoginSearch => ({
-    redirect: typeof s.redirect === "string" ? s.redirect : undefined,
-  }),
-  head: () => ({ meta: [{ title: "Entrar — Hostlyb" }, { name: "description", content: "Aceda à sua conta Hostlyb." }] }),
-  component: LoginPage,
+    validateSearch: (s: Record<string, unknown>): LoginSearch => ({
+          redirect: typeof s.redirect === "string" ? s.redirect : undefined,
+    }),
+    head: () => ({
+          meta: [
+            { title: "Entrar — Hostlyb" },
+            { name: "description", content: "Aceda à sua conta Hostlyb." },
+                ],
+    }),
+    component: LoginPage,
 });
 
 async function resolveDestination(userId: string, fallback?: string) {
-  if (fallback) return fallback;
-  const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
-  return data?.role === "cleaner" ? "/minha-agenda" : "/app";
+    if (fallback) return fallback;
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .maybeSingle();
+    return data?.role === "cleaner" ? "/minha-agenda" : "/app";
 }
 
-function translateError(error: string): string {
-    const errorMap: Record<string, string> = {
-          'Invalid login credentials': 'E-mail ou senha incorretos.',
-          'Email not confirmed': 'Confirme o seu e-mail antes de entrar.',
-          'User not found': 'Conta não encontrada.',
-          'Too many requests': 'Muitas tentativas. Aguarde alguns minutos.',
+function translateError(msg: string): string {
+    const map: Record<string, string> = {
+          "Invalid login credentials": "E-mail ou senha incorretos.",
+          "Invalid email or password": "E-mail ou senha incorretos.",
+          "Email not confirmed": "Confirme o seu e-mail antes de entrar.",
+          "User not found": "Conta não encontrada.",
+          "Too many requests": "Muitas tentativas. Aguarde alguns minutos.",
+          "Email rate limit exceeded": "Muitas tentativas. Aguarde alguns minutos.",
+          "Failed to fetch": "Sem ligação. Verifique a internet.",
+          "Network error": "Erro de ligação. Verifique a internet.",
+          "Password is known to be weak": "Senha muito comum. Escolha outra.",
     };
-
-    return errorMap[error] || 'Erro ao entrar. Tente novamente.';
+    for (const [key, value] of Object.entries(map)) {
+          if (msg.toLowerCase().includes(key.toLowerCase())) return value;
+    }
+    return "Erro ao entrar. Tente novamente.";
 }
 
 function LoginPage() {
-  const t = useT();
-  const navigate = useNavigate();
-  const { redirect } = Route.useSearch();
-  const { session, loading: authLoading } = useAuth();
-
-  const [method, setMethod] = useState<"password" | "magic">("password");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [magicSent, setMagicSent] = useState(false);
+    const navigate = useNavigate();
+    const { redirect } = Route.useSearch();
+    const { session, loading: authLoading } = useAuth();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      if (authLoading || !session) return;
-      const dest = await resolveDestination(session.user.id, redirect);
-      navigate({ to: dest as any, replace: true });
-    })();
+        (async () => {
+                if (authLoading || !session) return;
+                const dest = await resolveDestination(session.user.id, redirect);
+                navigate({ to: dest as any, replace: true });
+        })();
   }, [session, authLoading, redirect, navigate]);
 
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
-    setLoading(false);
-    if (error) toast.error(t("login.fail"));
+        e.preventDefault();
+        if (!email) { toast.error("Digite o seu e-mail."); return; }
+        if (!password) { toast.error("Digite a sua senha."); return; }
+        setLoading(true);
+        const { error } = await supabase.auth.signInWithPassword({
+                email: email.trim().toLowerCase(),
+                password,
+        });
+        setLoading(false);
+        if (error) toast.error(translateError(error.message));
   };
-
-  const sendMagic = async () => {
-    if (!email) { toast.error(t("login.email")); return; }
-    setLoading(true);
-    const target = redirect ?? "/minha-agenda";
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
-      options: { emailRedirectTo: `${window.location.origin}${target}` },
-    });
-    setLoading(false);
-    if (error) toast.error("Não foi possível enviar o link.");
-    else setMagicSent(true);
-  };
-
-  if (magicSent) {
-    return (
-      <div className="min-h-screen grid place-items-center px-5 bg-background">
-        <div className="w-full max-w-sm text-center">
-          <div className="text-5xl mb-3">📧</div>
-          <h1 className="text-xl font-black">Verifique o seu email</h1>
-          <p className="text-sm text-muted-foreground mt-2">Enviámos um link de acesso para <strong>{email}</strong>.</p>
-          <button onClick={() => setMagicSent(false)} className="mt-4 text-xs underline text-muted-foreground">
-            Tentar novamente
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen grid place-items-center px-5 bg-background">
-      <div className="w-full max-w-sm">
-        <Link to="/" className="block mb-1">
-          <h1 className="text-3xl font-black">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
-        </Link>
-        <p className="text-sm text-muted-foreground mb-6">{t("login.title")}</p>
-
-        {!MAGIC_LINK_ENABLED ? null : (        <div className="flex gap-1 p-1 rounded-xl bg-muted mb-4">
-          <button onClick={() => setMethod("password")}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "password" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
-            🔑 Palavra-passe
-          </button>
-          <button onClick={() => setMethod("magic")}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "magic" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
-            ✉️ Link por email
-          </button>
-        </div>
-                                       )}
-
-
-        {!MAGIC_LINK_ENABLED && (
-                    <div style={{ background: "#FFF8E6", border: "1px solid #FFB34740", padding: "12px 16px", borderRadius: "6px", marginBottom: "16px" }}>
-                                      <p style={{ color: "#92600A", margin: 0, fontSize: "14px" }}>
-                                                          🔗 Link mágico temporariamente indisponível. Use e-mail e senha.
-                                      </p>
-                    </div>
-                  )}
-                  {!MAGIC_LINK_ENABLED || method === "password" ? (
-          <form onSubmit={submit} className="flex flex-col gap-3">
-            <input type="email" required placeholder={t("login.email")} value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="px-4 py-3 rounded-xl bg-card border border-card-border" />
-            <div style={{ position: "relative" }}>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder={t("login.password")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-card border border-card-border"
-                style={{ paddingRight: 44 }}
-              />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9E9E9E" }}>
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <Link to="/esqueci-senha" className="text-xs text-muted-foreground text-right hover:underline" style={{ textDecoration: "none" }}>
-              {t("login.forgotPassword")}
-            </Link>
-            <button disabled={loading || authLoading} className="btn-primary justify-center">
-              {loading ? t("login.submitting") : t("login.submit")}
-            </button>
-          </form>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <input type="email" required placeholder={t("login.email")} value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="px-4 py-3 rounded-xl bg-card border border-card-border" />
-            <button disabled={loading} onClick={sendMagic} className="btn-primary justify-center">
-              {loading ? "A enviar…" : "Enviar link de acesso"}
-            </button>
-            <p className="text-xs text-muted-foreground text-center">Receberá um link para entrar sem palavra-passe.</p>
-          </div>
-        )}
-
-        <p className="text-sm text-muted-foreground mt-5 text-center">
-          {t("login.noAccount")} <Link to={"/signup" as any} style={{ color: "var(--color-accent)" }}>{t("login.signup")}</Link>
-        </p>
-      </div>
-    </div>
-  );
-}
+        <div className="min-h-screen grid place-items-center px-5 bg-background">
+              <div className="w-full max-w-sm">
+                      <Link to="/" className="block mb-1">
+                                <h1 className="text-3xl font-black">
+                                            Host<span style={{ color: "var(--color-accent)" }}>lyb</span>span>
+                                </h1>h1>
+                      </Link>Link>
+                      <p className="text-sm text-muted-foreground mb-6">
+                                Entrar na sua conta
+                      </p>p>
+                      <div style={{
+                    background: "#FFF8E6",
+                    border: "1px solid #FFB34740",
+                    borderRadius: 10,
+                    padding: "10px 14px",
+                    marginBottom: 16,
+                    fontSize: 12,
+                    color: "#92600A",
+                    display: "flex",
+                    gap: 8,
+                    lineHeight: 1.5,
+        }}>
+                                <span>🔗</span>span>
+                                <span>
+                                            <strong>Link mágico temporariamente indisponível.</strong>strong>{" "}
+                                            Use e-mail e senha por enquanto.
+                                </span>span>
+                      </div>div>
+                      <form onSubmit={submit} className="flex flex-col gap-3">
+                                <div>
+                                            <label style={{ fontSize: 12, fontWeight: 700, display: "block", marginBottom: 5, color: "#212121" }}>
+                                                          E-MAIL
+                                            </label>label>
+                                            <input
+                                                            type="email"
+                                                            required
+                                                            placeholder="seu@email.com"
+                                                            value={email}
+                                                            onChange={(e) => setEmail(e.target.value)}
+                                                            autoComplete="email"
+                                                            className="w-full px-4 py-3 rounded-xl bg-card border border-card-border"
+                                                          />
+                                </div>div>
+                                <div>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+                                                          <label style={{ fontSize: 12, fontWeight: 700, color: "#212121" }}>
+                                                                          SENHA
+                                                          </label>label>
+                                                          <Link
+                                                                            to="/esqueci-senha"
+                                                                            style={{ fontSize: 12, color: "var(--color-accent)", textDecoration: "none", fontWeight: 600 }}
+                                                                          >
+                                                                          Esqueci a senha
+                                                          </Link>Link>
+                                            </div>div>
+                                            <div style={{ position: "relative" }}>
+                                                          <input
+                                                                            type={showPassword ? "text" : "password"}
+                                                                            required
+                                                                            placeholder="••••••••"
+                                                                            value={password}
+                                                                            onChange={(e) => setPassword(e.target.value)}
+                                                                            autoComplete="current-password"
+                                                                            className="w-full px-4 py-3 rounded-xl bg-card border border-card-border"
+                                                                            style={{ paddingRight: 44 }}
+                                                                          />
+                                                          <button
+                                                                            type="button"
+                                                                            onClick={() => setShowPassword(!showPassword)}
+                                                                            style={{
+                                                                                                position: "absolute", right: 12,
+                                                                                                top: "50%", transform: "translateY(-50%)",
+                                                                                                background: "none", border: "none",
+                                                                                                cursor: "pointer", color: "#9E9E9E",
+                                                                                                display: "flex", alignItems: "center",
+                                                                            }}
+                                                                          >
+                                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                          </button>button>
+                                            </div>div>
+                                </div>div>
+                                <button
+                                              type="submit"
+                                              disabled={loading || authLoading}
+                                              className="btn-primary justify-center"
+                                              style={{ opacity: loading ? 0.7 : 1 }}
+                                            >
+                                  {loading ? "A entrar…" : "Entrar"}
+                                </button>button>
+                      </form>form>
+                      <p className="text-sm text-muted-foreground mt-5 text-center">
+                                Não tem conta?{" "}
+                                <Link
+                                              to={"/inscrever-se" as any}
+                                              style={{ color: "var(--color-accent)", fontWeight: 700, textDecoration: "none" }}
+                                            >
+                                            Criar conta
+                                </Link>Link>
+                      </p>p>
+              </div>div>
+        </div>div>
+      );
+}</div>
