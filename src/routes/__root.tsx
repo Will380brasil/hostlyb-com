@@ -82,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Hostlyb — Short-Term Rental Management" },
       { name: "description", content: "Manage your short-term rental in 2 minutes a day. Cleaning photos by email, automatic alerts, iCal sync with Airbnb and Booking.com." },
       { name: "author", content: "Hostlyb" },
+      { name: "google-site-verification", content: "Ph9GgE8nOpuZCfmJbmq3yy_SHgqoGYlGKSh8XYKdKyk" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Hostlyb" },
       { name: "twitter:card", content: "summary_large_image" },
