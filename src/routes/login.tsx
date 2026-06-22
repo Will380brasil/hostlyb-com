@@ -8,6 +8,8 @@ import { Eye, EyeOff } from "lucide-react";
 
 type LoginSearch = { redirect?: string };
 
+const MAGIC_LINK_ENABLED = false;
+
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): LoginSearch => ({
     redirect: typeof s.redirect === "string" ? s.redirect : undefined,
@@ -20,6 +22,17 @@ async function resolveDestination(userId: string, fallback?: string) {
   if (fallback) return fallback;
   const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
   return data?.role === "cleaner" ? "/minha-agenda" : "/app";
+}
+
+function translateError(error: string): string {
+    const errorMap: Record<string, string> = {
+          'Invalid login credentials': 'E-mail ou senha incorretos.',
+          'Email not confirmed': 'Confirme o seu e-mail antes de entrar.',
+          'User not found': 'Conta não encontrada.',
+          'Too many requests': 'Muitas tentativas. Aguarde alguns minutos.',
+    };
+
+    return errorMap[error] || 'Erro ao entrar. Tente novamente.';
 }
 
 function LoginPage() {
@@ -87,7 +100,7 @@ function LoginPage() {
         </Link>
         <p className="text-sm text-muted-foreground mb-6">{t("login.title")}</p>
 
-        <div className="flex gap-1 p-1 rounded-xl bg-muted mb-4">
+        {!MAGIC_LINK_ENABLED ? null : (        <div className="flex gap-1 p-1 rounded-xl bg-muted mb-4">
           <button onClick={() => setMethod("password")}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "password" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
             🔑 Palavra-passe
@@ -97,8 +110,17 @@ function LoginPage() {
             ✉️ Link por email
           </button>
         </div>
+                                       )}
 
-        {method === "password" ? (
+
+        {!MAGIC_LINK_ENABLED && (
+                    <div style={{ background: "#FFF8E6", border: "1px solid #FFB34740", padding: "12px 16px", borderRadius: "6px", marginBottom: "16px" }}>
+                                      <p style={{ color: "#92600A", margin: 0, fontSize: "14px" }}>
+                                                          🔗 Link mágico temporariamente indisponível. Use e-mail e senha.
+                                      </p>p>
+                    </div>div>
+                  )}
+                  {method === "p!MAGIC_LINK_ENABLED || method === "password"assword" ? (
           <form onSubmit={submit} className="flex flex-col gap-3">
             <input type="email" required placeholder={t("login.email")} value={email}
               onChange={(e) => setEmail(e.target.value)}
