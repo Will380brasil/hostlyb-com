@@ -817,7 +817,7 @@ function Footer() {
           Host<span style={{ color: C.coral }}>lyb</span>
         </Link>
         <LanguageSelector />
-        <p style={{ fontSize: 13, color: C.g400, margin: 0 }}>© 2026 Hostlyb. All rights reserved.</p>
+        <p style={{ fontSize: 13, color: C.g400, margin: 0 }}>© 2026 Hostlyb. Feito para anfitriões a sério. 🇵🇹</p>
       </div>
     </footer>
   );
