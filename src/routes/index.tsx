@@ -9,8 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 const FAQ_ITEMS_SEO = [
   { q: "Preciso de cartão de crédito para começar?", a: "Não. O plano grátis é permanente e não exige cartão." },
-  { q: "Posso importar minhas reservas existentes?", a: "Sim. Importe uma planilha (Excel ou CSV) em segundos." },
-  { q: "A faxineira precisa baixar algum aplicativo?", a: "Não. Recebe um link único e acessa direto pelo navegador." },
+  { q: "Posso importar as minhas reservas existentes?", a: "Sim. Importa uma folha de cálculo (Excel ou CSV) em segundos." },
+  { q: "A faxineira precisa de instalar alguma app?", a: "Não. Recebe um link único e acede direto pelo navegador." },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
 ];
 
@@ -817,7 +817,7 @@ function Footer() {
           Host<span style={{ color: C.coral }}>lyb</span>
         </Link>
         <LanguageSelector />
-        <p style={{ fontSize: 13, color: C.g400, margin: 0 }}>© 2026 Hostlyb. All rights reserved.</p>
+        <p style={{ fontSize: 13, color: C.g400, margin: 0 }}>© 2026 Hostlyb. Feito para anfitriões a sério. 🇵🇹</p>
       </div>
     </footer>
   );

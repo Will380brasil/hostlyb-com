@@ -124,9 +124,9 @@ function LoginPage() {
 
           e.preventDefault();
 
-          if (!email) { toast.error("Digite o seu e-mail."); return; }
+          if (!email) { toast.error("Insira o seu e-mail."); return; }
 
-          if (!password) { toast.error("Digite a sua senha."); return; }
+          if (!password) { toast.error("Insira a sua palavra-passe."); return; }
 
           setLoading(true);
 
