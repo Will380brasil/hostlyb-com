@@ -182,13 +182,13 @@ function LoginPage() {
                         
                                   <h1 className="text-3xl font-black">
                                   
-                                              Host<span style={{ color: "var(--color-accent)" }}>lyb</span>span>
+                                              Host<span style={{ color: "var(--color-accent)" }}>lyb</span>
                                   
-                                  </h1>h1>
+                                  </h1>
                         
-                        </Link>Link>
+                        </Link>
                 
-                        <p className="text-sm text-muted-foreground mb-6">Entrar na sua conta</p>p>
+                        <p className="text-sm text-muted-foreground mb-6">Entrar na sua conta</p>
                 
                         <div style={{
               
@@ -200,11 +200,11 @@ function LoginPage() {
               
           }}>
                         
-                                  <span>🔗</span>span>
+                                  <span>🔗</span>
                         
-                                  <span><strong>Link mágico temporariamente indisponível.</strong>strong> Use e-mail e senha.</span>span>
+                                  <span><strong>Link mágico temporariamente indisponível.</strong> Use e-mail e senha.</span>
                         
-                        </div>div>
+                        </div>
                 
                         <form onSubmit={submit} className="flex flex-col gap-3">
                         
@@ -214,7 +214,7 @@ function LoginPage() {
                                               
                                                             E-MAIL
                                               
-                                              </label>label>
+                                              </label>
                                   
                                               <input
                                                   
@@ -228,21 +228,21 @@ function LoginPage() {
                                                   
                                               />
                                   
-                                  </div>div>
+                                  </div>
                         
                                   <div>
                                   
                                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
                                               
-                                                            <label style={{ fontSize: 12, fontWeight: 700, color: "#212121" }}>SENHA</label>label>
+                                                            <label style={{ fontSize: 12, fontWeight: 700, color: "#212121" }}>SENHA</label>
                                               
                                                             <Link to="/esqueci-senha" style={{ fontSize: 12, color: "var(--color-accent)", textDecoration: "none", fontWeight: 600 }}>
                                                             
                                                                             Esqueci a senha
                                                             
-                                                            </Link>Link>
+                                                            </Link>
                                               
-                                              </div>div>
+                                              </div>
                                   
                                               <div style={{ position: "relative" }}>
                                               
@@ -268,11 +268,11 @@ function LoginPage() {
                                                             
                                                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                                             
-                                                            </button>button>
+                                                            </button>
                                               
-                                              </div>div>
+                                              </div>
                                   
-                                  </div>div>
+                                  </div>
                         
                                   <button type="submit" disabled={loading || authLoading}
                                       
@@ -282,9 +282,9 @@ function LoginPage() {
                                   
                                       {loading ? "A entrar…" : "Entrar"}
                                   
-                                  </button>button>
+                                  </button>
                         
-                        </form>form>
+                        </form>
                 
                         <p className="text-sm text-muted-foreground mt-5 text-center">
                         
@@ -294,14 +294,14 @@ function LoginPage() {
                                   
                                               Criar conta
                                   
-                                  </Link>Link>
+                                  </Link>
                         
-                        </p>p>
+                        </p>
                 
-                </div>div>
+                </div>
           
-          </div>div>
+          </div>
       
         );
     
-}</div>
+}

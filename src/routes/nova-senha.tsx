@@ -74,10 +74,10 @@ function ResetPasswordPage() {
           return (
                     <div className="min-h-screen grid place-items-center bg-background">
             <div className="text-center">
-                      <div style={{ fontSize: 40, marginBottom: 12 }}>🔐</div>div>
-                      <p className="text-sm text-muted-foreground">A verificar link…</p>p>
-            </div>div>
-                    </div>div>
+                      <div style={{ fontSize: 40, marginBottom: 12 }}>🔐</div>
+                      <p className="text-sm text-muted-foreground">A verificar link…</p>
+            </div>
+                    </div>
                   );
   }
     
@@ -85,12 +85,12 @@ function ResetPasswordPage() {
               return (
                         <div className="min-h-screen grid place-items-center px-5 bg-background">
                                 <div className="w-full max-w-sm text-center">
-                                          <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>div>
-                                          <h2 className="text-xl font-black mb-2">Link inválido ou expirado</h2>h2>
+                                          <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>
+                                          <h2 className="text-xl font-black mb-2">Link inválido ou expirado</h2>
                                           <p className="text-sm text-muted-foreground mb-6" style={{ lineHeight: 1.7 }}>
                                                       Este link de recuperação não é válido ou já expirou.<br />
                                                       Peça um novo link de recuperação.
-                                          </p>p>
+                                          </p>
                                           <a
                                                           href="/esqueci-senha"
                                                           style={{
@@ -101,9 +101,9 @@ function ResetPasswordPage() {
                                                           }}
                                                         >
                                                       Pedir novo link
-                                          </a>a>
-                                </div>div>
-                        </div>div>
+                                          </a>
+                                </div>
+                        </div>
                       );
       }
     
@@ -111,11 +111,11 @@ function ResetPasswordPage() {
               return (
                         <div className="min-h-screen grid place-items-center bg-background">
                                 <div className="text-center">
-                                          <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>div>
-                                          <h2 className="text-xl font-black">Senha atualizada!</h2>h2>
-                                          <p className="text-sm text-muted-foreground mt-2">A redirecionar…</p>p>
-                                </div>div>
-                        </div>div>
+                                          <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>
+                                          <h2 className="text-xl font-black">Senha atualizada!</h2>
+                                          <p className="text-sm text-muted-foreground mt-2">A redirecionar…</p>
+                                </div>
+                        </div>
                       );
       }
     
@@ -123,16 +123,16 @@ function ResetPasswordPage() {
               <div className="min-h-screen grid place-items-center px-5 bg-background">
                     <div className="w-full max-w-sm">
                             <h1 className="text-3xl font-black mb-1">
-                                      Host<span style={{ color: "var(--color-accent)" }}>lyb</span>span>
-                            </h1>h1>
+                                      Host<span style={{ color: "var(--color-accent)" }}>lyb</span>
+                            </h1>
                             <p className="text-sm text-muted-foreground mb-6">
                                       Definir nova palavra-passe
-                            </p>p>
+                            </p>
                             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                                       <div>
                                                   <label style={{ fontSize: 12, fontWeight: 700, display: "block", marginBottom: 5, color: "#212121" }}>
                                                                 NOVA SENHA
-                                                  </label>label>
+                                                  </label>
                                                   <div style={{ position: "relative" }}>
                                                                 <input
                                                                                     type={showPassword ? "text" : "password"}
@@ -155,8 +155,8 @@ function ResetPasswordPage() {
                                                                                         }}
                                                                                   >
                                                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                                </button>button>
-                                                  </div>div>
+                                                                </button>
+                                                  </div>
                                           {password && (
                                 <div style={{ marginTop: 6 }}>
                                                 <div style={{ display: "flex", gap: 4 }}>
@@ -167,17 +167,17 @@ function ResetPasswordPage() {
                                                                                   transition: "background 0.3s",
                                                         }} />
                                                       ))}
-                                                </div>div>
+                                                </div>
                                                 <div style={{ fontSize: 11, color: strength.color, fontWeight: 600, marginTop: 3 }}>
                                                     {strength.label}
-                                                </div>div>
-                                </div>div>
+                                                </div>
+                                </div>
                                                   )}
-                                      </div>div>
+                                      </div>
                                       <div>
                                                   <label style={{ fontSize: 12, fontWeight: 700, display: "block", marginBottom: 5, color: "#212121" }}>
                                                                 CONFIRMAR SENHA
-                                                  </label>label>
+                                                  </label>
                                                   <input
                                                                     type={showPassword ? "text" : "password"}
                                                                     placeholder="Repita a senha"
@@ -191,14 +191,14 @@ function ResetPasswordPage() {
                                           {confirm && confirm !== password && (
                                 <p style={{ fontSize: 12, color: "#FF6B6B", marginTop: 4 }}>
                                                 ⚠ As senhas não coincidem
-                                </p>p>
+                                </p>
                                                   )}
                                           {confirm && confirm === password && password.length >= 6 && (
                                 <p style={{ fontSize: 12, color: "#00C896", marginTop: 4 }}>
                                                 ✓ Senhas coincidem
-                                </p>p>
+                                </p>
                                                   )}
-                                      </div>div>
+                                      </div>
                                       <button
                                                       type="submit"
                                                       disabled={loading || password.length < 6 || password !== confirm}
@@ -208,16 +208,16 @@ function ResetPasswordPage() {
                                                       }}
                                                     >
                                           {loading ? "A guardar…" : "✅ Definir nova senha"}
-                                      </button>button>
+                                      </button>
                                       <a
                                                       href="/login"
                                                       className="text-center text-sm text-muted-foreground"
                                                       style={{ textDecoration: "none" }}
                                                     >
                                                   ← Voltar ao login
-                                      </a>a>
-                            </form>form>
-                    </div>div>
-              </div>div>
+                                      </a>
+                            </form>
+                    </div>
+              </div>
             );
-}</div>
+}
