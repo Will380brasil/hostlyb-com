@@ -20,7 +20,7 @@ function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
             e.preventDefault();
-            if (!email) { toast.error("Digite o seu e-mail."); return; }
+            if (!email) { toast.error("Insira o seu e-mail."); return; }
             setLoading(true);
             try {
                         const { error } = await supabase.auth.resetPasswordForEmail(
@@ -80,7 +80,7 @@ function ForgotPasswordPage() {
                                 </p>
                                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                                           <p className="text-sm text-muted-foreground">
-                                                      Digite o seu e-mail e enviaremos um link para redefinir a senha.
+                                                      Insira o seu e-mail e enviamos-lhe um link para redefinir a palavra-passe.
                                           </p>
                                           <div>
                                                       <label style={{ fontSize: 12, fontWeight: 700, display: "block", marginBottom: 5, color: "#212121" }}>

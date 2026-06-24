@@ -136,7 +136,7 @@ function ResetPasswordPage() {
                                                   <div style={{ position: "relative" }}>
                                                                 <input
                                                                                     type={showPassword ? "text" : "password"}
-                                                                                    placeholder="Mínimo 6 caracteres"
+                                                                                    placeholder="•••••••• (mín. 6 caracteres)"
                                                                                     value={password}
                                                                                     onChange={(e) => setPassword(e.target.value)}
                                                                                     autoFocus
@@ -180,7 +180,7 @@ function ResetPasswordPage() {
                                                   </label>
                                                   <input
                                                                     type={showPassword ? "text" : "password"}
-                                                                    placeholder="Repita a senha"
+                                                                    placeholder="Repita a palavra-passe"
                                                                     value={confirm}
                                                                     onChange={(e) => setConfirm(e.target.value)}
                                                                     className="w-full px-4 py-3 rounded-xl bg-card border border-card-border"
