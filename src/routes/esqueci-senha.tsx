@@ -43,13 +43,13 @@ function ForgotPasswordPage() {
             return (
                         <div className="min-h-screen grid place-items-center px-5 bg-background">
                                 <div className="w-full max-w-sm text-center">
-                                          <div style={{ fontSize: 56, marginBottom: 16 }}>📧</div>div>
-                                          <h1 className="text-xl font-black mb-2">Verifique o seu e-mail</h1>h1>
+                                          <div style={{ fontSize: 56, marginBottom: 16 }}>📧</div>
+                                          <h1 className="text-xl font-black mb-2">Verifique o seu e-mail</h1>
                                           <p className="text-sm text-muted-foreground" style={{ lineHeight: 1.7 }}>
                                                       Enviámos um link para{" "}
-                                                      <strong style={{ color: "#212121" }}>{email}</strong>strong>.<br />
+                                                      <strong style={{ color: "#212121" }}>{email}</strong>.<br />
                                                       Verifique também a pasta de spam.
-                                          </p>p>
+                                          </p>
                                           <Link
                                                             to="/login"
                                                             style={{
@@ -61,9 +61,9 @@ function ForgotPasswordPage() {
                                                             }}
                                                           >
                                                       ← Voltar ao login
-                                          </Link>Link>
-                                </div>div>
-                        </div>div>
+                                          </Link>
+                                </div>
+                        </div>
                       );
   }
       
@@ -72,20 +72,20 @@ function ForgotPasswordPage() {
                         <div className="w-full max-w-sm">
                 <Link to="/" className="block mb-1">
                           <h1 className="text-3xl font-black">
-                                      Host<span style={{ color: "var(--color-accent)" }}>lyb</span>span>
-                          </h1>h1>
-                </Link>Link>
+                                      Host<span style={{ color: "var(--color-accent)" }}>lyb</span>
+                          </h1>
+                </Link>
                                 <p className="text-sm text-muted-foreground mb-6">
                                           Recuperar palavra-passe
-                                </p>p>
+                                </p>
                                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                                           <p className="text-sm text-muted-foreground">
                                                       Digite o seu e-mail e enviaremos um link para redefinir a senha.
-                                          </p>p>
+                                          </p>
                                           <div>
                                                       <label style={{ fontSize: 12, fontWeight: 700, display: "block", marginBottom: 5, color: "#212121" }}>
                                                                     E-MAIL
-                                                      </label>label>
+                                                      </label>
                                                       <input
                                                                           type="email"
                                                                           placeholder="seu@email.com"
@@ -94,7 +94,7 @@ function ForgotPasswordPage() {
                                                                           autoFocus
                                                                           className="w-full px-4 py-3 rounded-xl bg-card border border-card-border"
                                                                         />
-                                          </div>div>
+                                          </div>
                                           <button
                                                             type="submit"
                                                             disabled={loading}
@@ -102,16 +102,16 @@ function ForgotPasswordPage() {
                                                             style={{ opacity: loading ? 0.7 : 1 }}
                                                           >
                                                 {loading ? "A enviar…" : "📧 Enviar link de recuperação"}
-                                          </button>button>
+                                          </button>
                                           <Link
                                                             to="/login"
                                                             className="text-center text-sm text-muted-foreground"
                                                             style={{ textDecoration: "none" }}
                                                           >
                                                       ← Voltar ao login
-                                          </Link>Link>
-                                </form>form>
-                        </div>div>
-                  </div>div>
+                                          </Link>
+                                </form>
+                        </div>
+                  </div>
                 );
-}</div>
+}
