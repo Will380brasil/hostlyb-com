@@ -1,11 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Home as HomeIcon, Check, X, ArrowRight, Plus, Minus, Star } from "lucide-react";
-import { useLocale, PLAN_PRICE, type Currency } from "@/lib/i18n";
-import { LANDING_COPY } from "@/lib/landing-copy";
+import { Home as HomeIcon, ArrowRight, Camera, Bell, CheckCircle2, AlertTriangle, Star } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
+import { buildLandingHead } from "@/lib/landing-head";
 
 const FAQ_ITEMS_SEO = [
   { q: "Preciso de cartão de crédito para começar?", a: "Não. O plano grátis é permanente e não exige cartão." },
@@ -19,35 +18,19 @@ const OG_IMAGE = `${BASE_URL}/og-cover.jpg`;
 
 const META_BY_LANG: Record<string, { title: string; description: string; keywords: string }> = {
   pt: {
-    title: "Hostlyb | Gestão de Alojamento Local — Simples e Rápido",
-    description: "Gira o seu alojamento local em 2 minutos por dia. Fotos de limpeza enviadas por email, alertas automáticos, sincronização com Airbnb e Booking.com. Grátis até 1 imóvel.",
-    keywords: "gestão alojamento local, app anfitrião, sincronização airbnb booking, checklist limpeza fotos, gestão hóspedes, software alojamento",
+    title: "Hostlyb | O seu Airbnb, finalmente organizado.",
+    description: "Pare de gerir o seu Airbnb pelo WhatsApp. Fotos de limpeza, alertas e calendário num só sítio. Grátis até 1 imóvel.",
+    keywords: "gestão alojamento local, app anfitrião, sincronização airbnb booking, checklist limpeza fotos",
   },
   en: {
-    title: "Hostlyb | Short-Term Rental Management — Simple & Fast",
-    description: "Manage your short-term rental in 2 minutes a day. Cleaning photos sent to your email, automatic alerts, iCal sync with Airbnb and Booking.com. Free up to 1 property.",
-    keywords: "short term rental management, vacation rental software, airbnb calendar sync, cleaning checklist app, host management software, rental property manager",
+    title: "Hostlyb | Your Airbnb, finally organized.",
+    description: "Stop running your Airbnb on WhatsApp. Cleaning photos, alerts, and calendar in one place. Free up to 1 property.",
+    keywords: "short term rental management, vacation rental software, airbnb calendar sync, cleaning checklist",
   },
-  fr: {
-    title: "Hostlyb | Gestion Location Courte Durée — Simple et Rapide",
-    description: "Gérez votre location courte durée en 2 minutes. Photos de ménage envoyées par email, alertes automatiques, sync Airbnb et Booking.com. Gratuit jusqu'à 1 logement.",
-    keywords: "gestion location courte durée, logiciel location vacances, sync calendrier airbnb, checklist ménage, gestion hôtes, conciergerie airbnb",
-  },
-  de: {
-    title: "Hostlyb | Ferienwohnung Verwaltung — Einfach & Schnell",
-    description: "Verwalten Sie Ihre Ferienwohnung in 2 Minuten. Reinigungsfotos per Email, automatische Benachrichtigungen, iCal-Sync mit Airbnb und Booking.com. Kostenlos bis 1 Objekt.",
-    keywords: "ferienwohnung verwaltung, vermietung software, airbnb kalender sync, reinigungs checkliste, gastgeber app, kurzzeitvermietung",
-  },
-  it: {
-    title: "Hostlyb | Gestione Affitti Brevi — Semplice e Veloce",
-    description: "Gestisci i tuoi affitti brevi in 2 minuti al giorno. Foto delle pulizie via email, avvisi automatici, sincronizzazione iCal con Airbnb e Booking.com. Gratis fino a 1 immobile.",
-    keywords: "gestione affitti brevi, software locazioni turistiche, sync calendario airbnb, checklist pulizie, gestione ospiti, app host airbnb",
-  },
-  es: {
-    title: "Hostlyb | Gestión Alojamiento Local — Simple y Rápido",
-    description: "Gestiona tu alquiler vacacional en 2 minutos al día. Fotos de limpieza por email, alertas automáticas, sincronización iCal con Airbnb y Booking.com. Gratis hasta 1 propiedad.",
-    keywords: "gestión alquiler vacacional, software alojamiento, sync calendario airbnb, checklist limpieza, gestión huéspedes, app anfitrión",
-  },
+  fr: { title: "Hostlyb | Votre Airbnb, enfin organisé.", description: "Arrêtez de gérer votre Airbnb sur WhatsApp.", keywords: "gestion location courte durée" },
+  de: { title: "Hostlyb | Ihr Airbnb, endlich organisiert.", description: "Hören Sie auf, Ihr Airbnb über WhatsApp zu verwalten.", keywords: "ferienwohnung verwaltung" },
+  it: { title: "Hostlyb | Il tuo Airbnb, finalmente organizzato.", description: "Smetti di gestire il tuo Airbnb su WhatsApp.", keywords: "gestione affitti brevi" },
+  es: { title: "Hostlyb | Tu Airbnb, por fin organizado.", description: "Deja de gestionar tu Airbnb por WhatsApp.", keywords: "gestión alquiler vacacional" },
 };
 
 const LANGS = ["pt", "en", "es", "fr", "it", "de"] as const;
@@ -66,20 +49,8 @@ const JSON_LD = {
       "offers": [
         { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR", "url": `${BASE_URL}/signup` },
         { "@type": "Offer", "name": "Pro", "price": "14", "priceCurrency": "EUR", "url": `${BASE_URL}/signup` },
-        { "@type": "Offer", "name": "Premium", "price": "29", "priceCurrency": "EUR", "url": `${BASE_URL}/signup` },
       ],
       "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "2400", "bestRating": "5", "worstRating": "1" },
-    },
-    {
-      "@type": "Organization",
-      "name": "Hostlyb",
-      "url": BASE_URL,
-      "logo": `${BASE_URL}/icon-512.png`,
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "email": "support@hostlyb.com",
-        "contactType": "customer support",
-      },
     },
     {
       "@type": "FAQPage",
@@ -92,32 +63,48 @@ const JSON_LD = {
   ],
 };
 
-import { buildLandingHead } from "@/lib/landing-head";
-
 export const Route = createFileRoute("/")({
   head: () => buildLandingHead("pt"),
   component: LandingPage,
 });
 
-
+/* ============================================================
+   Design tokens
+   ============================================================ */
 const C = {
-  coral: "#FF6B6B", coralDark: "#E85555", coralLight: "#FFE8E8", coralGlow: "rgba(255,107,107,0.28)",
-  white: "#FFFFFF", offWhite: "#FAFAFA",
-  g50: "#F7F7F7", g100: "#EFEFEF", g200: "#E0E0E0", g300: "#CFCFCF",
-  g400: "#9E9E9E", g600: "#616161", g800: "#212121", black: "#111111",
-  emerald: "#00C896", emeraldLight: "#E6FAF4",
+  coral: "#FF6B6B",
+  coralDark: "#E85555",
+  coralSoft: "#FFE8E8",
+  coralGlow: "rgba(255,107,107,0.28)",
+  black: "#111111",
+  ink: "#1A1A1A",
+  muted: "#9E9E9E",
+  sub: "#616161",
+  line: "#EFEFEF",
+  white: "#FFFFFF",
+  off: "#FAFAFA",
 };
 
-const displayFont = `'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif`;
+const display = `'Bricolage Grotesque', 'Plus Jakarta Sans', system-ui, sans-serif`;
+const body = `'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`;
 
+/* ============================================================
+   Hooks
+   ============================================================ */
 function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.12 });
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-visible");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
@@ -136,714 +123,790 @@ function useAnalytics() {
   }, []);
 }
 
-function StartFreeButton({ big, location }: { big?: boolean; location: string }) {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  return (
-    <Link
-      to={"/signup" as any}
-      data-cta-location={location}
-      className="btn-coral"
-      style={{
-        background: C.coral, color: "#fff", borderRadius: 999,
-        padding: big ? "18px 36px" : "12px 24px",
-        fontWeight: 800, fontSize: big ? 17 : 14,
-        boxShadow: big ? `0 14px 40px ${C.coralGlow}` : `0 6px 22px ${C.coralGlow}`,
-        display: "inline-flex", alignItems: "center", gap: 10,
-        textDecoration: "none", border: 0, transition: "all .2s ease",
-      }}
-    >
-      {big ? copy.hero.cta : copy.ctaPrimary} <ArrowRight size={big ? 20 : 16} />
-    </Link>
-  );
+function useCountUp(end: number, durationMs = 1400) {
+  const [val, setVal] = useState(0);
+  const ref = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    let started = false;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !started) {
+          started = true;
+          const start = performance.now();
+          const tick = (now: number) => {
+            const p = Math.min(1, (now - start) / durationMs);
+            const eased = 1 - Math.pow(1 - p, 3);
+            setVal(Math.round(end * eased));
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      });
+    }, { threshold: 0.4 });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [end, durationMs]);
+  return { ref, val };
 }
 
+/* ============================================================
+   Navbar
+   ============================================================ */
 function Navbar() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   const { session } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > 80);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   const navigate = useNavigate();
-  const onLogoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (session) { navigate({ to: "/app" as any }); return; }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
   return (
-    <header style={{
-      position: "sticky", top: 0, zIndex: 50, height: 68,
-      background: scrolled ? "rgba(255,255,255,0.92)" : "#fff",
-      backdropFilter: scrolled ? "blur(14px)" : "none",
-      WebkitBackdropFilter: scrolled ? "blur(14px)" : "none",
-      boxShadow: scrolled ? `0 1px 0 ${C.g100}` : "none",
-      transition: "all .2s ease",
-    }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="#" onClick={onLogoClick} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 24, fontWeight: 800, color: C.black, textDecoration: "none", cursor: "pointer" }}>
-          <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
-            <HomeIcon size={18} color={C.coral} />
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        height: 72,
+        background: scrolled ? "rgba(255,255,255,0.78)" : "transparent",
+        backdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none",
+        WebkitBackdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none",
+        borderBottom: scrolled ? `1px solid ${C.line}` : "1px solid transparent",
+        transition: "all .25s ease",
+      }}
+    >
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a
+          href="/"
+          onClick={(e) => { e.preventDefault(); if (session) navigate({ to: "/app" as any }); else window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: display, fontSize: 22, fontWeight: 800, color: C.black, textDecoration: "none", letterSpacing: "-0.02em" }}
+        >
+          <span style={{ display: "grid", placeItems: "center", width: 30, height: 30, borderRadius: 8, background: C.coral }}>
+            <HomeIcon size={16} color="#fff" />
           </span>
-          Host<span style={{ color: C.coral }}>lyb</span>
+          Hostlyb
         </a>
+        <nav className="nav-links" style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          <a href="#features" style={navLink}>Funcionalidades</a>
+          <a href="#testimonials" style={navLink}>Anfitriões</a>
+          <a href="#pricing" style={navLink}>Preços</a>
+        </nav>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <LanguageSelector compact />
           <Link
             to={session ? ("/app" as any) : ("/login" as any)}
-            style={{
-              color: C.g800, fontSize: 14, fontWeight: 700,
-              padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${C.g200}`,
-              textDecoration: "none", transition: "all .15s ease",
-            }}
-            className="login-link"
+            style={{ color: C.black, fontSize: 14, fontWeight: 600, padding: "9px 18px", textDecoration: "none" }}
           >
-            {copy.loginBtn}
+            Entrar
+          </Link>
+          <Link
+            to={"/signup" as any}
+            data-cta-location="nav"
+            style={{ background: C.black, color: "#fff", fontSize: 14, fontWeight: 600, padding: "10px 18px", borderRadius: 8, textDecoration: "none", transition: "all .15s ease" }}
+            className="nav-cta"
+          >
+            Começar grátis
           </Link>
         </div>
       </div>
-      <style>{`.login-link:hover { border-color: ${C.coral}; color: ${C.coral}; }`}</style>
+      <style>{`
+        .nav-cta:hover { background: ${C.coral}; }
+        @media (max-width: 880px) { .nav-links { display: none !important; } }
+      `}</style>
     </header>
   );
 }
+const navLink: React.CSSProperties = { color: C.sub, fontSize: 14, fontWeight: 500, textDecoration: "none", transition: "color .15s" };
 
-/* ============ HERO with animated phone mockup ============ */
-function PhoneMockup({ labels }: { labels: { d: string; c: string; cal: string } }) {
-  const [screen, setScreen] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setScreen((s) => (s + 1) % 3), 2800);
-    return () => clearInterval(id);
-  }, []);
+/* ============================================================
+   HERO
+   ============================================================ */
+function Hero() {
+  return (
+    <section style={{ position: "relative", padding: "80px 24px 120px", overflow: "hidden" }}>
+      {/* subtle background gradient */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", top: -200, right: -200, width: 700, height: 700,
+          background: `radial-gradient(closest-side, ${C.coralGlow}, transparent 70%)`,
+          filter: "blur(60px)", zIndex: 0, pointerEvents: "none",
+        }}
+      />
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 64, alignItems: "center" }} className="hero-grid">
+        <div>
+          <div className="hero-step" style={{ "--d": "0ms" } as any}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px",
+              borderRadius: 999, background: C.coralSoft, color: C.coral, fontSize: 13, fontWeight: 600,
+              marginBottom: 28,
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: C.coral }} />
+              Novo · Versão 2.0 disponível
+            </span>
+          </div>
+
+          <h1
+            className="hero-step hero-h1"
+            style={{
+              "--d": "100ms",
+              fontFamily: display, fontWeight: 900, color: C.black,
+              fontSize: "clamp(42px, 6.5vw, 72px)", lineHeight: 1.02,
+              letterSpacing: "-0.035em", margin: "0 0 28px",
+            } as any}
+          >
+            O seu Airbnb,<br />finalmente<br /><span style={{ color: C.coral }}>organizado.</span>
+          </h1>
+
+          <p
+            className="hero-step"
+            style={{
+              "--d": "200ms",
+              fontSize: 18, color: C.sub, maxWidth: 480, margin: "0 0 36px", lineHeight: 1.6,
+            } as any}
+          >
+            Chega de WhatsApp às 23h. Chega de Excel.<br />Chega de surpresas.
+          </p>
+
+          <div className="hero-step" style={{ "--d": "300ms", display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 28 } as any}>
+            <Link
+              to={"/signup" as any}
+              data-cta-location="hero-primary"
+              style={{
+                background: C.coral, color: "#fff",
+                padding: "16px 28px", borderRadius: 12, fontSize: 15, fontWeight: 700,
+                textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 10,
+                boxShadow: `0 10px 30px ${C.coralGlow}`, transition: "all .2s ease",
+              }}
+              className="cta-primary"
+            >
+              Começar grátis — sem cartão <ArrowRight size={18} />
+            </Link>
+            <a
+              href="#features"
+              style={{
+                background: "transparent", color: C.black,
+                padding: "16px 24px", borderRadius: 12, fontSize: 15, fontWeight: 600,
+                textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8,
+                border: `1px solid ${C.line}`, transition: "all .15s ease",
+              }}
+              className="cta-ghost"
+            >
+              Ver como funciona
+            </a>
+          </div>
+
+          <div className="hero-step" style={{ "--d": "400ms", display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: C.sub, fontWeight: 500 } as any}>
+            <span style={{ color: C.coral, letterSpacing: 1 }}>★★★★★</span>
+            <span><strong style={{ color: C.black }}>4.9</strong> · 2.400 anfitriões em 12 países</span>
+          </div>
+        </div>
+
+        <div style={{ position: "relative", minHeight: 480 }}>
+          <NotificationStack />
+        </div>
+      </div>
+
+      <style>{`
+        .hero-step { opacity: 0; transform: translateY(20px); animation: heroIn .8s cubic-bezier(0.16,1,0.3,1) forwards; animation-delay: var(--d, 0ms); }
+        @keyframes heroIn { to { opacity: 1; transform: translateY(0); } }
+        .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px ${C.coralGlow}; }
+        .cta-ghost:hover { border-color: ${C.black}; }
+        @media (max-width: 960px) {
+          .hero-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+/* ============================================================
+   Notification cards (right side of hero)
+   ============================================================ */
+function NotificationStack() {
+  const cards = [
+    {
+      icon: <CheckCircle2 size={20} color="#fff" />, iconBg: "#00C896",
+      title: "Limpeza concluída", meta: "Studio Paris · agora",
+      delay: "600ms", top: 20, left: 0, rotate: -3,
+    },
+    {
+      icon: <AlertTriangle size={20} color="#fff" />, iconBg: "#FF9F1C",
+      title: "Checkout amanhã", meta: "Apt Marais 3B · 11:00",
+      delay: "900ms", top: 160, left: 80, rotate: 2,
+    },
+    {
+      icon: <Camera size={20} color="#fff" />, iconBg: C.coral,
+      title: "6 fotos enviadas", meta: "Ana Costa · há 2 min",
+      delay: "1200ms", top: 320, left: 20, rotate: -1,
+    },
+  ];
+  return (
+    <div style={{ position: "relative", width: "100%", maxWidth: 460, margin: "0 auto", height: 480 }}>
+      {cards.map((c, i) => (
+        <div
+          key={i}
+          className="notif-card"
+          style={{
+            position: "absolute", top: c.top, left: c.left, right: 0,
+            background: "#fff", borderRadius: 16, padding: 18,
+            boxShadow: "0 20px 50px rgba(17,17,17,0.12), 0 0 0 1px rgba(17,17,17,0.04)",
+            display: "flex", alignItems: "center", gap: 14,
+            opacity: 0,
+            animation: `notifIn .7s cubic-bezier(0.16,1,0.3,1) forwards, notifFloat 5s ease-in-out infinite ${1500 + i * 500}ms`,
+            animationDelay: `${c.delay}, ${1500 + i * 500}ms`,
+            transform: `rotate(${c.rotate}deg)`,
+            transformOrigin: "center",
+          } as any}
+        >
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: c.iconBg, display: "grid", placeItems: "center", flexShrink: 0 }}>
+            {c.icon}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.black }}>{c.title}</p>
+            <p style={{ margin: "2px 0 0", fontSize: 13, color: C.muted }}>{c.meta}</p>
+          </div>
+        </div>
+      ))}
+      <style>{`
+        @keyframes notifIn {
+          from { opacity: 0; transform: translateY(20px) rotate(0deg); }
+          to { opacity: 1; }
+        }
+        @keyframes notifFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        .notif-card { will-change: transform; }
+      `}</style>
+    </div>
+  );
+}
+
+/* ============================================================
+   Social proof bar
+   ============================================================ */
+function SocialProofBar() {
+  const flags = ["🇵🇹", "🇫🇷", "🇩🇪", "🇪🇸", "🇮🇹", "🇬🇧", "🇧🇷", "🇺🇸", "🇳🇱", "🇧🇪", "🇦🇹", "🇨🇭"];
+  return (
+    <section style={{ background: C.off, padding: "48px 24px", borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` }} data-reveal>
+      <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          Confiado por anfitriões em 12 países
+        </p>
+        <div style={{ marginTop: 20, display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", fontSize: 28 }}>
+          {flags.map((f) => <span key={f}>{f}</span>)}
+        </div>
+        <div style={{ marginTop: 24, display: "inline-flex", alignItems: "center", gap: 10, color: C.sub, fontSize: 14, fontWeight: 500 }}>
+          <span style={{ color: C.coral, letterSpacing: 1.5 }}>★★★★★</span>
+          <span><strong style={{ color: C.black }}>4.9</strong> · 847 avaliações verificadas</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   Problem / Pain
+   ============================================================ */
+function Problem() {
+  const pains = [
+    { emoji: "😰", text: "Não sabe se a limpeza foi feita" },
+    { emoji: "📋", text: "Controla tudo em Excel" },
+    { emoji: "😱", text: "Descobre os problemas quando o hóspede reclama" },
+  ];
+  return (
+    <section style={{ padding: "120px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <h2 data-reveal style={{
+          fontFamily: display, fontWeight: 800, color: C.black,
+          fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.025em",
+          textAlign: "center", maxWidth: 800, margin: "0 auto 64px",
+        }}>
+          Ainda a gerir o seu Airbnb<br /><span style={{ color: C.coral }}>pelo WhatsApp?</span>
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="pain-grid">
+          {pains.map((p, i) => (
+            <div
+              key={i}
+              data-reveal
+              style={{
+                background: C.off, borderRadius: 20, padding: 36,
+                textAlign: "center", border: `1px solid ${C.line}`,
+                transitionDelay: `${i * 100}ms`,
+              }}
+            >
+              <div style={{ fontSize: 56, marginBottom: 20, lineHeight: 1 }}>{p.emoji}</div>
+              <p style={{ margin: 0, fontSize: 18, fontWeight: 600, color: C.black, lineHeight: 1.4 }}>{p.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <style>{`@media(max-width:780px){.pain-grid{grid-template-columns:1fr !important}}`}</style>
+    </section>
+  );
+}
+
+/* ============================================================
+   Features (alternating)
+   ============================================================ */
+function FeatureRow({ kicker, title, body: text, mockup, reverse }: { kicker: string; title: string; body: string; mockup: React.ReactNode; reverse?: boolean }) {
+  return (
+    <div
+      data-reveal
+      style={{
+        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center",
+        direction: reverse ? "rtl" : "ltr",
+      }}
+      className="feature-row"
+    >
+      <div style={{ direction: "ltr" }}>
+        <p style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: C.coral, textTransform: "uppercase", letterSpacing: "0.1em" }}>{kicker}</p>
+        <h3 style={{
+          fontFamily: display, fontWeight: 800, color: C.black,
+          fontSize: "clamp(28px, 4vw, 40px)", lineHeight: 1.1, letterSpacing: "-0.025em",
+          margin: "0 0 20px",
+        }}>{title}</h3>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: C.sub }}>{text}</p>
+      </div>
+      <div style={{ direction: "ltr", display: "grid", placeItems: "center" }}>{mockup}</div>
+    </div>
+  );
+}
+
+function MockupChecklist() {
   return (
     <div style={{
-      position: "relative", width: "min(280px, 80vw)", height: 560,
-      borderRadius: 44, background: "#1a1a1a", padding: 12,
-      boxShadow: `0 40px 80px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.04)`,
-      margin: "0 auto",
+      width: 280, height: 540, borderRadius: 40, background: "#0F0F0F", padding: 10,
+      boxShadow: "0 30px 80px rgba(17,17,17,0.18), 0 0 0 6px rgba(17,17,17,0.03)",
     }}>
-      {/* notch */}
-      <div style={{ position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)", width: 100, height: 22, background: "#000", borderRadius: 12, zIndex: 3 }} />
-      <div style={{
-        position: "relative", width: "100%", height: "100%",
-        borderRadius: 34, overflow: "hidden", background: "#fff",
-      }}>
-        {[0, 1, 2].map((i) => (
-          <div key={i} style={{
-            position: "absolute", inset: 0, opacity: screen === i ? 1 : 0,
-            transition: "opacity .6s ease",
-          }}>
-            {i === 0 && <ScreenDashboard label={labels.d} />}
-            {i === 1 && <ScreenCleanings label={labels.c} />}
-            {i === 2 && <ScreenCalendar label={labels.cal} />}
-          </div>
-        ))}
-      </div>
-      {/* tab dots */}
-      <div style={{ position: "absolute", bottom: -28, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 6 }}>
-        {[0, 1, 2].map((i) => (
-          <div key={i} style={{
-            width: screen === i ? 20 : 6, height: 6, borderRadius: 999,
-            background: screen === i ? C.coral : C.g200, transition: "all .3s ease",
-          }} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ScreenHeader({ label }: { label: string }) {
-  return (
-    <div style={{ padding: "40px 18px 12px", borderBottom: `1px solid ${C.g100}` }}>
-      <p style={{ fontSize: 11, color: C.g400, margin: 0, fontWeight: 600 }}>Hostlyb</p>
-      <h4 style={{ fontFamily: displayFont, fontSize: 19, fontWeight: 800, color: C.black, margin: "2px 0 0" }}>{label}</h4>
-    </div>
-  );
-}
-
-function ScreenDashboard({ label }: { label: string }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: C.offWhite }}>
-      <ScreenHeader label={label} />
-      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ width: "100%", height: "100%", background: "#fff", borderRadius: 32, overflow: "hidden", padding: "40px 18px 18px" }}>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Limpeza · Studio Paris</p>
+        <h4 style={{ fontFamily: display, fontSize: 20, fontWeight: 800, color: C.black, margin: "4px 0 16px" }}>Checklist</h4>
         {[
-          { name: "Lisbon Loft", status: "✓ Limpo", color: C.emerald },
-          { name: "Beach Villa", status: "🧹 Limpando", color: C.coral },
-          { name: "Downtown #2", status: "✓ Limpo", color: C.emerald },
-        ].map((p) => (
-          <div key={p.name} style={{ background: "#fff", borderRadius: 12, padding: 12, border: `1px solid ${C.g100}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.g800 }}>{p.name}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: p.color }}>{p.status}</span>
-          </div>
-        ))}
-        <div style={{ background: "linear-gradient(135deg,#FF6B6B,#FF8E53)", borderRadius: 14, padding: 14, color: "#fff", marginTop: 6 }}>
-          <p style={{ margin: 0, fontSize: 11, opacity: 0.9 }}>Receita do mês</p>
-          <p style={{ margin: "2px 0 0", fontFamily: displayFont, fontSize: 22, fontWeight: 800 }}>R$ 8.420</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ScreenCleanings({ label }: { label: string }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: C.offWhite }}>
-      <ScreenHeader label={label} />
-      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ background: "#fff", borderRadius: 12, padding: 12, border: `1px solid ${C.g100}` }}>
-          <p style={{ fontSize: 13, fontWeight: 700, color: C.g800, margin: 0 }}>Beach Villa · Quarto</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 8 }}>
-            {[1, 2].map((i) => (
-              <div key={i} style={{ aspectRatio: "1", borderRadius: 8, background: `linear-gradient(135deg, #FFD9D9, #FF9999)`, display: "grid", placeItems: "center", color: "#fff", fontSize: 18 }}>📷</div>
-            ))}
-          </div>
-        </div>
-        {["Quarto principal", "Cozinha", "Banheiro"].map((r) => (
-          <div key={r} style={{ background: "#fff", borderRadius: 10, padding: "10px 12px", border: `1px solid ${C.g100}`, display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 18, height: 18, borderRadius: 6, background: C.emerald, display: "grid", placeItems: "center" }}>
-              <Check size={12} color="#fff" />
-            </div>
-            <span style={{ fontSize: 12, color: C.g800, fontWeight: 600 }}>{r}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ScreenCalendar({ label }: { label: string }) {
-  const days = Array.from({ length: 28 }, (_, i) => i + 1);
-  const booked = new Set([3, 4, 5, 11, 12, 17, 18, 19, 25, 26]);
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: C.offWhite }}>
-      <ScreenHeader label={label} />
-      <div style={{ padding: 14 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 6 }}>
-          {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-            <div key={i} style={{ fontSize: 9, color: C.g400, textAlign: "center", fontWeight: 700 }}>{d}</div>
-          ))}
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
-          {days.map((d) => (
-            <div key={d} style={{
-              aspectRatio: "1", borderRadius: 6,
-              background: booked.has(d) ? C.coral : "#fff",
-              color: booked.has(d) ? "#fff" : C.g600,
-              border: booked.has(d) ? "none" : `1px solid ${C.g100}`,
-              fontSize: 10, fontWeight: 700, display: "grid", placeItems: "center",
-            }}>{d}</div>
-          ))}
-        </div>
-        <div style={{ background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 10, padding: 10, marginTop: 10 }}>
-          <p style={{ margin: 0, fontSize: 10, color: C.g400, fontWeight: 700 }}>Próximo check-out</p>
-          <p style={{ margin: "2px 0 0", fontSize: 12, color: C.g800, fontWeight: 700 }}>Beach Villa · Hoje 11:00</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Hero() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  return (
-    <section style={{ padding: "56px 20px 72px", background: "#fff", position: "relative", overflow: "hidden" }}>
-      <div className="hero-grid" style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gap: 40, alignItems: "center" }}>
-        <div data-reveal className="reveal">
-          <h1 style={{
-            fontFamily: displayFont, fontWeight: 800, color: C.black,
-            lineHeight: 1.04, margin: "0 0 22px", letterSpacing: "-0.025em",
-            fontSize: "clamp(36px, 5.4vw, 60px)",
+          { t: "Cozinha", done: true },
+          { t: "Casa de banho", done: true },
+          { t: "Quarto principal", done: true },
+          { t: "Sala", done: false },
+        ].map((it, i) => (
+          <div key={i} style={{
+            display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
+            background: it.done ? "#F0FBF6" : "#FAFAFA", borderRadius: 12, marginBottom: 8,
+            border: `1px solid ${it.done ? "#D1F2E2" : C.line}`,
+            animation: it.done ? `checkPop .5s ease ${i * 200}ms both` : undefined,
           }}>
-            {copy.hero.headline}
-          </h1>
-          <p style={{ fontSize: 18, color: C.g600, maxWidth: 560, margin: "0 0 32px", lineHeight: 1.6 }}>
-            {copy.hero.subheadline}
-          </p>
-          <StartFreeButton big location="hero" />
-          <p style={{ marginTop: 18, color: C.g600, fontSize: 13, display: "flex", gap: 20, flexWrap: "wrap", fontWeight: 600 }}>
-            {copy.hero.bullets.map((b) => <span key={b}>{b}</span>)}
-          </p>
-        </div>
-        <div data-reveal className="reveal" style={{ position: "relative", display: "grid", placeItems: "center" }}>
-          <div style={{
-            position: "absolute", inset: -40, borderRadius: 36,
-            background: `radial-gradient(60% 60% at 60% 40%, ${C.coralGlow}, transparent 70%)`,
-            filter: "blur(30px)", zIndex: 0,
-          }} />
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <PhoneMockup labels={{ d: copy.hero.phoneDashboard, c: copy.hero.phoneCleanings, cal: copy.hero.phoneCalendar }} />
+            <div style={{
+              width: 22, height: 22, borderRadius: 7,
+              background: it.done ? "#00C896" : "#fff",
+              border: it.done ? "none" : `2px solid ${C.line}`,
+              display: "grid", placeItems: "center", flexShrink: 0,
+            }}>
+              {it.done && <span style={{ color: "#fff", fontSize: 13, fontWeight: 900 }}>✓</span>}
+            </div>
+            <span style={{ fontSize: 14, fontWeight: 600, color: C.black, flex: 1 }}>{it.t}</span>
           </div>
-        </div>
-      </div>
-
-      {/* Social proof bar */}
-      <div style={{ maxWidth: 1100, margin: "56px auto 0", textAlign: "center" }}>
-        <p style={{ color: C.g600, fontSize: 14, fontWeight: 600, margin: 0 }}>{copy.hero.social}</p>
-      </div>
-
-      <style>{`
-        .hero-grid { grid-template-columns: 1.1fr 1fr; }
-        @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr; }
-          .hero-grid > div:last-child { order: -1; }
-        }
-      `}</style>
-    </section>
-  );
-}
-
-/* ============ PROBLEM (Before vs After) ============ */
-function Problem() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  return (
-    <section style={{ padding: "88px 20px", background: C.g50 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 48, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {copy.problem.title}
-        </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 980, margin: "0 auto" }}>
-          {copy.problem.rows.map((row, i) => (
-            <div key={i} data-reveal className="reveal problem-row" style={{
-              display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14,
-            }}>
-              <div className="bad-card" style={{
-                background: "#fff", border: `1px solid ${C.g100}`, borderRadius: 16,
-                padding: "18px 20px", display: "flex", gap: 12, alignItems: "flex-start",
-              }}>
-                <div style={{ width: 28, height: 28, borderRadius: 999, background: "#FFE8E8", display: "grid", placeItems: "center", flexShrink: 0 }}>
-                  <X size={16} color={C.coral} />
-                </div>
-                <p style={{ margin: 0, color: C.g600, fontSize: 15, lineHeight: 1.5 }}>{row.bad}</p>
-              </div>
-              <div className="good-card" style={{
-                background: "#fff", border: `1.5px solid ${C.emerald}55`, borderRadius: 16,
-                padding: "18px 20px", display: "flex", gap: 12, alignItems: "flex-start",
-              }}>
-                <div style={{ width: 28, height: 28, borderRadius: 999, background: C.emeraldLight, display: "grid", placeItems: "center", flexShrink: 0 }}>
-                  <Check size={16} color={C.emerald} />
-                </div>
-                <p style={{ margin: 0, color: C.g800, fontSize: 15, lineHeight: 1.5, fontWeight: 600 }}>{row.good}</p>
-              </div>
+        ))}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginTop: 12 }}>
+          {[1,2,3].map((i) => (
+            <div key={i} style={{ aspectRatio: "1", borderRadius: 8, background: `linear-gradient(135deg, #FFD9D9, #FF9999)`, display: "grid", placeItems: "center", color: "#fff" }}>
+              <Camera size={18} />
             </div>
           ))}
         </div>
       </div>
-      <style>{`
-        .problem-row .bad-card { opacity: 0; transform: translateX(-20px); transition: all .5s ease; }
-        .problem-row .good-card { opacity: 0; transform: translateX(20px); transition: all .5s ease .15s; }
-        .problem-row.is-visible .bad-card,
-        .problem-row.is-visible .good-card { opacity: 1; transform: translateX(0); }
-        @media (max-width: 720px) { .problem-row { grid-template-columns: 1fr !important; } }
-      `}</style>
-    </section>
-  );
-}
-
-/* ============ HOW IT WORKS ============ */
-function HowItWorks() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  return (
-    <section style={{ padding: "96px 20px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 56, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)", maxWidth: 800, marginLeft: "auto", marginRight: "auto" }}>
-          {copy.how.title}
-        </h2>
-        <div className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-          {copy.how.steps.map((s) => (
-            <div key={s.number} data-reveal className="reveal" style={{
-              padding: 28, borderRadius: 22, background: C.g50, border: `1px solid ${C.g100}`,
-              transition: "all .3s ease",
-            }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: 18, background: C.coral, color: "#fff",
-                fontFamily: displayFont, fontWeight: 800, fontSize: 24,
-                display: "grid", placeItems: "center", marginBottom: 18,
-                boxShadow: `0 10px 24px ${C.coralGlow}`,
-              }}>{s.number}</div>
-              <h3 style={{ fontFamily: displayFont, fontWeight: 800, fontSize: 20, color: C.black, marginBottom: 10 }}>{s.title}</h3>
-              <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign: "center", marginTop: 48 }}>
-          <StartFreeButton big location="how_it_works" />
-        </div>
-      </div>
-      <style>{`@media (max-width: 820px) { .hiw-grid { grid-template-columns: 1fr !important; } }`}</style>
-    </section>
-  );
-}
-
-/* ============ FEATURES (Bento) ============ */
-function Features() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  return (
-    <section style={{ padding: "96px 20px", background: C.g50 }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 56, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {copy.features.title}
-        </h2>
-        <div className="bento-grid" style={{
-          display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16,
-        }}>
-          {copy.features.cards.map((f, i) => (
-            <div key={i} data-reveal className="reveal feature-card" style={{
-              background: "#fff", borderRadius: 20, padding: 24,
-              border: `1px solid ${C.g100}`, transition: "all .25s ease",
-              gridColumn: i === 0 ? "span 2" : "span 1",
-            }}>
-              <div style={{ fontSize: 30, marginBottom: 12 }}>{f.icon}</div>
-              <h3 style={{ fontFamily: displayFont, fontWeight: 800, fontSize: 17, color: C.black, marginBottom: 6, lineHeight: 1.25 }}>{f.title}</h3>
-              <p style={{ color: C.g600, fontSize: 14, lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      <style>{`
-        .feature-card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(0,0,0,0.06); border-color: ${C.coralLight}; }
-        @media (max-width: 980px) { .bento-grid { grid-template-columns: repeat(2, 1fr) !important; } .bento-grid > div { grid-column: span 1 !important; } }
-        @media (max-width: 560px) { .bento-grid { grid-template-columns: 1fr !important; } }
-      `}</style>
-    </section>
-  );
-}
-
-/* ============ SOCIAL PROOF (testimonials) ============ */
-function SocialProof() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  return (
-    <section style={{ padding: "96px 20px", background: "#fff" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 56, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)", maxWidth: 820, marginLeft: "auto", marginRight: "auto" }}>
-          {copy.social.title}
-        </h2>
-        <div className="testimonial-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-          {copy.social.testimonials.map((t, i) => (
-            <div key={i} data-reveal className="reveal" style={{
-              background: C.g50, borderRadius: 20, padding: 22,
-              border: `1px solid ${C.g100}`, display: "flex", flexDirection: "column", gap: 14,
-            }}>
-              <div style={{ display: "flex", gap: 2 }}>
-                {Array.from({ length: 5 }).map((_, k) => (
-                  <Star key={k} size={14} fill="#FFB347" stroke="none" />
-                ))}
-              </div>
-              <p style={{ margin: 0, color: C.g800, fontSize: 14, lineHeight: 1.55, flex: 1, fontStyle: "italic" }}>
-                "{t.quote}"
-              </p>
-              <div>
-                <p style={{ margin: 0, fontSize: 13, color: C.black, fontWeight: 700 }}>{t.name} {t.flag}</p>
-                <p style={{ margin: "2px 0 0", fontSize: 12, color: C.g600 }}>{t.props}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <style>{`
-        @media (max-width: 980px) { .testimonial-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 560px) { .testimonial-grid { grid-template-columns: 1fr !important; } }
-      `}</style>
-    </section>
-  );
-}
-
-/* ============ PRICING ============ */
-function fmt(currency: Currency, lang: string, amount: number) {
-  const localeMap: Record<string, string> = { pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT", de: "de-DE" };
-  try {
-    return new Intl.NumberFormat(localeMap[lang] ?? "en-US", { style: "currency", currency, minimumFractionDigits: currency === "BRL" ? 2 : 0 }).format(amount);
-  } catch {
-    const sym = currency === "BRL" ? "R$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : "$";
-    return `${sym} ${amount.toFixed(2)}`;
-  }
-}
-
-function Pricing() {
-  const { lang, currency } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  const proPrice = fmt(currency, lang, PLAN_PRICE.pro[currency]);
-  const premiumPrice = fmt(currency, lang, PLAN_PRICE.premium[currency]);
-
-  const plans = [
-    { ...copy.pricing.free, price: copy.pricing.free.price, bg: "#fff", border: C.g200, accent: false, ctaBg: C.g100, ctaColor: C.black, signupTo: "/signup" },
-    { ...copy.pricing.pro, price: proPrice, bg: "#fff", border: C.coral, accent: true, ctaBg: C.coral, ctaColor: "#fff", signupTo: "/signup?plan=pro" },
-    { ...copy.pricing.premium, price: premiumPrice, bg: "#fff", border: C.g200, accent: false, ctaBg: "#111", ctaColor: "#fff", signupTo: "/signup?plan=premium" },
-  ];
-
-  return (
-    <section style={{ padding: "96px 20px", background: C.g50 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 12, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {copy.pricing.title}
-        </h2>
-        <p data-reveal className="reveal" style={{ textAlign: "center", color: C.g600, fontSize: 17, marginBottom: 48, maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
-          {copy.pricing.subtitle}
-        </p>
-        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, alignItems: "stretch" }}>
-          {plans.map((p, i) => (
-            <div key={i} data-reveal className="reveal" style={{
-              position: "relative", background: p.bg,
-              border: p.accent ? `2.5px solid ${C.coral}` : `1.5px solid ${p.border}`,
-              borderRadius: 24, padding: "32px 26px",
-              transform: p.accent ? "translateY(-8px)" : "none",
-              boxShadow: p.accent ? `0 24px 60px ${C.coralGlow}` : `0 4px 16px rgba(0,0,0,0.04)`,
-              display: "flex", flexDirection: "column",
-            }}>
-              {p.accent && (
-                <div style={{
-                  position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-                  background: C.coral, color: "#fff", padding: "6px 14px", borderRadius: 999,
-                  fontSize: 11, fontWeight: 800, letterSpacing: 0.5, whiteSpace: "nowrap",
-                  boxShadow: `0 8px 20px ${C.coralGlow}`,
-                }}>{copy.pricing.popular}</div>
-              )}
-              <p style={{ fontSize: 11, fontWeight: 800, color: p.accent ? C.coral : C.g600, letterSpacing: 1.2, marginBottom: 8, textTransform: "uppercase", margin: 0 }}>{p.tag}</p>
-              <h3 style={{ fontFamily: displayFont, fontSize: 24, fontWeight: 800, color: C.black, margin: "6px 0 14px" }}>{p.name}</h3>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 22 }}>
-                <span style={{ fontFamily: displayFont, fontSize: 38, fontWeight: 800, color: C.black, lineHeight: 1 }}>{p.price}</span>
-                {p.price !== copy.pricing.free.price && (
-                  <span style={{ color: C.g400, fontSize: 14, fontWeight: 600 }}>{copy.pricing.perMo}</span>
-                )}
-              </div>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
-                {p.features.map((f) => (
-                  <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: C.g800, fontSize: 14, lineHeight: 1.45 }}>
-                    <Check size={16} color={C.emerald} style={{ marginTop: 3, flexShrink: 0 }} /><span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to={p.signupTo as any}
-                data-cta-location={`pricing_${p.name}`}
-                onClick={() => trackEvent("pricing_cta", { plan: p.name })}
-                style={{
-                  display: "block", textAlign: "center", padding: "13px 16px", borderRadius: 999,
-                  background: p.ctaBg, color: p.ctaColor, textDecoration: "none",
-                  fontWeight: 800, fontSize: 14,
-                  boxShadow: p.accent ? `0 10px 24px ${C.coralGlow}` : "none",
-                }}
-              >{p.cta}</Link>
-            </div>
-          ))}
-        </div>
-        <p style={{ textAlign: "center", marginTop: 32, color: C.g600, fontSize: 13, fontWeight: 600 }}>
-          {copy.pricing.micro}
-        </p>
-      </div>
-      <style>{`@media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr !important; } .pricing-grid > div { transform: none !important; } }`}</style>
-    </section>
-  );
-}
-
-/* ============ FAQ ============ */
-function FAQItem({ q, a, open, onClick }: { q: string; a: string; open: boolean; onClick: () => void }) {
-  return (
-    <div style={{ borderBottom: `1px solid ${C.g100}` }}>
-      <button onClick={onClick} style={{
-        width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "22px 4px", background: "transparent", border: 0, cursor: "pointer", textAlign: "left", gap: 16,
-      }}>
-        <span style={{ fontWeight: 700, color: C.g800, fontSize: 16 }}>{q}</span>
-        {open ? <Minus size={20} color={C.coral} /> : <Plus size={20} color={C.g600} />}
-      </button>
-      <div style={{
-        maxHeight: open ? 260 : 0, overflow: "hidden",
-        transition: "max-height .35s ease, padding .35s ease",
-        paddingBottom: open ? 20 : 0,
-      }}>
-        <p style={{ color: C.g600, fontSize: 15, lineHeight: 1.65, margin: 0 }}>{a}</p>
-      </div>
+      <style>{`@keyframes checkPop{0%{transform:scale(.96);opacity:.4}100%{transform:scale(1);opacity:1}}`}</style>
     </div>
   );
 }
 
-function FAQ() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+function MockupForgotten() {
   return (
-    <section style={{ padding: "96px 20px", background: "#fff" }}>
-      <div style={{ maxWidth: 760, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 40, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {copy.faq.title}
+    <div style={{
+      background: "#fff", borderRadius: 20, padding: 28, width: "100%", maxWidth: 380,
+      boxShadow: "0 30px 80px rgba(17,17,17,0.12), 0 0 0 1px rgba(17,17,17,0.04)",
+      position: "relative",
+    }}>
+      <div style={{
+        position: "absolute", top: -10, right: -10,
+        background: C.coral, color: "#fff", fontSize: 12, fontWeight: 800,
+        padding: "6px 10px", borderRadius: 999,
+        animation: "pulseBadge 1.6s ease-in-out infinite",
+        boxShadow: `0 8px 24px ${C.coralGlow}`,
+      }}>
+        ! Objeto esquecido
+      </div>
+      <p style={{ margin: "0 0 16px", fontSize: 12, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Hóspede · Apt Marais</p>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", padding: 14, borderRadius: 12, background: "#FFF7F7", border: `1px solid ${C.coralSoft}` }}>
+        <div style={{ width: 56, height: 56, borderRadius: 10, background: `linear-gradient(135deg, #FFD9D9, #FF9999)`, display: "grid", placeItems: "center", color: "#fff", fontSize: 28 }}>📱</div>
+        <div>
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: C.black }}>Carregador iPhone</p>
+          <p style={{ margin: "2px 0 0", fontSize: 13, color: C.sub }}>Encontrado na mesa de cabeceira</p>
+        </div>
+      </div>
+      <button style={{
+        marginTop: 16, width: "100%", background: C.black, color: "#fff",
+        border: 0, padding: "12px", borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: "pointer",
+      }}>Avisar hóspede</button>
+      <style>{`@keyframes pulseBadge{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}`}</style>
+    </div>
+  );
+}
+
+function MockupAlerts() {
+  return (
+    <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 12 }}>
+      {[
+        { icon: <Bell size={16} color="#fff" />, bg: C.coral, t: "Check-in em 1 hora", m: "Lisbon Loft · João S.", d: "0s" },
+        { icon: <CheckCircle2 size={16} color="#fff" />, bg: "#00C896", t: "Pagamento recebido", m: "Booking #4821 · €340", d: "0.4s" },
+        { icon: <AlertTriangle size={16} color="#fff" />, bg: "#FF9F1C", t: "Limpeza pendente", m: "Marais 3B · checkout 11:00", d: "0.8s" },
+      ].map((n, i) => (
+        <div key={i} style={{
+          background: "#fff", borderRadius: 14, padding: 14,
+          boxShadow: "0 12px 30px rgba(17,17,17,0.08), 0 0 0 1px rgba(17,17,17,0.04)",
+          display: "flex", alignItems: "center", gap: 12,
+          animation: `slideIn .5s ease ${n.d} both`,
+        }}>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: n.bg, display: "grid", placeItems: "center", flexShrink: 0 }}>{n.icon}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.black }}>{n.t}</p>
+            <p style={{ margin: "2px 0 0", fontSize: 13, color: C.muted }}>{n.m}</p>
+          </div>
+          <span style={{ fontSize: 11, color: C.muted, fontWeight: 600 }}>agora</span>
+        </div>
+      ))}
+      <style>{`@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}`}</style>
+    </div>
+  );
+}
+
+function Features() {
+  return (
+    <section id="features" style={{ padding: "120px 24px", background: C.off }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div data-reveal style={{ textAlign: "center", maxWidth: 720, margin: "0 auto 96px" }}>
+          <p style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: C.coral, textTransform: "uppercase", letterSpacing: "0.1em" }}>Funcionalidades</p>
+          <h2 style={{ fontFamily: display, fontWeight: 800, color: C.black, fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.025em", margin: 0 }}>
+            Tudo o que precisa.<br />Nada do que não precisa.
+          </h2>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 120 }}>
+          <FeatureRow
+            kicker="Checklist com fotos"
+            title="Veja a limpeza acontecer em tempo real."
+            body="A sua faxineira tira fotos de cada divisão. Você recebe tudo por email assim que termina. Sem perguntas, sem dúvidas, sem chamadas."
+            mockup={<MockupChecklist />}
+          />
+          <FeatureRow
+            kicker="Objetos esquecidos"
+            title="Recupere o que ficou para trás. Antes do hóspede ligar."
+            body="A faxineira regista objetos esquecidos com foto. Você notifica o hóspede com um clique. Problema resolvido em 30 segundos."
+            mockup={<MockupForgotten />}
+            reverse
+          />
+          <FeatureRow
+            kicker="Alertas automáticos"
+            title="O Hostlyb avisa você. Antes de virar problema."
+            body="Check-in em 1 hora. Limpeza por agendar. Pagamento recebido. Você recebe tudo no telemóvel — sem refrescar nada."
+            mockup={<MockupAlerts />}
+          />
+        </div>
+      </div>
+      <style>{`@media(max-width:880px){.feature-row{grid-template-columns:1fr !important;gap:40px !important;direction:ltr !important}}`}</style>
+    </section>
+  );
+}
+
+/* ============================================================
+   Editorial testimonials
+   ============================================================ */
+function Testimonials() {
+  const items = [
+    { quote: "Antes acordava às 7h a verificar o WhatsApp. Agora o Hostlyb faz isso por mim.", author: "Sofia M.", meta: "4 imóveis · Lisboa", initials: "SM" },
+    { quote: "My cleaner photos everything now. I see it in real time from London.", author: "James T.", meta: "3 properties · London", initials: "JT" },
+    { quote: "Mes locataires arrivent toujours dans un appartement impeccable.", author: "Claire D.", meta: "2 appartements · Paris", initials: "CD" },
+  ];
+  return (
+    <section id="testimonials" style={{ padding: "120px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <p data-reveal style={{ textAlign: "center", margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: C.coral, textTransform: "uppercase", letterSpacing: "0.1em" }}>Anfitriões reais</p>
+        <h2 data-reveal style={{
+          fontFamily: display, fontWeight: 800, color: C.black,
+          fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.025em",
+          textAlign: "center", margin: "0 0 80px",
+        }}>
+          Não acredite em nós.<br />Acredite neles.
         </h2>
-        <div data-reveal className="reveal" style={{ background: "#fff", borderRadius: 22, padding: "8px 28px", border: `1px solid ${C.g100}`, boxShadow: "0 4px 16px rgba(0,0,0,0.03)" }}>
-          {copy.faq.items.map((it, i) => (
-            <FAQItem key={i} q={it.q} a={it.a} open={openIdx === i} onClick={() => setOpenIdx(openIdx === i ? null : i)} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 80 }}>
+          {items.map((it, i) => (
+            <figure key={i} data-reveal style={{
+              margin: 0, display: "grid",
+              gridTemplateColumns: "auto 1fr",
+              gap: 32, alignItems: "center",
+              maxWidth: 880,
+              marginLeft: i % 2 === 0 ? 0 : "auto",
+              marginRight: i % 2 === 0 ? "auto" : 0,
+            }} className="testimonial-row">
+              <div style={{
+                width: 88, height: 88, borderRadius: 999,
+                background: `linear-gradient(135deg, ${C.coral}, #FF8E53)`,
+                color: "#fff", display: "grid", placeItems: "center",
+                fontFamily: display, fontWeight: 800, fontSize: 28,
+                border: `4px solid ${C.coralSoft}`, flexShrink: 0,
+              }}>{it.initials}</div>
+              <div>
+                <blockquote style={{
+                  margin: 0, fontFamily: display, fontStyle: "italic", fontWeight: 500,
+                  color: C.black, fontSize: "clamp(20px, 2.5vw, 26px)",
+                  lineHeight: 1.4, letterSpacing: "-0.015em",
+                }}>
+                  "{it.quote}"
+                </blockquote>
+                <figcaption style={{ marginTop: 16, fontSize: 14, color: C.sub, fontWeight: 600 }}>
+                  — <span style={{ color: C.black, fontWeight: 700 }}>{it.author}</span>, {it.meta}
+                </figcaption>
+              </div>
+            </figure>
           ))}
         </div>
       </div>
+      <style>{`@media(max-width:680px){.testimonial-row{grid-template-columns:1fr !important;text-align:center;gap:20px !important}.testimonial-row > div:first-child{margin:0 auto}}`}</style>
     </section>
   );
 }
 
-/* ============ PROGRESS BAR ============ */
-function ProgressBar() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
-  const sectionRef = useRef<HTMLElement>(null);
-  const [pct, setPct] = useState(0);
-  const [active, setActive] = useState<number>(-1);
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting && pct === 0) {
-          // animate to 94%
-          let i = 0;
-          const total = copy.progress.items.length;
-          const interval = setInterval(() => {
-            i += 1;
-            setActive(i - 1);
-            setPct(Math.min(94, Math.round((i / total) * 94)));
-            if (i >= total) {
-              clearInterval(interval);
-              setPct(94);
-            }
-          }, 420);
-          io.disconnect();
-        }
-      });
-    }, { threshold: 0.35 });
-    io.observe(sectionRef.current);
-    return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+/* ============================================================
+   Stats with count-up
+   ============================================================ */
+function StatBlock({ value, suffix, label }: { value: number; suffix?: string; label: string }) {
+  const { ref, val } = useCountUp(value);
   return (
-    <section ref={sectionRef} style={{ padding: "96px 20px", background: C.g50 }}>
-      <div style={{ maxWidth: 880, margin: "0 auto" }}>
-        <h2 data-reveal className="reveal" style={{ fontFamily: displayFont, textAlign: "center", color: C.black, fontWeight: 800, marginBottom: 36, letterSpacing: "-0.02em", fontSize: "clamp(28px, 4vw, 44px)" }}>
-          {copy.progress.title}
-        </h2>
+    <div>
+      <p style={{ margin: 0, fontFamily: display, fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 900, color: C.black, letterSpacing: "-0.03em" }}>
+        <span ref={ref}>{val.toLocaleString("pt-PT")}</span>{suffix}
+      </p>
+      <p style={{ margin: "8px 0 0", fontSize: 14, fontWeight: 600, color: C.sub }}>{label}</p>
+    </div>
+  );
+}
 
-        <div style={{ background: "#fff", borderRadius: 24, padding: "32px 28px", border: `1px solid ${C.g100}`, boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-            <span style={{ fontSize: 13, color: C.g600, fontWeight: 700 }}>Hostlyb Score</span>
-            <span style={{ fontFamily: displayFont, fontSize: 40, fontWeight: 800, color: C.coral, lineHeight: 1 }}>{pct}%</span>
-          </div>
-          <div style={{ width: "100%", height: 14, borderRadius: 999, background: C.g100, overflow: "hidden" }}>
-            <div style={{
-              width: `${pct}%`, height: "100%",
-              background: `linear-gradient(90deg, ${C.coral}, #FF8E53)`,
-              borderRadius: 999, transition: "width .5s ease",
-            }} />
-          </div>
-          <ul style={{ listStyle: "none", padding: 0, margin: "26px 0 0", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }} className="progress-items">
-            {copy.progress.items.map((it, i) => {
-              const done = i <= active;
-              return (
-                <li key={i} style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  color: done ? C.g800 : C.g400,
-                  fontSize: 14, fontWeight: done ? 700 : 500,
-                  transition: "all .3s ease",
-                }}>
-                  <div style={{
-                    width: 22, height: 22, borderRadius: 999,
-                    background: done ? C.emerald : C.g200,
-                    display: "grid", placeItems: "center", flexShrink: 0,
-                    transition: "all .3s ease",
-                  }}>
-                    {done && <Check size={14} color="#fff" />}
-                  </div>
-                  <span>{it}</span>
-                </li>
-              );
-            })}
-          </ul>
+function Stats() {
+  return (
+    <section style={{ padding: "80px 24px", background: C.off, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32, textAlign: "center" }} className="stats-grid">
+        <StatBlock value={2400} suffix="+" label="Anfitriões ativos" />
+        <StatBlock value={12} label="Países" />
+        <StatBlock value={48000} suffix="+" label="Limpezas registadas" />
+        <StatBlock value={99} suffix="%" label="Uptime" />
+      </div>
+      <style>{`@media(max-width:780px){.stats-grid{grid-template-columns:repeat(2,1fr) !important}}`}</style>
+    </section>
+  );
+}
+
+/* ============================================================
+   Pricing
+   ============================================================ */
+function Pricing() {
+  const [annual, setAnnual] = useState(false);
+  const plans = [
+    { name: "Free", price: 0, desc: "Para começar com 1 imóvel.", cta: "Começar grátis", featured: false },
+    { name: "Pro", priceM: 14, priceA: 11, desc: "Até 5 imóveis com tudo incluído.", cta: "Testar 14 dias grátis", featured: true },
+    { name: "Premium", priceM: 29, priceA: 23, desc: "Imóveis ilimitados + equipa.", cta: "Falar connosco", featured: false },
+    { name: "Agency", priceM: 79, priceA: 63, desc: "Para gestoras profissionais.", cta: "Pedir demo", featured: false },
+  ];
+  return (
+    <section id="pricing" style={{ padding: "120px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div data-reveal style={{ textAlign: "center", maxWidth: 700, margin: "0 auto 24px" }}>
+          <h2 style={{ fontFamily: display, fontWeight: 800, color: C.black, fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.025em", margin: "0 0 16px" }}>
+            Simples. Transparente.<br /><span style={{ color: C.coral }}>Sem surpresas.</span>
+          </h2>
+          <p style={{ margin: 0, fontSize: 17, color: C.sub, lineHeight: 1.6 }}>
+            Um plano. Todos os recursos. Paga pelo que usa.
+          </p>
         </div>
-        <p style={{ textAlign: "center", marginTop: 24, color: C.g600, fontSize: 15, fontStyle: "italic" }}>{copy.progress.copy}</p>
+        <div data-reveal style={{ display: "flex", justifyContent: "center", gap: 12, margin: "32px 0 56px", alignItems: "center" }}>
+          <button onClick={() => setAnnual(false)} style={toggleBtn(!annual)}>Mensal</button>
+          <button onClick={() => setAnnual(true)} style={toggleBtn(annual)}>
+            Anual
+            <span style={{ marginLeft: 8, background: C.coral, color: "#fff", padding: "2px 8px", borderRadius: 999, fontSize: 11, fontWeight: 800 }}>-20%</span>
+          </button>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }} className="pricing-grid">
+          {plans.map((p, i) => {
+            const price = p.price !== undefined ? p.price : annual ? p.priceA! : p.priceM!;
+            return (
+              <div
+                key={p.name}
+                data-reveal
+                className="price-card"
+                style={{
+                  background: p.featured ? C.black : "#fff",
+                  color: p.featured ? "#fff" : C.black,
+                  borderRadius: 20, padding: 32,
+                  border: `1px solid ${p.featured ? C.black : C.line}`,
+                  position: "relative",
+                  transitionDelay: `${i * 80}ms`,
+                }}
+              >
+                {p.featured && (
+                  <div style={{
+                    position: "absolute", top: -12, left: 24,
+                    background: C.coral, color: "#fff", fontSize: 11, fontWeight: 800,
+                    padding: "5px 12px", borderRadius: 999, letterSpacing: 0.5,
+                  }}>MAIS POPULAR</div>
+                )}
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: p.featured ? C.coralSoft : C.muted, textTransform: "uppercase", letterSpacing: "0.08em" }}>{p.name}</p>
+                <div style={{ margin: "20px 0 12px", display: "flex", alignItems: "baseline", gap: 6 }}>
+                  <span style={{ fontFamily: display, fontSize: 56, fontWeight: 900, letterSpacing: "-0.03em", lineHeight: 1 }}>€{price}</span>
+                  <span style={{ fontSize: 14, opacity: 0.6 }}>/mês</span>
+                </div>
+                <p style={{ margin: "0 0 28px", fontSize: 14, opacity: 0.7, lineHeight: 1.5 }}>{p.desc}</p>
+                <Link
+                  to={"/signup" as any}
+                  data-cta-location={`pricing-${p.name.toLowerCase()}`}
+                  style={{
+                    display: "block", textAlign: "center", textDecoration: "none",
+                    padding: "12px 20px", borderRadius: 10, fontWeight: 700, fontSize: 14,
+                    background: p.featured ? C.coral : (p.name === "Free" ? C.black : "#fff"),
+                    color: p.featured ? "#fff" : (p.name === "Free" ? "#fff" : C.black),
+                    border: p.featured ? "none" : (p.name === "Free" ? "none" : `1px solid ${C.line}`),
+                    transition: "all .15s ease",
+                  }}
+                  className="price-cta"
+                >
+                  {p.cta}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <style>{`@media (max-width: 600px) { .progress-items { grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`
+        .price-card { transition: all .25s ease; }
+        .price-card:hover { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(255,107,107,0.18); }
+        .price-cta:hover { filter: brightness(0.95); }
+        @media(max-width:980px){.pricing-grid{grid-template-columns:repeat(2,1fr) !important}}
+        @media(max-width:560px){.pricing-grid{grid-template-columns:1fr !important}}
+      `}</style>
     </section>
   );
 }
+const toggleBtn = (active: boolean): React.CSSProperties => ({
+  display: "inline-flex", alignItems: "center",
+  padding: "10px 20px", borderRadius: 999, fontSize: 14, fontWeight: 700,
+  border: 0, cursor: "pointer", transition: "all .15s",
+  background: active ? C.black : "transparent",
+  color: active ? "#fff" : C.sub,
+});
 
-/* ============ FINAL CTA ============ */
+/* ============================================================
+   Final CTA
+   ============================================================ */
 function FinalCTA() {
-  const { lang } = useLocale();
-  const copy = LANDING_COPY[lang] ?? LANDING_COPY.en;
   return (
-    <section style={{ padding: "32px 20px 64px" }}>
-      <div data-reveal className="reveal" style={{
-        position: "relative", overflow: "hidden",
-        maxWidth: 1100, margin: "0 auto", borderRadius: 36,
-        background: "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)",
-        padding: "80px 32px", textAlign: "center", color: "#fff",
-      }}>
-        <h2 style={{ fontFamily: displayFont, fontWeight: 800, color: "#fff", margin: "0 0 14px", letterSpacing: "-0.02em", lineHeight: 1.1, fontSize: "clamp(30px, 4.4vw, 48px)" }}>
-          {copy.finalCta.title}
-        </h2>
-        <p style={{ fontSize: 18, color: "rgba(255,255,255,0.92)", margin: "0 auto 32px", maxWidth: 560 }}>{copy.finalCta.subtitle}</p>
-        <Link
-          to={"/signup" as any}
-          data-cta-location="final"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 10,
-            background: "#fff", color: C.coral, padding: "18px 36px",
-            borderRadius: 999, fontWeight: 800, fontSize: 17,
-            boxShadow: "0 16px 40px rgba(0,0,0,0.22)",
-            textDecoration: "none",
-          }}
-        >
-          {copy.finalCta.cta}
-        </Link>
-        <p style={{ marginTop: 24, color: "rgba(255,255,255,0.85)", fontSize: 13, display: "flex", justifyContent: "center", gap: 18, flexWrap: "wrap", fontWeight: 600 }}>
-          {copy.finalCta.micro}
-        </p>
+    <section style={{ padding: "120px 24px", background: "#fff" }}>
+      <div
+        data-reveal
+        style={{
+          maxWidth: 1100, margin: "0 auto",
+          background: `linear-gradient(135deg, ${C.coral} 0%, #FF8E53 100%)`,
+          borderRadius: 32, padding: "96px 48px", textAlign: "center",
+          position: "relative", overflow: "hidden",
+          boxShadow: `0 40px 100px ${C.coralGlow}`,
+        }}
+      >
+        <div aria-hidden style={{ position: "absolute", top: -100, right: -100, width: 400, height: 400, borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
+        <div aria-hidden style={{ position: "absolute", bottom: -150, left: -150, width: 500, height: 500, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
+        <div style={{ position: "relative" }}>
+          <h2 style={{
+            fontFamily: display, fontWeight: 900, color: "#fff",
+            fontSize: "clamp(40px, 6vw, 64px)", lineHeight: 1.05, letterSpacing: "-0.03em",
+            margin: "0 0 16px",
+          }}>
+            Comece hoje.<br />Descanse amanhã.
+          </h2>
+          <p style={{ margin: "0 0 40px", fontSize: 18, color: "rgba(255,255,255,0.9)", maxWidth: 540, marginLeft: "auto", marginRight: "auto", lineHeight: 1.6 }}>
+            14 dias grátis. Sem cartão. Cancele quando quiser.
+          </p>
+          <Link
+            to={"/signup" as any}
+            data-cta-location="final-cta"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              background: "#fff", color: C.coral,
+              padding: "20px 36px", borderRadius: 14, fontSize: 17, fontWeight: 800,
+              textDecoration: "none",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
+              transition: "all .2s ease",
+            }}
+            className="cta-primary"
+          >
+            Começar grátis — sem cartão <ArrowRight size={20} />
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
+/* ============================================================
+   Footer
+   ============================================================ */
 function Footer() {
   return (
-    <footer style={{ background: C.black, color: C.g300, padding: "48px 20px 32px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20, alignItems: "center", textAlign: "center" }}>
-        <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: displayFont, fontSize: 22, fontWeight: 800, color: "#fff", textDecoration: "none" }}>
-          <span style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 10, background: C.coralLight }}>
-            <HomeIcon size={18} color={C.coral} />
+    <footer style={{ background: C.black, color: "#999", padding: "64px 24px 40px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 24 }}>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, color: "#fff", textDecoration: "none", fontFamily: display, fontSize: 22, fontWeight: 800 }}>
+          <span style={{ display: "grid", placeItems: "center", width: 30, height: 30, borderRadius: 8, background: C.coral }}>
+            <HomeIcon size={16} color="#fff" />
           </span>
-          Host<span style={{ color: C.coral }}>lyb</span>
-        </Link>
+          Hostlyb
+        </a>
+        <div style={{ display: "flex", gap: 28, fontSize: 14 }}>
+          <a href="#features" style={{ color: "#999", textDecoration: "none" }}>Funcionalidades</a>
+          <a href="#pricing" style={{ color: "#999", textDecoration: "none" }}>Preços</a>
+          <a href="/trust" style={{ color: "#999", textDecoration: "none" }}>Segurança</a>
+        </div>
         <LanguageSelector />
-        <p style={{ fontSize: 13, color: C.g400, margin: 0 }}>© 2026 Hostlyb. Feito para anfitriões a sério. 🇵🇹</p>
+      </div>
+      <div style={{ maxWidth: 1200, margin: "48px auto 0", paddingTop: 24, borderTop: "1px solid #222", fontSize: 13, color: "#666", textAlign: "center" }}>
+        © 2026 Hostlyb. Feito para anfitriões a sério. 🇵🇹
       </div>
     </footer>
   );
 }
 
+/* ============================================================
+   Page
+   ============================================================ */
 export { META_BY_LANG, LANGS, BASE_URL, OG_IMAGE, JSON_LD, FAQ_ITEMS_SEO };
+
 export function LandingPage() {
   useReveal();
   useAnalytics();
   return (
-    <div style={{ background: "#fff", color: C.g800, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
+    <div style={{ background: "#fff", color: C.ink, fontFamily: body, minHeight: "100vh" }}>
       <style>{`
-        [data-reveal] { opacity: 0; transform: translateY(12px); transition: opacity .6s ease, transform .6s ease; }
-        [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
-        .btn-coral:hover { transform: translateY(-2px); filter: brightness(1.04); }
         html { scroll-behavior: smooth; }
+        body { font-family: ${body}; }
+        [data-reveal] {
+          opacity: 0; transform: translateY(30px);
+          transition: opacity .6s cubic-bezier(0.16,1,0.3,1), transform .6s cubic-bezier(0.16,1,0.3,1);
+        }
+        [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+        ::selection { background: ${C.coral}; color: #fff; }
       `}</style>
       <Navbar />
       <Hero />
+      <SocialProofBar />
       <Problem />
-      <HowItWorks />
       <Features />
-      <SocialProof />
+      <Testimonials />
+      <Stats />
       <Pricing />
-      <FAQ />
-      <ProgressBar />
       <FinalCTA />
       <Footer />
     </div>
