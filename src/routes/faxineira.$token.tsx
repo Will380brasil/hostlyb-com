@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SignedImage } from "@/components/SignedImage";
 import { ReportProblemSheet } from "@/components/cleaner/ReportProblemSheet";
 import { useAuth } from "@/hooks/useAuth";
+import { useT, useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/faxineira/$token")({
