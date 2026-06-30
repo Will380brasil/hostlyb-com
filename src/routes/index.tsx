@@ -218,13 +218,13 @@ function HeroSection() {
       <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
-        <p className="cine-eyebrow" data-reveal>GESTÃO DE AIRBNB · SEM ESFORÇO</p>
+        <p className="cine-eyebrow" data-reveal>{t("cine.hero.eyebrow")}</p>
         <h1 className="cine-h1" data-reveal style={{ animationDelay: "0.2s" }}>
-          O SEU IMÓVEL.<br />
-          <span className="cine-h1-italic">Sempre pronto.</span>
+          {t("cine.hero.t1")}<br />
+          <span className="cine-h1-italic">{t("cine.hero.t2")}</span>
         </h1>
         <p className="cine-sub" data-reveal style={{ animationDelay: "0.4s" }}>
-          Enquanto você vive, o Hostlyb cuida do resto.
+          {t("cine.hero.sub")}
         </p>
         <div className="cine-actions" data-reveal style={{ animationDelay: "0.6s" }}>
           <Link
@@ -233,14 +233,14 @@ function HeroSection() {
             data-cta-location="hero"
             onClick={() => trackEvent("cta_click", { location: "hero" })}
           >
-            Começar 14 dias grátis <ArrowRight size={16} />
+            {t("cine.hero.cta")} <ArrowRight size={16} />
           </Link>
-          <a href="#chegada" className="cine-btn-ghost-lg">Ver como funciona</a>
+          <a href="#chegada" className="cine-btn-ghost-lg">{t("cine.hero.cta2")}</a>
         </div>
       </div>
 
       <a href="#chegada" className="cine-scroll-indicator" aria-label="Continuar">
-        <span>SCROLL</span>
+        <span>{t("cine.scroll")}</span>
         <ChevronDown size={18} />
       </a>
     </section>
