@@ -61,8 +61,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
   }, [session, loading, navigate]);
 
   if (loading || !session) {
-    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando…</div>;
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">{t("app.loading")}</div>;
   }
+
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full max-w-[480px] md:max-w-6xl bg-background">
