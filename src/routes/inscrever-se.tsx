@@ -147,6 +147,7 @@ function SubscribePage() {
   const [dial, setDial] = useState("+351");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -181,6 +182,10 @@ function SubscribePage() {
     }
     if (pwScore < 2) {
       toast.error("A palavra-passe é demasiado fraca");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("As palavras-passe não coincidem");
       return;
     }
     setLoading(true);
@@ -426,6 +431,18 @@ function SubscribePage() {
                     Força: {pwLabels[pwScore]}
                   </p>
                 </div>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Confirmar palavra-passe</label>
+              <PasswordField
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                placeholder="Repita a palavra-passe"
+              />
+              {confirmPassword && password !== confirmPassword && (
+                <p className="text-xs text-destructive">As palavras-passe não coincidem</p>
               )}
             </div>
 
