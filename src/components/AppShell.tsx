@@ -98,8 +98,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
           {isAdmin && (
             <Link
               to={"/admin" as any}
-              aria-label="Admin"
-              title="Painel Admin"
+              aria-label={t("app.admin")}
+              title={t("app.admin")}
               className="grid place-items-center w-10 h-10 rounded-full border"
               style={{ background: "#FFF1F1", borderColor: "#FFCCCC", color: "#FF6B6B" }}
             >
@@ -108,14 +108,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
           )}
           <Link
             to={"/equipe" as any}
-            aria-label="Equipe"
+            aria-label={t("app.team")}
             className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
           >
             <UsersRound size={16} />
           </Link>
           <Link
             to={"/alertas" as any}
-            aria-label="Alertas"
+            aria-label={t("app.alerts")}
             className="relative grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
           >
             <Bell size={16} />
@@ -127,13 +127,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
             )}
           </Link>
           <button
-            aria-label="Sair"
+            aria-label={t("app.logout")}
             onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
             className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
           >
             <LogOut size={16} />
           </button>
         </div>
+
       </header>
 
       <main className="flex-1 px-4 md:px-8 pt-4 pb-28 md:pb-12">
