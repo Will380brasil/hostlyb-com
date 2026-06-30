@@ -2080,6 +2080,11 @@ const de: Dict = {
 
 };
 
+import { internalPT, internalEN, internalES } from "./i18n-internal";
+Object.assign(pt, internalPT);
+Object.assign(en, internalEN);
+Object.assign(es, internalES);
+
 const DICTS: Record<Lang, Dict> = {
   pt, en, es, fr, it, de,
 };
