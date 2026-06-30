@@ -7,14 +7,14 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { sendTransactionalEmail } from "@/lib/email/send";
 
-type SignupPlan = "free" | "pro" | "premium";
+type SignupPlan = "starter" | "pro" | "premium";
 type SignupSearch = { plan?: SignupPlan };
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Criar conta — Hostlyb" }, { name: "description", content: "Crie sua conta Hostlyb grátis." }] }),
   validateSearch: (s: Record<string, unknown>): SignupSearch => {
     const p = s.plan;
-    return p === "free" || p === "pro" || p === "premium" ? { plan: p } : {};
+    return p === "starter" || p === "pro" || p === "premium" ? { plan: p } : {};
   },
   component: SignupPage,
 });
@@ -36,8 +36,8 @@ const COUNTRIES = [
 
 function getPlanOptions(t: (k: string) => string): Array<{ id: SignupPlan; name: string; price: string; description: string; features: string[] }> {
   return [
-    { id: "free",    name: t("signup.plan.free.name"),    price: t("signup.plan.free.price"),    description: t("signup.plan.free.desc"),    features: [t("signup.plan.free.f1"), t("signup.plan.free.f2")] },
-    { id: "pro",     name: t("signup.plan.pro.name"),     price: "R$ 59,90/mês",                  description: t("signup.plan.pro.desc"),     features: [t("signup.plan.pro.f1"), t("signup.plan.pro.f2")] },
+    { id: "starter", name: t("signup.plan.starter.name"), price: t("signup.plan.starter.price"), description: t("signup.plan.starter.desc"), features: [t("signup.plan.starter.f1"), t("signup.plan.starter.f2")] },
+    { id: "pro",     name: t("signup.plan.pro.name"),     price: t("signup.plan.pro.price"),     description: t("signup.plan.pro.desc"),     features: [t("signup.plan.pro.f1"), t("signup.plan.pro.f2")] },
     { id: "premium", name: t("signup.plan.premium.name"), price: t("signup.plan.premium.price"), description: t("signup.plan.premium.desc"), features: [t("signup.plan.premium.f1"), t("signup.plan.premium.f2")] },
   ];
 }
@@ -47,7 +47,7 @@ function SignupPage() {
   const t = useT();
   const navigate = useNavigate();
   const { plan } = useSearch({ from: "/signup" }) as SignupSearch;
-  const [selectedPlan, setSelectedPlan] = useState<SignupPlan>(plan ?? "free");
+  const [selectedPlan, setSelectedPlan] = useState<SignupPlan>(plan ?? "starter");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

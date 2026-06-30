@@ -44,7 +44,7 @@ const COUNTRY_TO_CURRENCY: Record<string, CurrencyCode> = {
 };
 
 type Plan = {
-  id: "starter" | "professional" | "premium";
+  id: "starter" | "pro" | "premium";
   name: string;
   basePrice: number;
   tagline: string;
@@ -90,7 +90,7 @@ function SubscribePage() {
 
   const PLANS: Plan[] = [
     { id: "starter", name: t("plans.starter.name"), basePrice: 24.99, tagline: t("plans.starter.tagline") },
-    { id: "professional", name: t("plans.professional.name"), basePrice: 34.99, tagline: t("plans.professional.tagline"), highlighted: true },
+    { id: "pro", name: t("plans.professional.name"), basePrice: 34.99, tagline: t("plans.professional.tagline"), highlighted: true },
     { id: "premium", name: t("plans.premium.name"), basePrice: 69.99, tagline: t("plans.premium.tagline") },
   ];
 
@@ -114,7 +114,7 @@ function SubscribePage() {
 
   const [currency, setCurrency] = useState<CurrencyCode>("EUR");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
-  const [selectedPlan, setSelectedPlan] = useState<Plan["id"]>("professional");
+  const [selectedPlan, setSelectedPlan] = useState<Plan["id"]>("pro");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
