@@ -91,14 +91,15 @@ function SignupPage() {
     if (error) {
       const msg = error.message || "";
       if (/already registered|already exists|user.*exists/i.test(msg)) {
-        toast.error("Este email já está registado. Tente entrar em vez de criar conta.");
+        toast.error(t("signup.emailExists"));
       } else if (/database error|unexpected/i.test(msg)) {
-        toast.error("Erro ao criar conta. Por favor tente novamente ou contacte o suporte.");
+        toast.error(t("signup.dbError"));
       } else {
-        toast.error("Erro ao criar conta: " + msg);
+        toast.error(t("signup.dbError") + " " + msg);
       }
       return;
     }
+
     if (data.user?.id) {
       sendTransactionalEmail({
         templateName: "welcome",
