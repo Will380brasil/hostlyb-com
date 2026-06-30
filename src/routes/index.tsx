@@ -271,16 +271,19 @@ function CleaningSection() {
       <div className="cine-content">
         <p className="cine-time" data-reveal>14:00 — A LIMPEZA</p>
         <h2 className="cine-h2" data-reveal style={{ animationDelay: "0.15s" }}>
-          Limpeza concluída.<br />
-          <span className="cine-h2-thin">6 fotos. 1 objeto esquecido. Tudo registado.</span>
+          Esqueceram algo?<br />
+          <span className="cine-h2-thin">A faxineira fotografa. Você recebe na hora.</span>
         </h2>
 
-        <div className="cine-gallery" data-reveal style={{ animationDelay: "0.4s" }}>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="cine-photo" style={{ animationDelay: `${0.5 + i * 0.12}s` }}>
-              <Camera size={20} />
-              <span>Foto {i}</span>
-            </div>
+        <div className="cine-gallery cine-gallery-real" data-reveal style={{ animationDelay: "0.4s" }}>
+          {FORGOTTEN_ITEMS.map((item, i) => (
+            <figure key={item.label} className="cine-photo cine-photo-real" style={{ animationDelay: `${0.5 + i * 0.14}s` }}>
+              <img src={item.src} alt={item.label} loading="lazy" width={1024} height={1024} />
+              <figcaption>
+                <Camera size={12} />
+                <span>{item.label}</span>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>
