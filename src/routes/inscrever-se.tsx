@@ -147,6 +147,7 @@ function SubscribePage() {
   const [dial, setDial] = useState("+351");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
