@@ -71,3 +71,50 @@ export function buildLandingHead(lang: Lang) {
     scripts: [],
   };
 }
+
+function detectLang(): string {
+  if (typeof navigator === "undefined") return "pt";
+  return (navigator.language || "pt").slice(0, 2).toLowerCase();
+}
+
+const LOGIN_META: Record<string, { title: string; description: string }> = {
+  pt: { title: "Entrar — Hostlyb", description: "Aceda à sua conta Hostlyb." },
+  en: { title: "Sign in — Hostlyb", description: "Access your Hostlyb account." },
+  es: { title: "Iniciar sesión — Hostlyb", description: "Accede a tu cuenta Hostlyb." },
+  fr: { title: "Se connecter — Hostlyb", description: "Accédez à votre compte Hostlyb." },
+  de: { title: "Anmelden — Hostlyb", description: "Greifen Sie auf Ihr Hostlyb-Konto zu." },
+  it: { title: "Accedi — Hostlyb", description: "Accedi al tuo account Hostlyb." },
+};
+
+export function buildLoginHead() {
+  const lang = detectLang();
+  const m = LOGIN_META[lang] ?? LOGIN_META.pt;
+  return {
+    meta: [
+      { title: m.title },
+      { name: "description", content: m.description },
+      { name: "robots", content: "noindex" },
+    ],
+  };
+}
+
+const SIGNUP_META: Record<string, { title: string; description: string }> = {
+  pt: { title: "Inscrever-se — Planos Hostlyb", description: "Escolha o plano ideal para sua operação. 14 dias grátis, sem cartão de crédito." },
+  en: { title: "Sign up — Hostlyb Plans", description: "Pick the plan that fits your operation. 14 days free, no credit card." },
+  es: { title: "Inscribirse — Planes Hostlyb", description: "Elige el plan ideal para tu operación. 14 días gratis, sin tarjeta de crédito." },
+  fr: { title: "S'inscrire — Plans Hostlyb", description: "Choisissez le plan idéal pour votre opération. 14 jours gratuits, sans carte." },
+  de: { title: "Registrieren — Hostlyb-Pläne", description: "Wählen Sie den richtigen Plan. 14 Tage kostenlos, keine Kreditkarte." },
+  it: { title: "Iscriviti — Piani Hostlyb", description: "Scegli il piano ideale. 14 giorni gratis, senza carta di credito." },
+};
+
+export function buildSignupHead() {
+  const lang = detectLang();
+  const m = SIGNUP_META[lang] ?? SIGNUP_META.pt;
+  return {
+    meta: [
+      { title: m.title },
+      { name: "description", content: m.description },
+      { name: "robots", content: "noindex" },
+    ],
+  };
+}

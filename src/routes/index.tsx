@@ -29,31 +29,6 @@ const FAQ_ITEMS_SEO = [
 const BASE_URL = "https://www.hostlyb.com";
 const OG_IMAGE = `${BASE_URL}/og-cover.jpg`;
 
-const JSON_LD = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "SoftwareApplication",
-      name: "Hostlyb",
-      description: "Gestão de Airbnb sem esforço. Fotos de limpeza, alertas e calendário num só sítio.",
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web, iOS, Android",
-      url: BASE_URL,
-      image: OG_IMAGE,
-      offers: [{ "@type": "Offer", price: "19.99", priceCurrency: "EUR", url: `${BASE_URL}/signup` }],
-      aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "2400", bestRating: "5", worstRating: "1" },
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: FAQ_ITEMS_SEO.map((it) => ({
-        "@type": "Question",
-        name: it.q,
-        acceptedAnswer: { "@type": "Answer", text: it.a },
-      })),
-    },
-  ],
-};
-
 export const Route = createFileRoute("/")({
   head: () => buildLandingHead("pt"),
   component: LandingPage,
@@ -120,10 +95,35 @@ export function LandingPage() {
     initScrollDepth();
   }, []);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        name: "Hostlyb",
+        description: t("hero.subtitle"),
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web, iOS, Android",
+        url: BASE_URL,
+        image: OG_IMAGE,
+        offers: [{ "@type": "Offer", price: "19.99", priceCurrency: "EUR", url: `${BASE_URL}/signup` }],
+        aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "2400", bestRating: "5", worstRating: "1" },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: FAQ_ITEMS_SEO.map((it) => ({
+          "@type": "Question",
+          name: t(it.qKey),
+          acceptedAnswer: { "@type": "Answer", text: t(it.aKey) },
+        })),
+      },
+    ],
+  };
+
   return (
     <>
       <style>{cinematicCSS}</style>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Fixed nav */}
       <nav className="cine-nav">

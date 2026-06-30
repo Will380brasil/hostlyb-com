@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocale } from "@/lib/i18n";
+import { buildLoginHead } from "@/lib/landing-head";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -12,12 +13,7 @@ export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): LoginSearch => ({
     redirect: typeof s.redirect === "string" ? s.redirect : undefined,
   }),
-  head: () => ({
-    meta: [
-      { title: "Entrar — Hostlyb" },
-      { name: "description", content: "Aceda à sua conta Hostlyb." },
-    ],
-  }),
+  head: () => buildLoginHead(),
   component: LoginPage,
 });
 

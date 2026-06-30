@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { buildSignupHead } from "@/lib/landing-head";
 import {
   Check,
   Sparkles,
@@ -20,16 +21,7 @@ import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inscrever-se")({
-  head: () => ({
-    meta: [
-      { title: "Inscrever-se — Planos Hostlyb" },
-      {
-        name: "description",
-        content:
-          "Escolha o plano ideal para sua operação. 14 dias grátis, sem cartão de crédito.",
-      },
-    ],
-  }),
+  head: () => buildSignupHead(),
   component: SubscribePage,
 });
 
