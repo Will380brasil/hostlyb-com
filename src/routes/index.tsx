@@ -149,6 +149,7 @@ export function LandingPage() {
 
 /* ---------------- Section 1: HERO with video ---------------- */
 function HeroSection() {
+  const t = useT();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoFailed, setVideoFailed] = useState(false);
   useEffect(() => {
