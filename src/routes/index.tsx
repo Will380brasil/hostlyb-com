@@ -5,6 +5,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { buildLandingHead } from "@/lib/landing-head";
 import phoneVideo from "@/assets/phone-relax.mp4.asset.json";
+import phoneVideoWebm from "@/assets/phone-relax.webm.asset.json";
 import forgottenPhone from "@/assets/forgotten-phone.jpg";
 import forgottenKeys from "@/assets/forgotten-keys.jpg";
 import forgottenToy from "@/assets/forgotten-toy.jpg";
@@ -197,7 +198,6 @@ function HeroSection() {
       <video
         ref={videoRef}
         className="cine-video"
-        src={phoneVideo.url}
         poster={heroPoster}
         autoPlay
         muted
@@ -208,7 +208,10 @@ function HeroSection() {
         controls={false}
         disablePictureInPicture
         style={videoFailed ? { display: "none" } : undefined}
-      />
+      >
+        <source src={phoneVideoWebm.url} type="video/webm" />
+        <source src={phoneVideo.url} type="video/mp4" />
+      </video>
       <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
