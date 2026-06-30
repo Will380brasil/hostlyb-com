@@ -229,9 +229,9 @@ function FinanceiroPage() {
       {open && (
         <div onClick={() => setOpen(false)} style={modalBg}>
           <div onClick={(e) => e.stopPropagation()} style={modal}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, marginTop: 0 }}>{editing ? "Editar" : "Nova"} transação</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, marginTop: 0 }}>{editing ? t("fin.edit") : t("fin.new")}</h2>
             <div style={{ display: "grid", gap: 10 }}>
-              <Field label="Tipo *" error={errors.type}>
+              <Field label={`${t("fin.type")} *`} error={errors.type}>
                 <div style={{ display: "flex", gap: 8 }}>
                   {(["entrada", "saida"] as const).map((tp) => {
                     const sel = form.type === tp;
@@ -240,81 +240,81 @@ function FinanceiroPage() {
                       <button key={tp} type="button"
                         onClick={() => setForm({ ...form, type: tp, category: "", guest_id: null, cleaning_job_id: null })}
                         style={{ flex: 1, padding: 10, background: sel ? c + "18" : "#f7f7f7", border: `2px solid ${sel ? c : "transparent"}`, borderRadius: 8, fontWeight: 700, color: sel ? c : "#616161", cursor: "pointer" }}>
-                        {tp === "entrada" ? "↑ Entrada" : "↓ Saída"}
+                        {tp === "entrada" ? `↑ ${t("fin.entry")}` : `↓ ${t("fin.exit")}`}
                       </button>
                     );
                   })}
                 </div>
               </Field>
 
-              <Field label="Categoria *" error={errors.category}>
+              <Field label={`${t("fin.category")} *`} error={errors.category}>
                 <select value={form.category || ""} onChange={(e) => setForm({ ...form, category: e.target.value })} style={inpErr(!!errors.category)}>
-                  <option value="">Selecione…</option>
+                  <option value="">{t("fin.select")}</option>
                   {categories.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </Field>
 
-              <Field label="Descrição" error={errors.description}>
+              <Field label={t("fin.colDescription")} error={errors.description}>
                 <input value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} maxLength={500} style={inpErr(!!errors.description)} />
               </Field>
 
-              <Field label="Valor (R$) *" error={errors.amount}>
+              <Field label={`${t("fin.amount")} *`} error={errors.amount}>
                 <input type="number" step="0.01" min={0} value={form.amount ?? 0} onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })} style={inpErr(!!errors.amount)} />
               </Field>
 
-              <Field label="Data *" error={errors.date}>
+              <Field label={`${t("fin.date")} *`} error={errors.date}>
                 <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} style={inpErr(!!errors.date)} />
               </Field>
 
-              <Field label="Status *" error={errors.status}>
+              <Field label={`${t("fin.colStatus")} *`} error={errors.status}>
                 <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })} style={inpErr(!!errors.status)}>
-                  <option value="pago">Pago</option><option value="pendente">Pendente</option><option value="cancelado">Cancelado</option>
+                  <option value="pago">{t("status.pago")}</option><option value="pendente">{t("status.pendente")}</option><option value="cancelado">{t("status.cancelado")}</option>
                 </select>
               </Field>
 
-              <Field label="Método de pagamento">
+              <Field label={t("fin.method")}>
                 <select value={form.payment_method || ""} onChange={(e) => setForm({ ...form, payment_method: e.target.value })} style={inp}>
-                  <option value="pix">PIX</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option><option value="outro">Outro</option>
+                  <option value="pix">PIX</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option><option value="outro">{t("g.none")}</option>
                 </select>
               </Field>
 
               <div style={{ borderTop: "1px solid #e5e7eb", margin: "8px 0 4px", paddingTop: 8 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", margin: 0, textTransform: "uppercase" }}>Vincular (opcional)</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", margin: 0, textTransform: "uppercase" }}>{t("fin.link")}</p>
               </div>
 
-              <Field label="Imóvel">
+              <Field label={t("fin.property")}>
                 <select value={form.property_id || ""} onChange={(e) => setForm({ ...form, property_id: e.target.value || null, guest_id: null, cleaning_job_id: null })} style={inp}>
-                  <option value="">Nenhum</option>
+                  <option value="">{t("g.none")}</option>
                   {(properties as any[]).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </Field>
 
               {form.property_id && guests.length > 0 && (
-                <Field label="Hóspede">
+                <Field label={t("fin.guest")}>
                   <select value={form.guest_id || ""} onChange={(e) => setForm({ ...form, guest_id: e.target.value || null })} style={inp}>
-                    <option value="">Nenhum</option>
+                    <option value="">{t("g.none")}</option>
                     {(guests as any[]).map((g) => <option key={g.id} value={g.id}>{g.name} ({g.checkin_date} → {g.checkout_date})</option>)}
                   </select>
                 </Field>
               )}
 
               {form.property_id && form.type === "saida" && jobs.length > 0 && (
-                <Field label="Limpeza">
+                <Field label={t("fin.cleaning")}>
                   <select value={form.cleaning_job_id || ""} onChange={(e) => setForm({ ...form, cleaning_job_id: e.target.value || null })} style={inp}>
-                    <option value="">Nenhuma</option>
-                    {(jobs as any[]).map((j) => <option key={j.id} value={j.id}>{j.scheduled_date} — {j.cleaners?.name ?? "Faxineira"}</option>)}
+                    <option value="">{t("g.none")}</option>
+                    {(jobs as any[]).map((j) => <option key={j.id} value={j.id}>{j.scheduled_date} — {j.cleaners?.name ?? t("lim.cleaner")}</option>)}
                   </select>
                 </Field>
               )}
 
-              <Field label="Observações">
+              <Field label={t("fin.notes")}>
                 <textarea value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} maxLength={1000} style={inp} />
               </Field>
             </div>
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
-              <button onClick={() => setOpen(false)} style={btnGhost}>Cancelar</button>
+              <button onClick={() => setOpen(false)} style={btnGhost}>{t("g.cancel")}</button>
               <button onClick={() => save.mutate()} disabled={save.isPending} style={btnPrimary}>
-                {save.isPending ? "Salvando…" : "Salvar"}
+                {save.isPending ? t("g.saving") : t("g.save")}
               </button>
             </div>
           </div>
