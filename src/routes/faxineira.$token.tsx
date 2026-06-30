@@ -546,9 +546,9 @@ function CleanerPortal({ token }: { token: string }) {
         )}
 
         <section className="rounded-2xl bg-card border border-card-border p-4">
-          <h3 className="font-bold mb-3">Checklist</h3>
+          <h3 className="font-bold mb-3">{t("fax.checklist")}</h3>
           {checklist.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Nenhum item.</p>
+            <p className="text-xs text-muted-foreground">{t("fax.portal.checklistEmpty")}</p>
           ) : (
             <ul className="space-y-2">
               {checklist.map((it, i) => (
@@ -569,9 +569,9 @@ function CleanerPortal({ token }: { token: string }) {
 
         <section className="rounded-2xl bg-card border border-card-border p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold">Fotos da limpeza</h3>
+            <h3 className="font-bold">{t("fax.photos")}</h3>
             <label className="text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1" style={{ background: "var(--color-accent)", color: "white" }}>
-              {uploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />} Adicionar
+              {uploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />} {t("fax.portal.addPhoto")}
               <input type="file" accept="image/*" capture="environment" className="hidden" onChange={onAddPhoto} disabled={uploading} />
             </label>
           </div>
@@ -579,19 +579,19 @@ function CleanerPortal({ token }: { token: string }) {
             <div className="grid grid-cols-3 gap-2">
               {data.photos.map((p, i) => <SignedImage key={i} bucket="cleaning-photos" path={p} alt="" className="aspect-square object-cover rounded-lg w-full" />)}
             </div>
-          ) : <p className="text-xs text-muted-foreground">Nenhuma foto enviada.</p>}
+          ) : <p className="text-xs text-muted-foreground">{t("fax.portal.noPhotos")}</p>}
         </section>
 
         <section className="rounded-2xl bg-card border border-card-border p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold flex items-center gap-2"><Package size={14} /> Objetos esquecidos</h3>
+            <h3 className="font-bold flex items-center gap-2"><Package size={14} /> {t("fax.forgotten")}</h3>
             <button onClick={() => setShowItemForm(true)} className="text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1" style={{ background: "var(--color-accent)", color: "white" }}>
-              <Plus size={12} /> Registar objeto
+              <Plus size={12} /> {t("fax.portal.forgottenRegister")}
             </button>
           </div>
 
           {data.forgotten_items.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Nada registado.</p>
+            <p className="text-xs text-muted-foreground">{t("fax.portal.forgottenNothing")}</p>
           ) : (
             <ul className="space-y-2">
               {data.forgotten_items.map((it) => (
@@ -612,26 +612,26 @@ function CleanerPortal({ token }: { token: string }) {
           <div className="fixed inset-0 z-50 bg-black/50 grid place-items-end sm:place-items-center px-4 py-6" onClick={() => !uploading && setShowItemForm(false)}>
             <div className="w-full max-w-[460px] rounded-2xl bg-card border border-card-border p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between">
-                <h3 className="font-bold flex items-center gap-2"><Package size={16} /> Registar objeto esquecido</h3>
+                <h3 className="font-bold flex items-center gap-2"><Package size={16} /> {t("fax.portal.modalTitle")}</h3>
                 <button onClick={() => setShowItemForm(false)} disabled={uploading} className="p-1 text-muted-foreground"><X size={18} /></button>
               </div>
 
               <label className="block">
-                <span className="text-xs font-semibold text-muted-foreground">Descrição do objeto</span>
-                <input value={newItem.description} onChange={(e) => setNewItem((n) => ({ ...n, description: e.target.value }))} placeholder="Ex.: Carregador de telemóvel" autoFocus
+                <span className="text-xs font-semibold text-muted-foreground">{t("fax.portal.modalDesc")}</span>
+                <input value={newItem.description} onChange={(e) => setNewItem((n) => ({ ...n, description: e.target.value }))} placeholder={t("fax.portal.modalDescPh")} autoFocus
                   className="mt-1 w-full px-3 py-2.5 rounded-lg border border-card-border bg-background text-sm" />
               </label>
 
               <label className="block">
-                <span className="text-xs font-semibold text-muted-foreground">Localização no imóvel</span>
-                <input value={newItem.location} onChange={(e) => setNewItem((n) => ({ ...n, location: e.target.value }))} placeholder="Ex.: Quarto 1, casa de banho, sala"
+                <span className="text-xs font-semibold text-muted-foreground">{t("fax.portal.modalLoc")}</span>
+                <input value={newItem.location} onChange={(e) => setNewItem((n) => ({ ...n, location: e.target.value }))} placeholder={t("fax.portal.modalLocPh")}
                   className="mt-1 w-full px-3 py-2.5 rounded-lg border border-card-border bg-background text-sm" />
               </label>
 
               <div>
-                <span className="text-xs font-semibold text-muted-foreground">Foto (opcional)</span>
+                <span className="text-xs font-semibold text-muted-foreground">{t("fax.portal.modalPhotoOpt")}</span>
                 <label className="mt-1 flex items-center justify-center gap-2 py-3 rounded-lg border border-dashed border-card-border text-xs cursor-pointer">
-                  <Camera size={14} /> {newItemFile ? newItemFile.name : "Tirar foto / escolher imagem"}
+                  <Camera size={14} /> {newItemFile ? newItemFile.name : t("fax.portal.modalPhotoCta")}
                   <input type="file" accept="image/*" capture="environment" className="hidden" disabled={uploading}
                     onChange={(e) => setNewItemFile(e.target.files?.[0] ?? null)} />
                 </label>
@@ -640,12 +640,12 @@ function CleanerPortal({ token }: { token: string }) {
               <div className="flex gap-2 pt-2">
                 <button onClick={() => setShowItemForm(false)} disabled={uploading}
                   className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-card-border">
-                  Cancelar
+                  {t("g.cancel")}
                 </button>
                 <button disabled={uploading || !newItem.description.trim()} onClick={() => onAddForgottenWithPhoto(newItemFile)}
                   className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 flex items-center justify-center gap-2"
                   style={{ background: "var(--color-accent)" }}>
-                  {uploading ? <><Loader2 size={14} className="animate-spin" /> A registar…</> : "Registar"}
+                  {uploading ? <><Loader2 size={14} className="animate-spin" /> {t("fax.portal.modalSubmitting")}</> : t("fax.portal.modalSubmit")}
                 </button>
               </div>
             </div>
@@ -653,15 +653,15 @@ function CleanerPortal({ token }: { token: string }) {
         )}
 
         <section className="rounded-2xl bg-card border border-card-border p-4">
-          <h3 className="font-bold mb-2">Observações</h3>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Algo importante para o anfitrião…"
+          <h3 className="font-bold mb-2">{t("fax.portal.notes")}</h3>
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder={t("fax.portal.notesPh")}
             className="w-full px-3 py-2 rounded-lg border border-card-border bg-background text-sm" />
         </section>
 
         <button onClick={() => setShowProblem(true)} disabled={uploading}
           className="w-full py-2.5 rounded-xl text-sm font-semibold border border-card-border flex items-center justify-center gap-2"
           style={{ color: "var(--color-destructive, #ef4444)" }}>
-          <AlertTriangle size={14} /> Reportar problema
+          <AlertTriangle size={14} /> {t("fax.reportProblem")}
         </button>
         {showProblem && <ReportProblemSheet token={token} onClose={() => setShowProblem(false)} onReported={afterProblemReported} />}
       </main>
@@ -670,14 +670,14 @@ function CleanerPortal({ token }: { token: string }) {
         {dirty && (
           <button onClick={() => update.mutate({ checklist, notes })} disabled={update.isPending}
             className="w-full py-2.5 rounded-xl text-sm font-semibold border border-card-border">
-            {update.isPending ? "A guardar…" : "Guardar progresso"}
+            {update.isPending ? t("g.saving") : t("fax.portal.saveProgress")}
           </button>
         )}
         <button onClick={() => update.mutate({ status: "concluido", checklist, notes })}
           disabled={!allDone || update.isPending || data.status === "concluido"}
           className="w-full py-3 rounded-2xl font-bold text-white disabled:opacity-50"
           style={{ background: "var(--color-accent)" }}>
-          {data.status === "concluido" ? "✓ Limpeza concluída" : allDone ? "Concluir limpeza" : `Conclua o checklist (${checklist.filter(c => c.done).length}/${checklist.length})`}
+          {data.status === "concluido" ? t("fax.portal.doneState") : allDone ? t("fax.portal.doneCta") : `${t("fax.portal.completeChecklist")} (${checklist.filter(c => c.done).length}/${checklist.length})`}
         </button>
         <div style={{ height: "env(safe-area-inset-bottom)" }} />
       </footer>
