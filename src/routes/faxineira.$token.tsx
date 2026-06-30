@@ -304,6 +304,7 @@ type Job = {
   status: string;
   scheduled_date: string;
   scheduled_time: string;
+  started_at: string | null;
   checklist: ChecklistItem[] | string[];
   photos: string[];
   notes: string | null;
@@ -316,6 +317,13 @@ type Job = {
 const STATUS_LABEL: Record<string, string> = {
   agendado: "Agendado", em_andamento: "Em andamento", concluido: "Concluído", problema: "Problema", cancelado: "Cancelado",
 };
+
+function formatTimer(secs: number) {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
+}
 
 function normalizeChecklist(raw: any): ChecklistItem[] {
   if (!Array.isArray(raw)) return [];
@@ -341,6 +349,7 @@ function CleanerPortal({ token }: { token: string }) {
   const [showItemForm, setShowItemForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showProblem, setShowProblem] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     if (data) {
@@ -348,6 +357,15 @@ function CleanerPortal({ token }: { token: string }) {
       setNotes(data.notes ?? "");
     }
   }, [data?.id]);
+
+  useEffect(() => {
+    if (!data?.started_at || data.status !== "em_andamento") { setElapsed(0); return; }
+    const start = new Date(data.started_at).getTime();
+    const tick = () => setElapsed(Math.floor((Date.now() - start) / 1000));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [data?.started_at, data?.status]);
 
   const update = useMutation({
     mutationFn: async (payload: { checklist?: any; notes?: string; status?: string; photos?: any }) => {
@@ -519,6 +537,13 @@ function CleanerPortal({ token }: { token: string }) {
           <button onClick={() => update.mutate({ status: "em_andamento" })} className="w-full py-3 rounded-2xl font-bold text-white" style={{ background: "var(--color-accent)" }}>
             Iniciar limpeza
           </button>
+        )}
+
+        {data.status === "em_andamento" && (
+          <section className="rounded-2xl border border-card-border p-4 text-center" style={{ background: "var(--color-accent)11" }}>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Limpeza em curso</p>
+            <p className="text-5xl font-mono font-bold tracking-widest" style={{ color: "var(--color-accent)" }}>{formatTimer(elapsed)}</p>
+          </section>
         )}
 
         <section className="rounded-2xl bg-card border border-card-border p-4">

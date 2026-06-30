@@ -35,7 +35,7 @@ function KpiCard({ icon: Icon, label, value, color }: { icon: any; label: string
 }
 
 function Dashboard() {
-  const { currency, lang } = useLocale();
+  const { currency, lang, t } = useLocale();
   const fm = (v: number) => formatMoney(v, currency, lang);
   const navigate = useNavigate();
   const { data: needsOnboarding } = useQuery({
@@ -101,8 +101,8 @@ function Dashboard() {
       <Onboarding open={onboarding.open} onClose={onboarding.close} />
       <section className="mb-2 flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm text-muted-foreground">Bem-vindo de volta 👋</p>
-          <h2 className="text-2xl font-bold">Sua operação hoje</h2>
+          <p className="text-sm text-muted-foreground">{t("app.welcome")}</p>
+          <h2 className="text-2xl font-bold">{t("app.todayOp")}</h2>
         </div>
         <OnboardingHelpButton onClick={onboarding.show} />
       </section>
@@ -124,21 +124,21 @@ function Dashboard() {
       <OperationProgress />
 
       <section className="grid grid-cols-2 gap-3 mt-6">
-        <KpiCard icon={Wallet} label="Receita potencial/mês" value={fm(monthlyRevenue)} color="#FF5A5F" />
-        <KpiCard icon={Home} label="Imóveis ativos" value={String(properties.length)} color="#4A9EFF" />
-        <KpiCard icon={Star} label="Avaliação média" value={`${avgRating} ★`} color="#FFB347" />
-        <KpiCard icon={UsersIcon} label="Hóspedes" value={String(guests.length)} color="#00C896" />
+        <KpiCard icon={Wallet} label={t("app.kpi.revenue")} value={fm(monthlyRevenue)} color="#FF5A5F" />
+        <KpiCard icon={Home} label={t("app.kpi.properties")} value={String(properties.length)} color="#4A9EFF" />
+        <KpiCard icon={Star} label={t("app.kpi.rating")} value={`${avgRating} ★`} color="#FFB347" />
+        <KpiCard icon={UsersIcon} label={t("app.kpi.guests")} value={String(guests.length)} color="#00C896" />
       </section>
 
       <section className="mt-7">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold">Seus imóveis</h3>
-          <Link to="/imoveis" className="text-xs text-muted-foreground flex items-center">Ver todos <ChevronRight size={14} /></Link>
+          <h3 className="font-bold">{t("app.yourProperties")}</h3>
+          <Link to="/imoveis" className="text-xs text-muted-foreground flex items-center">{t("app.viewAll")} <ChevronRight size={14} /></Link>
         </div>
         {properties.length === 0 ? (
           <div className="hostly-card text-center text-sm text-muted-foreground">
-            <p className="mb-2">Você ainda não cadastrou imóveis.</p>
-            <Link to="/imoveis" style={{ color: "var(--color-accent)" }}>Cadastrar agora →</Link>
+            <p className="mb-2">{t("app.noProperties")}</p>
+            <Link to="/imoveis" style={{ color: "var(--color-accent)" }}>{t("app.addNow")}</Link>
           </div>
         ) : (
           <div className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2">
@@ -150,7 +150,7 @@ function Dashboard() {
                 </div>
                 <p className="text-xs text-muted-foreground">{p.city ?? "—"} · {p.state ?? ""}</p>
                 <p className="text-sm font-mono mt-2" style={{ color: "var(--color-success)" }}>
-                  {fm(Number(p.income_monthly ?? 0))}<span className="text-xs text-muted-foreground"> /mês</span>
+                  {fm(Number(p.income_monthly ?? 0))}<span className="text-xs text-muted-foreground">{t("app.perMonth")}</span>
                 </p>
               </Link>
             ))}
@@ -160,11 +160,11 @@ function Dashboard() {
 
       <section className="mt-7">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold">Próximas limpezas</h3>
-          <Link to="/limpezas" className="text-xs text-muted-foreground flex items-center">Ver agenda <ChevronRight size={14} /></Link>
+          <h3 className="font-bold">{t("app.upcomingCleanings")}</h3>
+          <Link to="/limpezas" className="text-xs text-muted-foreground flex items-center">{t("app.viewSchedule")} <ChevronRight size={14} /></Link>
         </div>
         {jobs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma limpeza agendada.</p>
+          <p className="text-sm text-muted-foreground">{t("app.noCleanings")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {jobs.slice(0, 3).map((j: any) => (
@@ -175,7 +175,7 @@ function Dashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{j.properties?.name ?? "—"}</p>
-                  <p className="text-xs text-muted-foreground">{j.cleaners?.name ?? "Sem profissional"}</p>
+                  <p className="text-xs text-muted-foreground">{j.cleaners?.name ?? t("app.noStaff")}</p>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-1 text-xs text-muted-foreground justify-end">
@@ -191,13 +191,13 @@ function Dashboard() {
 
       {pendingForgotten > 0 && (
         <section className="mt-7 mb-2">
-          <h3 className="font-bold mb-3">Alertas</h3>
+          <h3 className="font-bold mb-3">{t("app.alertsTitle")}</h3>
           <Link to="/limpezas" className="hostly-card !p-4 flex items-start gap-3"
             style={{ background: "var(--color-warning-soft)", borderColor: "transparent" }}>
             <AlertTriangle size={18} style={{ color: "var(--color-warning)" }} className="mt-0.5" />
             <div className="text-sm">
-              <p className="font-semibold">{pendingForgotten} objeto(s) esquecido(s) pendentes</p>
-              <p className="text-muted-foreground text-xs mt-0.5">Marque como devolvido ou descartado.</p>
+              <p className="font-semibold">{pendingForgotten} {t("app.forgottenLabel")}</p>
+              <p className="text-muted-foreground text-xs mt-0.5">{t("app.forgottenAction")}</p>
             </div>
           </Link>
         </section>
