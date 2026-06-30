@@ -147,6 +147,7 @@ export function LandingPage() {
 /* ---------------- Section 1: HERO with video ---------------- */
 function HeroSection() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -154,14 +155,29 @@ function HeroSection() {
     (v as any).playsInline = true;
     v.setAttribute("playsinline", "");
     v.setAttribute("webkit-playsinline", "");
-    const tryPlay = () => v.play().catch(() => {});
+    let failTimer: number | undefined;
+    const tryPlay = () =>
+      v.play().then(() => setVideoFailed(false)).catch(() => {
+        failTimer = window.setTimeout(() => {
+          if (v.paused || v.readyState < 2) setVideoFailed(true);
+        }, 1500);
+      });
     tryPlay();
+    const onErr = () => setVideoFailed(true);
+    const onPlaying = () => setVideoFailed(false);
+    v.addEventListener("error", onErr);
+    v.addEventListener("stalled", onErr);
+    v.addEventListener("playing", onPlaying);
     const onVis = () => { if (!document.hidden) tryPlay(); };
     const onTouch = () => { tryPlay(); document.removeEventListener("touchstart", onTouch); document.removeEventListener("click", onTouch); };
     document.addEventListener("visibilitychange", onVis);
     document.addEventListener("touchstart", onTouch, { once: true, passive: true });
     document.addEventListener("click", onTouch, { once: true });
     return () => {
+      if (failTimer) clearTimeout(failTimer);
+      v.removeEventListener("error", onErr);
+      v.removeEventListener("stalled", onErr);
+      v.removeEventListener("playing", onPlaying);
       document.removeEventListener("visibilitychange", onVis);
       document.removeEventListener("touchstart", onTouch);
       document.removeEventListener("click", onTouch);
@@ -169,10 +185,20 @@ function HeroSection() {
   }, []);
   return (
     <section className="cine-section">
+      {/* Poster image — always rendered behind the video so the layout never jumps */}
+      <img
+        src={heroPoster}
+        alt=""
+        className="cine-video cine-poster"
+        width={1920}
+        height={1088}
+        aria-hidden="true"
+      />
       <video
         ref={videoRef}
         className="cine-video"
         src={phoneVideo.url}
+        poster={heroPoster}
         autoPlay
         muted
         loop
@@ -181,12 +207,8 @@ function HeroSection() {
         aria-hidden="true"
         controls={false}
         disablePictureInPicture
+        style={videoFailed ? { display: "none" } : undefined}
       />
-      <div className="cine-bg-hero-fallback" aria-hidden="true">
-        <div className="cine-orb cine-orb-1" />
-        <div className="cine-orb cine-orb-2" />
-        <div className="cine-grain" />
-      </div>
       <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
