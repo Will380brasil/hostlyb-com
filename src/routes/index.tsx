@@ -5,6 +5,17 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { buildLandingHead } from "@/lib/landing-head";
 import phoneVideo from "@/assets/phone-relax.mp4.asset.json";
+import forgottenPhone from "@/assets/forgotten-phone.jpg";
+import forgottenKeys from "@/assets/forgotten-keys.jpg";
+import forgottenToy from "@/assets/forgotten-toy.jpg";
+import forgottenWallet from "@/assets/forgotten-wallet.jpg";
+
+const FORGOTTEN_ITEMS = [
+  { src: forgottenPhone, label: "Telemóvel · Quarto" },
+  { src: forgottenKeys, label: "Chaves · Sala" },
+  { src: forgottenToy, label: "Brinquedo · Cama" },
+  { src: forgottenWallet, label: "Carteira · WC" },
+];
 
 const FAQ_ITEMS_SEO = [
   { q: "Preciso de cartão de crédito para começar?", a: "Não. 14 dias grátis e sem cartão." },
