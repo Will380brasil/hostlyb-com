@@ -294,6 +294,37 @@ const pt: Dict = {
   "legal.pt.insurance.t": "Seguro de responsabilidade civil",
   "legal.pt.insurance.b": "É obrigatório ter seguro de responsabilidade civil multirriscos que cubra danos a hóspedes e a terceiros, conforme o Decreto-Lei n.º 128/2014.",
 
+  "login.description": "Aceda à sua conta Hostlyb.",
+  "login.forgotPassword": "Esqueci a senha",
+  "login.error": "E-mail ou senha incorretos",
+
+  "signup.description": "Escolha o seu plano e crie a sua conta Hostlyb.",
+  "signup.fullName": "Nome completo",
+  "signup.confirmPassword": "Confirmar palavra-passe",
+  "signup.selectPlan": "Selecione um plano",
+  "signup.continue": "Continuar",
+  "signup.backToPlans": "Voltar aos planos",
+  "signup.createAccount": "Criar a sua conta",
+
+  "plans.starter.name": "Starter",
+  "plans.starter.tagline": "Para quem está a começar",
+  "plans.professional.name": "Professional",
+  "plans.professional.tagline": "Para operações em crescimento",
+  "plans.premium.name": "Premium",
+  "plans.premium.tagline": "Para equipas profissionais",
+  "plans.enterprise.name": "Enterprise",
+  "plans.enterprise.tagline": "Para grandes operações",
+
+  "landing.forgotten.phone": "Telemóvel · Quarto",
+  "landing.forgotten.keys": "Chaves · Sala",
+  "landing.forgotten.toy": "Brinquedo · Cama",
+  "landing.forgotten.wallet": "Carteira · WC",
+  "landing.faq.noCard.q": "Preciso de cartão de crédito para começar?",
+  "landing.faq.noCard.a": "Não. 14 dias grátis e sem cartão.",
+  "landing.faq.cleanerApp.q": "A faxineira precisa de app?",
+  "landing.faq.cleanerApp.a": "Não. Recebe um link único e acede pelo navegador.",
+  "landing.faq.cancel.q": "Posso cancelar quando quiser?",
+  "landing.faq.cancel.a": "Sim, sem contrato e sem multa.",
 };
 
 const en: Dict = {
@@ -538,6 +569,37 @@ const en: Dict = {
   "legal.pt.insurance.t": "Civil liability insurance",
   "legal.pt.insurance.b": "Multi-risk civil liability insurance covering harm to guests and third parties is mandatory under Decree-Law 128/2014.",
 
+  "login.description": "Access your Hostlyb account.",
+  "login.forgotPassword": "Forgot password",
+  "login.error": "Invalid email or password",
+
+  "signup.description": "Pick your plan and create your Hostlyb account.",
+  "signup.fullName": "Full name",
+  "signup.confirmPassword": "Confirm password",
+  "signup.selectPlan": "Select a plan",
+  "signup.continue": "Continue",
+  "signup.backToPlans": "Back to plans",
+  "signup.createAccount": "Create your account",
+
+  "plans.starter.name": "Starter",
+  "plans.starter.tagline": "To get started",
+  "plans.professional.name": "Professional",
+  "plans.professional.tagline": "For growing operations",
+  "plans.premium.name": "Premium",
+  "plans.premium.tagline": "For professional teams",
+  "plans.enterprise.name": "Enterprise",
+  "plans.enterprise.tagline": "For large operations",
+
+  "landing.forgotten.phone": "Phone · Bedroom",
+  "landing.forgotten.keys": "Keys · Living room",
+  "landing.forgotten.toy": "Toy · Bed",
+  "landing.forgotten.wallet": "Wallet · Bathroom",
+  "landing.faq.noCard.q": "Do I need a credit card to start?",
+  "landing.faq.noCard.a": "No. 14 days free, no card required.",
+  "landing.faq.cleanerApp.q": "Does my cleaner need an app?",
+  "landing.faq.cleanerApp.a": "No. They get a unique link and open it in the browser.",
+  "landing.faq.cancel.q": "Can I cancel anytime?",
+  "landing.faq.cancel.a": "Yes, no contract and no fees.",
 };
 
 const es: Dict = {
@@ -782,6 +844,37 @@ const es: Dict = {
   "legal.pt.insurance.t": "Seguro de responsabilidad civil",
   "legal.pt.insurance.b": "Es obligatorio un seguro multirriesgo de responsabilidad civil que cubra daños a huéspedes y terceros (Decreto-Ley 128/2014).",
 
+  "login.description": "Accede a tu cuenta Hostlyb.",
+  "login.forgotPassword": "Olvidé mi contraseña",
+  "login.error": "Email o contraseña incorrectos",
+
+  "signup.description": "Elige tu plan y crea tu cuenta Hostlyb.",
+  "signup.fullName": "Nombre completo",
+  "signup.confirmPassword": "Confirmar contraseña",
+  "signup.selectPlan": "Selecciona un plan",
+  "signup.continue": "Continuar",
+  "signup.backToPlans": "Volver a los planes",
+  "signup.createAccount": "Crear tu cuenta",
+
+  "plans.starter.name": "Starter",
+  "plans.starter.tagline": "Para empezar",
+  "plans.professional.name": "Professional",
+  "plans.professional.tagline": "Para operaciones en crecimiento",
+  "plans.premium.name": "Premium",
+  "plans.premium.tagline": "Para equipos profesionales",
+  "plans.enterprise.name": "Enterprise",
+  "plans.enterprise.tagline": "Para grandes operaciones",
+
+  "landing.forgotten.phone": "Móvil · Dormitorio",
+  "landing.forgotten.keys": "Llaves · Salón",
+  "landing.forgotten.toy": "Juguete · Cama",
+  "landing.forgotten.wallet": "Cartera · Baño",
+  "landing.faq.noCard.q": "¿Necesito tarjeta de crédito para empezar?",
+  "landing.faq.noCard.a": "No. 14 días gratis sin tarjeta.",
+  "landing.faq.cleanerApp.q": "¿La limpiadora necesita una app?",
+  "landing.faq.cleanerApp.a": "No. Recibe un enlace único y entra desde el navegador.",
+  "landing.faq.cancel.q": "¿Puedo cancelar cuando quiera?",
+  "landing.faq.cancel.a": "Sí, sin contrato ni penalización.",
 };
 
 const fr: Dict = {
