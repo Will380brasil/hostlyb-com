@@ -184,6 +184,10 @@ function SubscribePage() {
       toast.error("A palavra-passe é demasiado fraca");
       return;
     }
+    if (password !== confirmPassword) {
+      toast.error("As palavras-passe não coincidem");
+      return;
+    }
     setLoading(true);
     try {
       const fullPhone = `${dial}${phone.replace(/\D/g, "")}`;
