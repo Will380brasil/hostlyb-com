@@ -83,6 +83,7 @@ function CleanerGate() {
 /* --------------------------- Signup screen --------------------------- */
 
 function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
+  const t = useT();
   const [name, setName] = useState(info.cleaner_name ?? "");
   const [email, setEmail] = useState(info.cleaner_email ?? "");
   const [phone, setPhone] = useState(info.cleaner_phone ?? "");
@@ -107,19 +108,17 @@ function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
       if (error) {
         const msg = (error.message || "").toLowerCase();
         if (msg.includes("already registered") || msg.includes("already exists")) {
-          setErr("Já existe uma conta com este email. Faça login abaixo.");
+          setErr(t("fax.signup.errExists"));
         } else if (msg.includes("password")) {
-          setErr("Palavra-passe inválida (mínimo 6 caracteres).");
+          setErr(t("fax.signup.errPassword"));
         } else {
-          setErr("Erro ao criar conta. Tente novamente.");
+          setErr(t("fax.signup.errCreate"));
         }
         return;
       }
-      // signUp also signs the user in when email confirmation is disabled.
-      // Page rerenders via useAuth and the gate takes over.
-      toast.success("Conta criada — a abrir o checklist…");
+      toast.success(t("fax.signup.success"));
     } catch {
-      setErr("Erro inesperado. Tente novamente.");
+      setErr(t("fax.signup.errUnexpected"));
     } finally {
       setLoading(false);
     }
@@ -129,30 +128,27 @@ function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
     <div className="min-h-screen px-5 py-8 mx-auto w-full max-w-[460px]">
       <div className="text-center mb-6">
         <div className="text-5xl mb-2">🧹</div>
-        <h1 className="text-2xl font-black">Criar a sua conta</h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          A primeira vez que aceita uma limpeza precisa de criar uma conta rápida.
-          Depois fica com tudo guardado em <strong>Minha Agenda</strong>.
-        </p>
+        <h1 className="text-2xl font-black">{t("fax.signup.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-2">{t("fax.signup.subtitle")}</p>
         <p className="text-xs text-muted-foreground mt-3">
-          Limpeza em <strong>{info.property_name}</strong>
+          {t("fax.signup.cleaningAt")} <strong>{info.property_name}</strong>
         </p>
       </div>
 
       <form onSubmit={submit} className="flex flex-col gap-3">
-        <label className="text-xs font-semibold text-muted-foreground">Nome completo
+        <label className="text-xs font-semibold text-muted-foreground">{t("fax.signup.name")}
           <input required value={name} onChange={(e) => setName(e.target.value)}
             className="mt-1 w-full px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
         </label>
-        <label className="text-xs font-semibold text-muted-foreground">Email
+        <label className="text-xs font-semibold text-muted-foreground">{t("fax.signup.email")}
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
             className="mt-1 w-full px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
         </label>
-        <label className="text-xs font-semibold text-muted-foreground">Telefone / WhatsApp
+        <label className="text-xs font-semibold text-muted-foreground">{t("fax.signup.phone")}
           <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
             className="mt-1 w-full px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
         </label>
-        <label className="text-xs font-semibold text-muted-foreground">Palavra-passe (mín. 6)
+        <label className="text-xs font-semibold text-muted-foreground">{t("fax.signup.password")}
           <div className="relative mt-1">
             <input type={showPwd ? "text" : "password"} required minLength={6} value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -167,9 +163,9 @@ function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
         {err && (
           <div className="text-xs text-destructive bg-destructive/10 rounded-lg p-3">
             {err}
-            {err.includes("Já existe") && (
+            {err === t("fax.signup.errExists") && (
               <button type="button" onClick={() => setMode("login")} className="block mt-1 underline font-semibold">
-                Fazer login →
+                {t("fax.signup.loginCta")}
               </button>
             )}
           </div>
@@ -177,13 +173,13 @@ function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
 
         <button disabled={loading} className="mt-2 py-3 rounded-2xl font-bold text-white disabled:opacity-50"
           style={{ background: "var(--color-accent)" }}>
-          {loading ? "A criar conta…" : "Criar conta e abrir checklist"}
+          {loading ? t("fax.signup.submitting") : t("fax.signup.submit")}
         </button>
 
         <p className="text-xs text-center text-muted-foreground mt-2">
-          Já tem conta?{" "}
+          {t("fax.signup.hasAccount")}{" "}
           <button type="button" onClick={() => setMode("login")} className="font-semibold underline" style={{ color: "var(--color-accent)" }}>
-            Fazer login
+            {t("fax.signup.login")}
           </button>
         </p>
       </form>
