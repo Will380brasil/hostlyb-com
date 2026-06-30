@@ -298,7 +298,7 @@ function SubscribePage() {
 
         {/* Plans */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PLANS.map((plan) => {
+          {PLANS_I18N.map((plan) => {
             const isSelected = selectedPlan === plan.id;
             return (
               <button
@@ -348,7 +348,7 @@ function SubscribePage() {
                       : "bg-secondary text-secondary-foreground"
                   }`}
                 >
-                  {isSelected ? "Selecionado" : "Selecionar plano"}
+                  {isSelected ? (t("signup.selectPlan") || "Selecionado") : (t("signup.selectPlan") || "Selecionar plano")}
                 </div>
               </button>
             );
@@ -358,17 +358,17 @@ function SubscribePage() {
         {/* Signup form */}
         <section className="max-w-xl mx-auto rounded-2xl border border-border bg-card p-8 space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold">Criar a sua conta</h2>
+            <h2 className="text-2xl font-bold">{t("signup.createAccount") || "Criar a sua conta"}</h2>
             <p className="text-sm text-muted-foreground">
-              Plano selecionado:{" "}
-              <strong>{PLANS.find((p) => p.id === selectedPlan)?.name}</strong> ·{" "}
-              {formatPrice(PLANS.find((p) => p.id === selectedPlan)!.basePrice, currency, cycle)}/mês
+              {t("signup.selectPlan") || "Plano selecionado"}:{" "}
+              <strong>{PLANS_I18N.find((p) => p.id === selectedPlan)?.name}</strong> ·{" "}
+              {formatPrice(PLANS_I18N.find((p) => p.id === selectedPlan)!.basePrice, currency, cycle)}/mês
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Nome completo</label>
+              <label className="text-sm font-medium">{t("signup.fullName") || "Nome completo"}</label>
               <input
                 type="text"
                 value={name}
@@ -380,7 +380,7 @@ function SubscribePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-sm font-medium">{t("signup.email") || "Email"}</label>
               <input
                 type="email"
                 value={email}
@@ -392,7 +392,7 @@ function SubscribePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Telemóvel</label>
+              <label className="text-sm font-medium">{t("signup.phone") || "Telemóvel"}</label>
               <div className="flex gap-2">
                 <select
                   value={dial}
@@ -417,7 +417,7 @@ function SubscribePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Palavra-passe</label>
+              <label className="text-sm font-medium">{t("signup.password") || "Palavra-passe"}</label>
               <PasswordField
                 value={password}
                 onChange={setPassword}
@@ -443,7 +443,7 @@ function SubscribePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Confirmar palavra-passe</label>
+              <label className="text-sm font-medium">{t("signup.confirmPassword") || "Confirmar palavra-passe"}</label>
               <PasswordField
                 value={confirmPassword}
                 onChange={setConfirmPassword}
@@ -459,7 +459,7 @@ function SubscribePage() {
               disabled={loading}
               className="w-full rounded-md bg-primary text-primary-foreground font-medium py-2.5 text-sm hover:opacity-90 transition disabled:opacity-50"
             >
-              {loading ? "A criar conta..." : "Começar 14 dias grátis"}
+              {loading ? (t("signup.submitting") || "A criar conta...") : (t("signup.submit") || "Começar 14 dias grátis")}
             </button>
 
             <p className="text-xs text-center text-muted-foreground">
