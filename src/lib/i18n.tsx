@@ -7,9 +7,6 @@ export const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "pt", label: "Português", flag: "🇵🇹" },
   { code: "en", label: "English",   flag: "🇬🇧" },
   { code: "es", label: "Español",   flag: "🇪🇸" },
-  { code: "fr", label: "Français",  flag: "🇫🇷" },
-  { code: "it", label: "Italiano",  flag: "🇮🇹" },
-  { code: "de", label: "Deutsch",   flag: "🇩🇪" },
 ];
 
 // Synchronously guess locale from the browser before any network call so
