@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatMoney, currencySymbol } from "@/lib/format";
-import { useLocale } from "@/lib/i18n";
+import { useLocale, useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, Phone, MessageCircle, Star, Clock, Check, X, ArrowLeft, Mail, AlertTriangle, Link2, Copy } from "lucide-react";
 import { publicUrl } from "@/lib/public-url";
@@ -64,6 +64,7 @@ function paymentPlaceholder(m: string) {
 }
 
 function CleaningsPage() {
+  const t = useT();
   const [tab, setTab] = useState<"agenda" | "profissionais">("agenda");
   const [openJob, setOpenJob] = useState<string | null>(null);
   const [openNew, setOpenNew] = useState(false);
@@ -72,22 +73,22 @@ function CleaningsPage() {
   return (
     <AppShell>
       <header className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Limpezas</h2>
+        <h2 className="text-2xl font-bold">{t("lim.title")}</h2>
         <button className="btn-primary !py-2 !px-3"
           onClick={() => tab === "agenda" ? setOpenNew(true) : setOpenCleaner(true)}>
-          <Plus size={16} /> {tab === "agenda" ? "Agendar" : "Profissional"}
+          <Plus size={16} /> {tab === "agenda" ? t("lim.new") : t("lim.cleaner")}
         </button>
       </header>
 
       <div className="flex p-1 rounded-xl bg-card border border-card-border mb-4">
-        {(["agenda", "profissionais"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)}
+        {(["agenda", "profissionais"] as const).map((tt) => (
+          <button key={tt} onClick={() => setTab(tt)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition"
             style={{
-              background: tab === t ? "var(--color-accent)" : "transparent",
-              color: tab === t ? "var(--color-accent-foreground)" : "var(--color-muted-foreground)",
+              background: tab === tt ? "var(--color-accent)" : "transparent",
+              color: tab === tt ? "var(--color-accent-foreground)" : "var(--color-muted-foreground)",
             }}>
-            {t === "agenda" ? "Agenda" : "Profissionais"}
+            {tt === "agenda" ? t("cal.title") : t("lim.cleaner")}
           </button>
         ))}
       </div>
@@ -103,6 +104,7 @@ function CleaningsPage() {
 
 function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
   const { currency, lang } = useLocale();
+  const t = useT();
   const [filterDate, setFilterDate] = useState<string>("");
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["cleaning_jobs"],
@@ -120,20 +122,17 @@ function AgendaList({ onOpen }: { onOpen: (id: string) => void }) {
     <>
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
-          className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" title="Filtrar por data" />
+          className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" />
         {filterDate && (
-          <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">Limpar</button>
+          <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">{t("g.close")}</button>
         )}
-        <span className="text-xs text-muted-foreground">
-          {filterDate ? `${filtered.length} limpeza(s) em ${new Date(filterDate).toLocaleDateString()}` : "Todas as limpezas"}
-        </span>
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando…</p>
+        <p className="text-sm text-muted-foreground">{t("g.loading")}</p>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-10">
-          {filterDate ? "Nenhuma limpeza nesta data." : "Nenhuma limpeza ainda. Toque em \u201cAgendar\u201d."}
+          {t("lim.empty")}
         </p>
       ) : (
         <>
