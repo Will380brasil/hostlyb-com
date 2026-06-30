@@ -329,6 +329,9 @@ function normalizeChecklist(raw: any): ChecklistItem[] {
 
 function CleanerPortal({ token }: { token: string }) {
   const qc = useQueryClient();
+  const t = useT();
+  const { lang } = useLocale();
+  const intlLocale = lang === "pt" ? "pt-PT" : lang === "es" ? "es-ES" : "en-GB";
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["cleaner-job", token],
