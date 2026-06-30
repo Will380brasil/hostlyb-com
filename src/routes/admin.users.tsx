@@ -48,6 +48,7 @@ function UsersPage() {
           style={{ padding: "10px 12px", border: "1px solid #e5e7eb", borderRadius: 8, fontSize: 14, background: "#fff" }}>
           <option value="all">All plans</option>
           <option value="free">Free</option>
+          <option value="starter">Starter</option>
           <option value="pro">Pro</option>
           <option value="premium">Premium</option>
         </select>
@@ -94,6 +95,7 @@ const cellStyle: React.CSSProperties = { padding: "10px 12px", color: "#0f172a" 
 function TierBadge({ t }: { t: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     free: { bg: "#f1f5f9", fg: "#475569" },
+    starter: { bg: "#d1fae5", fg: "#065f46" },
     pro: { bg: "#dbeafe", fg: "#1e40af" },
     premium: { bg: "#f3e8ff", fg: "#7e22ce" },
   };

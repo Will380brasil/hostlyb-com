@@ -28,6 +28,8 @@ function RevenuePage() {
         <Stat label="MRR" value={fmt(rev.mrrBrl)} accent="#FF6B6B" />
         <Stat label="Paying users" value={rev.payingCount} accent="#00C896" />
         <Stat label="Conversion" value={`${conv}%`} accent="#3b82f6" />
+        <Stat label="Starter" value={(m as any).starterUsers ?? 0} accent="#10b981" />
+        <Stat label="Pro" value={m.proUsers} accent="#3b82f6" />
         <Stat label="Premium" value={m.premiumUsers} accent="#a855f7" />
       </div>
       <div style={{ background: "#fff", borderRadius: 14, padding: 20, border: "1px solid #e5e7eb", marginBottom: 16 }}>

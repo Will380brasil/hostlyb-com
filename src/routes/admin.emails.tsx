@@ -17,7 +17,7 @@ function EmailsPage() {
   const sendAuthTest = useServerFn(sendAuthTestEmail);
   const { data } = useQuery({ queryKey: ["admin-email-stats"], queryFn: () => fetch(), refetchInterval: 60_000 });
 
-  const [audience, setAudience] = useState<"all" | "free" | "pro" | "premium" | "inactive7">("all");
+  const [audience, setAudience] = useState<"all" | "free" | "starter" | "pro" | "premium" | "inactive7">("all");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
@@ -121,6 +121,7 @@ function EmailsPage() {
             style={inp}>
             <option value="all">All users</option>
             <option value="free">Free users</option>
+            <option value="starter">Starter users</option>
             <option value="pro">Pro users</option>
             <option value="premium">Premium users</option>
             <option value="inactive7">Inactive 7d+</option>

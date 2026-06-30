@@ -35,8 +35,11 @@ function Overview() {
       </Row>
       <Row>
         <Stat label={`Free · ${pct(data.freeUsers)}%`} value={data.freeUsers} />
+        <Stat label={`Starter · ${pct((data as any).starterUsers ?? 0)}%`} value={(data as any).starterUsers ?? 0} accent="#10b981" />
         <Stat label={`Pro · ${pct(data.proUsers)}%`} value={data.proUsers} accent="#3b82f6" />
         <Stat label={`Premium · ${pct(data.premiumUsers)}%`} value={data.premiumUsers} accent="#a855f7" />
+      </Row>
+      <Row>
         <Stat label="Updated" value={new Date(data.generatedAt).toLocaleTimeString("pt-BR")} />
       </Row>
       <div style={{ background: "#fff", borderRadius: 14, padding: 20, border: "1px solid #e5e7eb", marginTop: 8 }}>

@@ -25,7 +25,7 @@ const AUTH_TEMPLATES: Record<string, { component: React.ComponentType<any>; subj
   reauthentication: { component: ReauthenticationEmail, subject: "[TEST] Seu código de verificação" },
 };
 
-const PLAN_BRL = 59.90;
+const MRR_BRL: Record<string, number> = { starter: 139.90, pro: 194.90, premium: 389.90 };
 
 async function assertAdmin(context: any) {
   const userEmail = ((context.claims as any)?.email as string | undefined)?.toLowerCase();
@@ -88,13 +88,14 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
     const D30 = now - 30 * 86400_000;
 
     let active7 = 0, inactive3 = 0, inactive7 = 0, churnRisk = 0;
-    let free = 0, pro = 0, premium = 0;
+    let free = 0, starter = 0, pro = 0, premium = 0;
     const newPerDay: Record<string, number> = {};
 
     const users = allUsers.map((u) => {
       const p = profileMap.get(u.id);
       const tier = tierByUser.get(u.id) || "free";
       if (tier === "free") free++;
+      else if (tier === "starter") starter++;
       else if (tier === "premium") premium++;
       else pro++;
 
@@ -129,17 +130,20 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       series.push({ date: d, signups: newPerDay[d] || 0 });
     }
 
+    const estimatedMrrBrl = users.reduce((sum, u) => sum + (u.is_paying ? (MRR_BRL[u.plan_tier] ?? 0) : 0), 0);
+
     return {
       totalUsers: allUsers.length,
       payingUsers: payingUserIds.size,
       freeUsers: free,
+      starterUsers: starter,
       proUsers: pro,
       premiumUsers: premium,
       active7,
       inactive3,
       inactive7,
       churnRisk,
-      estimatedMrrBrl: payingUserIds.size * PLAN_BRL,
+      estimatedMrrBrl,
       signupSeries: series,
       users,
       generatedAt: new Date().toISOString(),
@@ -216,12 +220,15 @@ export const getRevenueMetrics = createServerFn({ method: "GET" })
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = d.toISOString().slice(0, 7);
       const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-      const count = live.filter((s: any) => new Date(s.created_at) < monthEnd).length;
-      months.push({ month: key, mrr: count * PLAN_BRL });
+      const active = live.filter((s: any) => new Date(s.created_at) < monthEnd);
+      const mrr = active.reduce((sum: number, s: any) => sum + (MRR_BRL[s.plan_tier] ?? MRR_BRL.pro), 0);
+      months.push({ month: key, mrr });
     }
 
+    const mrrBrl = live.reduce((sum: number, s: any) => sum + (MRR_BRL[s.plan_tier] ?? MRR_BRL.pro), 0);
+
     return {
-      mrrBrl: live.length * PLAN_BRL,
+      mrrBrl,
       payingCount: live.length,
       series: months,
     };
@@ -285,7 +292,7 @@ export const getEmailStats = createServerFn({ method: "GET" })
 
 export const sendManualBlast = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { audience: "all" | "free" | "pro" | "premium" | "inactive7"; subject: string; body: string; confirm: boolean }) => {
+  .inputValidator((d: { audience: "all" | "free" | "starter" | "pro" | "premium" | "inactive7"; subject: string; body: string; confirm: boolean }) => {
     if (!d.confirm) throw new Error("Confirmação requerida");
     if (!d.subject || d.subject.length > 200) throw new Error("Assunto inválido");
     if (!d.body || d.body.length > 10_000) throw new Error("Corpo inválido");

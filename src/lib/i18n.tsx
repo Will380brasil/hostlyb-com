@@ -132,6 +132,15 @@ const pt: Dict = {
   "pricing.free.cta": "Começar grátis",
   "pricing.free.price": "Grátis",
 
+  "pricing.starter.name": "Starter",
+  "pricing.starter.tag": "Para começar a crescer",
+  "pricing.starter.f1": "Até 2 imóveis, 2 usuários",
+  "pricing.starter.f2": "Tudo do Gratuito, sem marca no link",
+  "pricing.starter.f3": "Alertas de checkout por WhatsApp",
+  "pricing.starter.f4": "Timer de limpeza + checklist com score",
+  "pricing.starter.f5": "Suporte por e-mail",
+  "pricing.starter.cta": "Assinar Starter",
+
   "pricing.pro.name": "Pro",
   "pricing.pro.tag": "Profissional",
   "pricing.pro.f1": "Até 5 imóveis, 3 usuários",
@@ -566,6 +575,15 @@ const en: Dict = {
   "pricing.free.cta": "Start free",
   "pricing.free.price": "Free",
 
+  "pricing.starter.name": "Starter",
+  "pricing.starter.tag": "Start growing",
+  "pricing.starter.f1": "Up to 2 properties, 2 users",
+  "pricing.starter.f2": "Everything in Free, no branding on link",
+  "pricing.starter.f3": "WhatsApp checkout alerts",
+  "pricing.starter.f4": "Cleaning timer + checklist with score",
+  "pricing.starter.f5": "Email support",
+  "pricing.starter.cta": "Subscribe to Starter",
+
   "pricing.pro.name": "Pro",
   "pricing.pro.tag": "Professional",
   "pricing.pro.f1": "Up to 5 properties, 3 users",
@@ -999,6 +1017,15 @@ const es: Dict = {
   "pricing.free.f5": "Marca \"Powered by Hostlyb\" en el enlace",
   "pricing.free.cta": "Empezar gratis",
   "pricing.free.price": "Gratis",
+
+  "pricing.starter.name": "Starter",
+  "pricing.starter.tag": "Para crecer",
+  "pricing.starter.f1": "Hasta 2 propiedades, 2 usuarios",
+  "pricing.starter.f2": "Todo lo del Gratis, sin marca en el enlace",
+  "pricing.starter.f3": "Avisos de checkout por WhatsApp",
+  "pricing.starter.f4": "Timer de limpieza + checklist con score",
+  "pricing.starter.f5": "Soporte por e-mail",
+  "pricing.starter.cta": "Suscribirse a Starter",
 
   "pricing.pro.name": "Pro",
   "pricing.pro.tag": "Profesional",

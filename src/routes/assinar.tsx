@@ -12,17 +12,17 @@ import { getStripeEnvironment } from "@/lib/stripe";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-type AssinarSearch = { onboarding?: "1"; plan?: "free" | "pro" | "premium" };
+type AssinarSearch = { onboarding?: "1"; plan?: "free" | "starter" | "pro" | "premium" };
 
 export const Route = createFileRoute("/assinar")({
   validateSearch: (s: Record<string, unknown>): AssinarSearch => ({
     onboarding: s.onboarding === "1" ? "1" : undefined,
-    plan: (s.plan === "free" || s.plan === "pro" || s.plan === "premium") ? s.plan : undefined,
+    plan: (s.plan === "free" || s.plan === "starter" || s.plan === "pro" || s.plan === "premium") ? s.plan : undefined,
   }),
   component: SubscribePage,
 });
 
-type Plan = "pro" | "premium";
+type Plan = "starter" | "pro" | "premium";
 
 // Map display currency + plan → Stripe price ID. SA users are billed in EUR.
 function priceIdFor(currency: "BRL" | "EUR" | "USD" | "GBP", plan: Plan): string {
@@ -56,7 +56,7 @@ function SubscribePage() {
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
-    search.plan === "pro" || search.plan === "premium" ? (search.plan as Plan) : null
+    search.plan === "starter" || search.plan === "pro" || search.plan === "premium" ? (search.plan as Plan) : null
   );
   const [continuingFree, setContinuingFree] = useState(false);
   const { subscription, isActive, loading } = useSubscription(orgId);
@@ -105,6 +105,7 @@ function SubscribePage() {
   const billedCurrency: "BRL" | "EUR" | "USD" | "GBP" = isSA ? "EUR" : currency;
   const displayCurrency: Currency | "SAR" = isSA ? "SAR" : currency;
 
+  const starterAmount = displayCurrency === "SAR" ? PLAN_PRICE.starter.EUR * 4 : PLAN_PRICE.starter[currency];
   const proAmount = displayCurrency === "SAR" ? PLAN_PRICE.pro.EUR * 4 : PLAN_PRICE.pro[currency];
   const premiumAmount = displayCurrency === "SAR" ? PLAN_PRICE.premium.EUR * 4 : PLAN_PRICE.premium[currency];
 
@@ -117,6 +118,7 @@ function SubscribePage() {
   };
 
   const freeFeatures = [t("pricing.free.f1"), t("pricing.free.f2"), t("pricing.free.f3"), t("pricing.free.f4"), t("pricing.free.f5")];
+  const starterFeatures = [t("pricing.starter.f1"), t("pricing.starter.f2"), t("pricing.starter.f3"), t("pricing.starter.f4"), t("pricing.starter.f5")];
   const proFeatures = [t("pricing.pro.f1"), t("pricing.pro.f2"), t("pricing.pro.f3"), t("pricing.pro.f4"), t("pricing.pro.f5")];
   const premiumFeatures = [t("pricing.premium.f1"), t("pricing.premium.f2"), t("pricing.premium.f3"), t("pricing.premium.f4"), t("pricing.premium.f5")];
 
@@ -160,7 +162,7 @@ function SubscribePage() {
             <StripeEmbeddedCheckout priceId={priceIdFor(billedCurrency, selectedPlan)} organizationId={orgId} />
           </div>
         ) : (
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-4">
             {/* FREE */}
             <div className="rounded-2xl border bg-card p-6 flex flex-col">
               <div className="text-xs font-bold text-muted-foreground tracking-wide mb-2">{t("pricing.free.tag").toUpperCase()}</div>
@@ -182,6 +184,26 @@ function SubscribePage() {
               )}
             </div>
 
+            {/* STARTER */}
+            <div className="rounded-2xl border bg-card p-6 flex flex-col">
+              <div className="text-xs font-bold text-emerald-600 tracking-wide mb-2">{t("pricing.starter.tag").toUpperCase()}</div>
+              <div className="text-xl font-bold mb-3">{t("pricing.starter.name")}</div>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className="text-4xl font-extrabold">{formatPlan(starterAmount, displayCurrency, lang)}</span>
+                <span className="text-sm text-muted-foreground">{t("pricing.suffix")}</span>
+              </div>
+              <p className="text-xs font-semibold text-emerald-600 mb-4">✦ 1€ no 1.º mês</p>
+              <ul className="space-y-2 mb-6 flex-1">
+                {starterFeatures.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" /><span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button size="lg" variant="outline" className="w-full" onClick={() => setSelectedPlan("starter")}>{t("pricing.starter.cta")}</Button>
+              <p className="text-xs text-center text-muted-foreground mt-3">{t("pricing.note")}</p>
+            </div>
+
             {/* PRO */}
             <div className="rounded-2xl border-2 border-primary bg-card p-6 flex flex-col relative shadow-lg">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-bold tracking-wide px-3 py-1 rounded-full">
@@ -189,10 +211,11 @@ function SubscribePage() {
               </div>
               <div className="text-xs font-bold text-primary tracking-wide mb-2">{t("pricing.pro.tag").toUpperCase()}</div>
               <div className="text-xl font-bold mb-3">{t("pricing.pro.name")}</div>
-              <div className="flex items-baseline gap-1 mb-5">
+              <div className="flex items-baseline gap-1 mb-1">
                 <span className="text-4xl font-extrabold">{formatPlan(proAmount, displayCurrency, lang)}</span>
                 <span className="text-sm text-muted-foreground">{t("pricing.suffix")}</span>
               </div>
+              <p className="text-xs font-semibold text-emerald-400 mb-4">✦ 1€ no 1.º mês</p>
               <ul className="space-y-2 mb-6 flex-1">
                 {proFeatures.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
@@ -208,10 +231,11 @@ function SubscribePage() {
             <div className="rounded-2xl border bg-card p-6 flex flex-col">
               <div className="text-xs font-bold text-muted-foreground tracking-wide mb-2">{t("pricing.premium.tag").toUpperCase()}</div>
               <div className="text-xl font-bold mb-3">{t("pricing.premium.name")}</div>
-              <div className="flex items-baseline gap-1 mb-5">
+              <div className="flex items-baseline gap-1 mb-1">
                 <span className="text-4xl font-extrabold">{formatPlan(premiumAmount, displayCurrency, lang)}</span>
                 <span className="text-sm text-muted-foreground">{t("pricing.suffix")}</span>
               </div>
+              <p className="text-xs font-semibold text-emerald-600 mb-4">✦ 1€ no 1.º mês</p>
               <ul className="space-y-2 mb-6 flex-1">
                 {premiumFeatures.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
