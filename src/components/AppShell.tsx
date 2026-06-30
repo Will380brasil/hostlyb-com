@@ -6,15 +6,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { TrialBanner, TrialGate } from "@/components/TrialGate";
 import { InstallButton } from "@/components/InstallButton";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useT } from "@/lib/i18n";
 
-const tabs = [
-  { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
-  { to: "/imoveis",    label: "Imóveis",    icon: Home },
-  { to: "/limpezas",   label: "Limpezas",   icon: Sparkles },
-  { to: "/hospedes",   label: "Hóspedes",   icon: Users },
-  { to: "/calendario", label: "Calendário", icon: Calendar },
-  { to: "/financeiro", label: "Financeiro", icon: DollarSign },
-] as const;
 
 export function AppShell({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
