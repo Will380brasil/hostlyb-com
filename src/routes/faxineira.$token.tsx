@@ -459,9 +459,9 @@ function CleanerPortal({ token }: { token: string }) {
       const path = await uploadPhoto(file, "cleaning-photos");
       const thumbnailBase64 = await makeThumbnail(file);
       await notifyHostWithThumb({ type: "photo", bucket: "cleaning-photos", path, thumbnailBase64 });
-      toast.success("Foto enviada ao anfitrião");
+      toast.success(t("fax.portal.photoSent"));
     } catch (err: any) {
-      toast.error(err.message ?? "Falha ao enviar");
+      toast.error(err.message ?? t("fax.portal.photoFail"));
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -469,14 +469,14 @@ function CleanerPortal({ token }: { token: string }) {
   }
 
   async function onAddForgottenWithPhoto(file: File | null) {
-    if (!newItem.description.trim()) { toast.error("Descreva o objeto"); return; }
+    if (!newItem.description.trim()) { toast.error(t("fax.portal.describeErr")); return; }
     setUploading(true);
     try {
       let photo_url: string | null = null;
       if (file) photo_url = await uploadPhoto(file, "forgotten-items");
       await addItem.mutateAsync({ description: newItem.description.trim(), location: newItem.location.trim(), photo_url });
     } catch (err: any) {
-      toast.error(err.message ?? "Falha ao registar");
+      toast.error(err.message ?? t("fax.portal.registerFail"));
     } finally { setUploading(false); }
   }
 
@@ -484,13 +484,13 @@ function CleanerPortal({ token }: { token: string }) {
     try { await update.mutateAsync({ status: "problema", checklist, notes }); } catch {}
   }
 
-  if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">A carregar…</div>;
+  if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">{t("fax.loading")}</div>;
   if (error || !data) return (
     <div className="min-h-screen grid place-items-center px-6 text-center">
       <div>
         <AlertTriangle className="mx-auto mb-3" />
-        <h1 className="text-lg font-bold">Link inválido</h1>
-        <p className="text-sm text-muted-foreground mt-1">Peça um novo link ao anfitrião.</p>
+        <h1 className="text-lg font-bold">{t("fax.invalidTitle")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("fax.invalidBody")}</p>
       </div>
     </div>
   );
