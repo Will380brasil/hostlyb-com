@@ -400,9 +400,11 @@ html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
 .cine-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 
 .cine-bg-hero { background: radial-gradient(ellipse at 30% 40%, #2a1a14 0%, #0A0A0A 70%); }
+.cine-bg-hero-fallback { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: radial-gradient(ellipse at 30% 40%, #2a1a14 0%, #0A0A0A 70%); }
 .cine-bg-arrival { background: linear-gradient(135deg, #1a1410 0%, #2d2218 50%, #0A0A0A 100%); }
 .cine-bg-checkout { background: radial-gradient(ellipse at 70% 50%, #2a1f1a 0%, #0A0A0A 70%); }
 .cine-bg-cleaning { background: linear-gradient(180deg, #0f1419 0%, #1a2028 60%, #0A0A0A 100%); }
+.cine-bg-tranquility { background: radial-gradient(ellipse at 50% 60%, #1f1814 0%, #0A0A0A 75%); }
 .cine-bg-dark { background: #0A0A0A; }
 
 /* Orbs (parallax soft light) */
