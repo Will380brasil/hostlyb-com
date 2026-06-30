@@ -28,6 +28,7 @@ type TokenInfo = {
 function CleanerGate() {
   const { token } = Route.useParams();
   const { session, loading: authLoading } = useAuth();
+  const t = useT();
 
   const { data: info, isLoading, error } = useQuery({
     queryKey: ["cleaner-token-lookup", token],
@@ -38,14 +39,12 @@ function CleanerGate() {
     },
   });
 
-  // Once signed in, bind the auth user to the cleaner record (idempotent).
   const claimed = useQuery({
     queryKey: ["cleaner-claim", token, session?.user.id],
     enabled: !!session?.user.id && !!info,
     queryFn: async () => {
       const { error } = await supabase.rpc("cleaner_claim_token", { p_token: token });
       if (error && error.message !== "cleaner_already_bound") {
-        // Non-fatal: log but allow checklist if the user is the bound cleaner.
         console.warn("claim failed", error);
       }
       return true;
@@ -53,7 +52,7 @@ function CleanerGate() {
   });
 
   if (authLoading || isLoading) {
-    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">A carregar…</div>;
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">{t("fax.loading")}</div>;
   }
 
   if (error || !info || !info.cleaner_id) {
@@ -61,8 +60,8 @@ function CleanerGate() {
       <div className="min-h-screen grid place-items-center px-6 text-center">
         <div>
           <AlertTriangle className="mx-auto mb-3" />
-          <h1 className="text-lg font-bold">Link inválido</h1>
-          <p className="text-sm text-muted-foreground mt-1">Peça um novo link ao anfitrião.</p>
+          <h1 className="text-lg font-bold">{t("fax.invalidTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("fax.invalidBody")}</p>
         </div>
       </div>
     );
@@ -75,7 +74,7 @@ function CleanerGate() {
   }
 
   if (claimed.isLoading) {
-    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">A preparar a limpeza…</div>;
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">{t("fax.preparing")}</div>;
   }
 
   return <CleanerPortal token={token} />;
