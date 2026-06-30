@@ -6,21 +6,26 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { TrialBanner, TrialGate } from "@/components/TrialGate";
 import { InstallButton } from "@/components/InstallButton";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useT } from "@/lib/i18n";
 
-const tabs = [
-  { to: "/app",        label: "Dashboard",  icon: LayoutDashboard },
-  { to: "/imoveis",    label: "Imóveis",    icon: Home },
-  { to: "/limpezas",   label: "Limpezas",   icon: Sparkles },
-  { to: "/hospedes",   label: "Hóspedes",   icon: Users },
-  { to: "/calendario", label: "Calendário", icon: Calendar },
-  { to: "/financeiro", label: "Financeiro", icon: DollarSign },
-] as const;
 
 export function AppShell({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { session, loading, signOut } = useAuth();
   const qc = useQueryClient();
+  const t = useT();
+
+  const tabs = [
+    { to: "/app",        label: t("app.tab.dashboard"),  icon: LayoutDashboard },
+    { to: "/imoveis",    label: t("app.tab.properties"), icon: Home },
+    { to: "/limpezas",   label: t("app.tab.cleanings"),  icon: Sparkles },
+    { to: "/hospedes",   label: t("app.tab.guests"),     icon: Users },
+    { to: "/calendario", label: t("app.tab.calendar"),   icon: Calendar },
+    { to: "/financeiro", label: t("app.tab.finance"),    icon: DollarSign },
+  ] as const;
+
 
   const { data: unread = 0 } = useQuery({
     queryKey: ["alerts-unread", session?.user.id],
@@ -56,8 +61,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
   }, [session, loading, navigate]);
 
   if (loading || !session) {
-    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando…</div>;
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">{t("app.loading")}</div>;
   }
+
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full max-w-[480px] md:max-w-6xl bg-background">
@@ -86,12 +92,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSelector compact />
           <InstallButton compact />
+
           {isAdmin && (
             <Link
               to={"/admin" as any}
-              aria-label="Admin"
-              title="Painel Admin"
+              aria-label={t("app.admin")}
+              title={t("app.admin")}
               className="grid place-items-center w-10 h-10 rounded-full border"
               style={{ background: "#FFF1F1", borderColor: "#FFCCCC", color: "#FF6B6B" }}
             >
@@ -100,14 +108,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
           )}
           <Link
             to={"/equipe" as any}
-            aria-label="Equipe"
+            aria-label={t("app.team")}
             className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
           >
             <UsersRound size={16} />
           </Link>
           <Link
             to={"/alertas" as any}
-            aria-label="Alertas"
+            aria-label={t("app.alerts")}
             className="relative grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
           >
             <Bell size={16} />
@@ -119,13 +127,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
             )}
           </Link>
           <button
-            aria-label="Sair"
+            aria-label={t("app.logout")}
             onClick={() => { signOut(); navigate({ to: "/login" as any }); }}
             className="grid place-items-center w-10 h-10 rounded-full bg-card border border-card-border"
           >
             <LogOut size={16} />
           </button>
         </div>
+
       </header>
 
       <main className="flex-1 px-4 md:px-8 pt-4 pb-28 md:pb-12">

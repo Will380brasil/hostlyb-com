@@ -34,11 +34,14 @@ const COUNTRIES = [
   { code: "CL", flag: "🇨🇱", dial: "+56" },
 ];
 
-const PLAN_OPTIONS: Array<{ id: SignupPlan; name: string; price: string; description: string; features: string[] }> = [
-  { id: "free", name: "Grátis", price: "R$ 0", description: "Para começar agora", features: ["1 imóvel", "Agenda básica"] },
-  { id: "pro", name: "Pro", price: "R$ 59,90/mês", description: "Mais controle da operação", features: ["Mais imóveis", "iCal e alertas"] },
-  { id: "premium", name: "Premium", price: "Plano completo", description: "Para operações maiores", features: ["Recursos avançados", "Gestão completa"] },
-];
+function getPlanOptions(t: (k: string) => string): Array<{ id: SignupPlan; name: string; price: string; description: string; features: string[] }> {
+  return [
+    { id: "free",    name: t("signup.plan.free.name"),    price: t("signup.plan.free.price"),    description: t("signup.plan.free.desc"),    features: [t("signup.plan.free.f1"), t("signup.plan.free.f2")] },
+    { id: "pro",     name: t("signup.plan.pro.name"),     price: "R$ 59,90/mês",                  description: t("signup.plan.pro.desc"),     features: [t("signup.plan.pro.f1"), t("signup.plan.pro.f2")] },
+    { id: "premium", name: t("signup.plan.premium.name"), price: t("signup.plan.premium.price"), description: t("signup.plan.premium.desc"), features: [t("signup.plan.premium.f1"), t("signup.plan.premium.f2")] },
+  ];
+}
+
 
 function SignupPage() {
   const t = useT();
@@ -88,14 +91,15 @@ function SignupPage() {
     if (error) {
       const msg = error.message || "";
       if (/already registered|already exists|user.*exists/i.test(msg)) {
-        toast.error("Este email já está registado. Tente entrar em vez de criar conta.");
+        toast.error(t("signup.emailExists"));
       } else if (/database error|unexpected/i.test(msg)) {
-        toast.error("Erro ao criar conta. Por favor tente novamente ou contacte o suporte.");
+        toast.error(t("signup.dbError"));
       } else {
-        toast.error("Erro ao criar conta: " + msg);
+        toast.error(t("signup.dbError") + " " + msg);
       }
       return;
     }
+
     if (data.user?.id) {
       sendTransactionalEmail({
         templateName: "welcome",
@@ -122,12 +126,13 @@ function SignupPage() {
     });
     setResending(false);
     if (error) toast.error(error.message);
-    else toast.success("E-mail reenviado!");
+    else toast.success(t("signup.resentOk"));
   };
 
   // Google OAuth removed until provider is configured in Supabase.
 
   const inputCls = "px-4 py-3 rounded-xl bg-card border border-card-border";
+  const PLAN_OPTIONS = getPlanOptions(t);
 
   return (
     <div className="min-h-screen grid place-items-center px-5 py-8 bg-background">
@@ -139,18 +144,18 @@ function SignupPage() {
           <div className="mt-6 text-center max-w-sm mx-auto">
             <div className="mx-auto mb-4 grid place-items-center w-14 h-14 rounded-2xl text-2xl"
               style={{ background: "var(--color-accent-soft, #ffe4e0)", color: "var(--color-accent)" }}>📧</div>
-            <h2 className="text-xl font-bold mb-2">Confirme seu e-mail</h2>
+            <h2 className="text-xl font-bold mb-2">{t("signup.confirmEmail")}</h2>
             <p className="text-sm text-muted-foreground mb-1">
-              Enviamos um link de confirmação para <strong>{sentTo}</strong>.
+              {t("signup.sentLink")} <strong>{sentTo}</strong>.
             </p>
             <p className="text-xs text-muted-foreground mb-5">
-              Depois da confirmação, você irá escolher ou confirmar o plano selecionado.
+              {t("signup.afterConfirm")}
             </p>
             <button onClick={resend} disabled={resending} className="btn-primary justify-center w-full mb-2">
-              {resending ? "Reenviando…" : "Reenviar e-mail"}
+              {resending ? t("signup.resending") : t("signup.resend")}
             </button>
             <button onClick={() => setSentTo(null)} className="text-xs text-muted-foreground">
-              Usar outro e-mail
+              {t("signup.useOther")}
             </button>
           </div>
         ) : (
@@ -159,11 +164,12 @@ function SignupPage() {
 
         <section className="mb-5">
           <div className="flex items-center justify-between gap-3 mb-3">
-            <h2 className="text-sm font-bold">Escolha seu plano</h2>
-            <span className="text-xs text-muted-foreground">Você pode trocar depois</span>
+            <h2 className="text-sm font-bold">{t("signup.choosePlan")}</h2>
+            <span className="text-xs text-muted-foreground">{t("signup.canSwitch")}</span>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {PLAN_OPTIONS.map((option) => {
+
               const active = selectedPlan === option.id;
               return (
                 <button
