@@ -606,6 +606,34 @@ html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+.cine-gallery-real {
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 860px;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .cine-gallery-real { grid-template-columns: repeat(2, 1fr); }
+}
+.cine-photo-real {
+  position: relative; overflow: hidden; padding: 0;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: #111;
+  box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7);
+}
+.cine-photo-real img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.8s ease;
+}
+.cine-photo-real:hover img { transform: scale(1.05); }
+.cine-photo-real figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 12px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.75));
+}
+
 /* Footer in CTA */
 .cine-footer {
   margin-top: 60px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
