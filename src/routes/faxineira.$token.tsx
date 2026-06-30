@@ -190,6 +190,7 @@ function CleanerSignup({ token, info }: { token: string; info: TokenInfo }) {
 /* ---------------------------- Login screen --------------------------- */
 
 function CleanerLogin({ token, info }: { token: string; info: TokenInfo }) {
+  const t = useT();
   const [method, setMethod] = useState<"password" | "magic">("password");
   const [email, setEmail] = useState(info.cleaner_email ?? "");
   const [password, setPassword] = useState("");
@@ -202,12 +203,12 @@ function CleanerLogin({ token, info }: { token: string; info: TokenInfo }) {
     setErr(null); setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
     setLoading(false);
-    if (error) setErr("Email ou palavra-passe inválidos.");
+    if (error) setErr(t("fax.login.invalid"));
   }
 
   async function sendMagic() {
     setErr(null);
-    if (!email) { setErr("Indique o seu email."); return; }
+    if (!email) { setErr(t("fax.login.needEmail")); return; }
     setLoading(true);
     const redirectTo = `${window.location.origin}/faxineira/${token}`;
     const { error } = await supabase.auth.signInWithOtp({
@@ -215,7 +216,7 @@ function CleanerLogin({ token, info }: { token: string; info: TokenInfo }) {
       options: { emailRedirectTo: redirectTo },
     });
     setLoading(false);
-    if (error) setErr("Não foi possível enviar o link. Verifique o email.");
+    if (error) setErr(t("fax.login.magicErr"));
     else setMagicSent(true);
   }
 
@@ -224,12 +225,12 @@ function CleanerLogin({ token, info }: { token: string; info: TokenInfo }) {
       <div className="min-h-screen grid place-items-center px-6 text-center">
         <div>
           <div className="text-5xl mb-3">📧</div>
-          <h1 className="text-lg font-bold">Verifique o seu email</h1>
+          <h1 className="text-lg font-bold">{t("fax.login.magicSentTitle")}</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Enviámos um link de acesso para <strong>{email}</strong>.
+            {t("fax.login.magicSentBody")} <strong>{email}</strong>.
           </p>
           <button onClick={() => setMagicSent(false)} className="mt-4 text-xs underline text-muted-foreground">
-            Não recebeu? Tentar novamente
+            {t("fax.login.magicRetry")}
           </button>
         </div>
       </div>
@@ -240,51 +241,51 @@ function CleanerLogin({ token, info }: { token: string; info: TokenInfo }) {
     <div className="min-h-screen px-5 py-8 mx-auto w-full max-w-[460px]">
       <div className="text-center mb-6">
         <div className="text-5xl mb-2">🧹</div>
-        <h1 className="text-2xl font-black">Entrar</h1>
-        <p className="text-sm text-muted-foreground mt-2">Faça login para abrir o checklist da limpeza em <strong>{info.property_name}</strong>.</p>
+        <h1 className="text-2xl font-black">{t("fax.login.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-2">{t("fax.login.subtitle")} <strong>{info.property_name}</strong>.</p>
       </div>
 
       <div className="flex gap-1 p-1 rounded-xl bg-muted mb-4">
         <button onClick={() => setMethod("password")}
           className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "password" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
-          🔑 Palavra-passe
+          🔑 {t("fax.login.password")}
         </button>
         <button onClick={() => setMethod("magic")}
           className={`flex-1 py-2 rounded-lg text-sm font-semibold ${method === "magic" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
-          ✉️ Link por email
+          ✉️ {t("fax.login.magic")}
         </button>
       </div>
 
       {method === "password" ? (
         <form onSubmit={loginPwd} className="flex flex-col gap-3">
-          <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+          <input type="email" required placeholder={t("fax.signup.email")} value={email} onChange={(e) => setEmail(e.target.value)}
             className="px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
-          <input type="password" required placeholder="Palavra-passe" value={password} onChange={(e) => setPassword(e.target.value)}
+          <input type="password" required placeholder={t("fax.login.password")} value={password} onChange={(e) => setPassword(e.target.value)}
             className="px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
           {err && <p className="text-xs text-destructive">{err}</p>}
           <button disabled={loading} className="py-3 rounded-2xl font-bold text-white disabled:opacity-50"
             style={{ background: "var(--color-accent)" }}>
-            {loading ? "A entrar…" : "Entrar"}
+            {loading ? t("fax.login.signingIn") : t("fax.login.signin")}
           </button>
         </form>
       ) : (
         <div className="flex flex-col gap-3">
-          <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+          <input type="email" required placeholder={t("fax.signup.email")} value={email} onChange={(e) => setEmail(e.target.value)}
             className="px-3 py-3 rounded-xl bg-card border border-card-border text-sm" />
           {err && <p className="text-xs text-destructive">{err}</p>}
           <button disabled={loading} onClick={sendMagic}
             className="py-3 rounded-2xl font-bold text-white disabled:opacity-50"
             style={{ background: "var(--color-accent)" }}>
-            {loading ? "A enviar…" : "Enviar link de acesso"}
+            {loading ? t("fax.login.magicSending") : t("fax.login.magicSend")}
           </button>
-          <p className="text-xs text-muted-foreground text-center">Receberá um link para entrar sem palavra-passe.</p>
+          <p className="text-xs text-muted-foreground text-center">{t("fax.login.magicHelp")}</p>
         </div>
       )}
 
       <p className="text-xs text-center text-muted-foreground mt-6">
-        Não tem conta?{" "}
+        {t("fax.login.noAccount")}{" "}
         <Link to="/faxineira/$token" params={{ token }} reloadDocument className="font-semibold underline" style={{ color: "var(--color-accent)" }}>
-          Criar agora
+          {t("fax.login.createNow")}
         </Link>
       </p>
     </div>
