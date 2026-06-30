@@ -311,8 +311,8 @@ type Job = {
   forgotten_items: ForgottenItem[];
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  agendado: "Agendado", em_andamento: "Em andamento", concluido: "Concluído", problema: "Problema", cancelado: "Cancelado",
+const STATUS_KEY: Record<string, string> = {
+  agendado: "status.agendado", em_andamento: "status.em_andamento", concluido: "status.concluido", problema: "status.problema", cancelado: "status.cancelado",
 };
 
 function formatTimer(secs: number) {
