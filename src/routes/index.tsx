@@ -393,7 +393,7 @@ function CtaSection() {
           <span className="cine-h1-italic">{t("cine.cta.t2")}</span>
         </h2>
         <p className="cine-sub" data-reveal style={{ animationDelay: "0.35s" }}>
-          {t("cine.cta.priceFrom")} <strong style={{ color: "#fff", fontWeight: 600 }}>€19,99{t("cine.cta.priceSuffix")}</strong>
+          {t("cine.cta.priceFrom")} <strong style={{ color: "#fff", fontWeight: 600 }}>€24,99{t("cine.cta.priceSuffix")}</strong>
         </p>
         <div className="cine-actions" data-reveal style={{ animationDelay: "0.55s" }}>
           <Link to="/signup" className="cine-btn-primary" data-cta-location="cta">
