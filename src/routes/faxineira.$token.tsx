@@ -379,7 +379,7 @@ function CleanerPortal({ token }: { token: string }) {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["cleaner-job", token] }),
-    onError: (e: any) => toast.error(e.message ?? "Erro ao guardar"),
+    onError: (e: any) => toast.error(e.message ?? t("fax.portal.saveErr")),
   });
 
   const addItem = useMutation({
@@ -388,17 +388,16 @@ function CleanerPortal({ token }: { token: string }) {
         p_token: token, p_description: vars.description, p_photo_url: vars.photo_url ?? undefined, p_notes: vars.location || undefined,
       });
       if (error) throw error;
-      // Fire-and-forget: extra realtime notification to host (alert is also created by DB trigger)
-      void notifyHostWithThumb({ type: "photo", description: `Objeto esquecido: ${vars.description}${vars.location ? ` (${vars.location})` : ""}` });
+      void notifyHostWithThumb({ type: "photo", description: `${t("fax.forgotten")}: ${vars.description}${vars.location ? ` (${vars.location})` : ""}` });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["cleaner-job", token] });
       setNewItem({ description: "", location: "" });
       setNewItemFile(null);
       setShowItemForm(false);
-      toast.success("Objeto registado. Anfitrião notificado.");
+      toast.success(t("fax.portal.registered"));
     },
-    onError: (e: any) => toast.error(e.message ?? "Erro"),
+    onError: (e: any) => toast.error(e.message ?? t("g.error")),
   });
 
   async function uploadPhoto(file: File, bucket: "cleaning-photos" | "forgotten-items") {
