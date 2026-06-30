@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { PasswordField } from "@/components/PasswordField";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inscrever-se")({
@@ -137,6 +138,13 @@ function scorePassword(pw: string) {
 
 function SubscribePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
+  const PLANS_I18N: Plan[] = [
+    { id: "starter", name: t("plans.starter.name") || "Starter", basePrice: 19.99, tagline: t("plans.starter.tagline") || "Para quem está a começar" },
+    { id: "professional", name: t("plans.professional.name") || "Professional", basePrice: 34.99, tagline: t("plans.professional.tagline") || "Para operações em crescimento", highlighted: true },
+    { id: "premium", name: t("plans.premium.name") || "Premium", basePrice: 59.99, tagline: t("plans.premium.tagline") || "Para equipas profissionais" },
+    { id: "enterprise", name: t("plans.enterprise.name") || "Enterprise", basePrice: 99.99, tagline: t("plans.enterprise.tagline") || "Para grandes operações" },
+  ];
   const [currency, setCurrency] = useState<CurrencyCode>("EUR");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   const [selectedPlan, setSelectedPlan] = useState<Plan["id"]>("professional");
