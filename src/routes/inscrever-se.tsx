@@ -434,6 +434,18 @@ function SubscribePage() {
               )}
             </div>
 
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Confirmar palavra-passe</label>
+              <PasswordField
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                placeholder="Repita a palavra-passe"
+              />
+              {confirmPassword && password !== confirmPassword && (
+                <p className="text-xs text-destructive">As palavras-passe não coincidem</p>
+              )}
+            </div>
+
             <button
               type="submit"
               disabled={loading}
