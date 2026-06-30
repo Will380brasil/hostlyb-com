@@ -5,6 +5,17 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { buildLandingHead } from "@/lib/landing-head";
 import phoneVideo from "@/assets/phone-relax.mp4.asset.json";
+import forgottenPhone from "@/assets/forgotten-phone.jpg";
+import forgottenKeys from "@/assets/forgotten-keys.jpg";
+import forgottenToy from "@/assets/forgotten-toy.jpg";
+import forgottenWallet from "@/assets/forgotten-wallet.jpg";
+
+const FORGOTTEN_ITEMS = [
+  { src: forgottenPhone, label: "Telemóvel · Quarto" },
+  { src: forgottenKeys, label: "Chaves · Sala" },
+  { src: forgottenToy, label: "Brinquedo · Cama" },
+  { src: forgottenWallet, label: "Carteira · WC" },
+];
 
 const FAQ_ITEMS_SEO = [
   { q: "Preciso de cartão de crédito para começar?", a: "Não. 14 dias grátis e sem cartão." },
@@ -132,17 +143,26 @@ export function LandingPage() {
   );
 }
 
-/* ---------------- Section 1: HERO ---------------- */
+/* ---------------- Section 1: HERO with video ---------------- */
 function HeroSection() {
   return (
     <section className="cine-section">
-      <div className="cine-bg cine-bg-hero" aria-hidden="true">
+      <video
+        className="cine-video"
+        src={phoneVideo.url}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+      />
+      <div className="cine-bg-hero-fallback" aria-hidden="true">
         <div className="cine-orb cine-orb-1" />
         <div className="cine-orb cine-orb-2" />
-        <div className="cine-orb cine-orb-3" />
         <div className="cine-grain" />
       </div>
-      <div className="cine-overlay" />
+      <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
         <p className="cine-eyebrow" data-reveal>GESTÃO DE AIRBNB · SEM ESFORÇO</p>
@@ -251,16 +271,19 @@ function CleaningSection() {
       <div className="cine-content">
         <p className="cine-time" data-reveal>14:00 — A LIMPEZA</p>
         <h2 className="cine-h2" data-reveal style={{ animationDelay: "0.15s" }}>
-          Limpeza concluída.<br />
-          <span className="cine-h2-thin">6 fotos. 1 objeto esquecido. Tudo registado.</span>
+          Esqueceram algo?<br />
+          <span className="cine-h2-thin">A faxineira fotografa. Você recebe na hora.</span>
         </h2>
 
-        <div className="cine-gallery" data-reveal style={{ animationDelay: "0.4s" }}>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="cine-photo" style={{ animationDelay: `${0.5 + i * 0.12}s` }}>
-              <Camera size={20} />
-              <span>Foto {i}</span>
-            </div>
+        <div className="cine-gallery cine-gallery-real" data-reveal style={{ animationDelay: "0.4s" }}>
+          {FORGOTTEN_ITEMS.map((item, i) => (
+            <figure key={item.label} className="cine-photo cine-photo-real" style={{ animationDelay: `${0.5 + i * 0.14}s` }}>
+              <img src={item.src} alt={item.label} loading="lazy" width={1024} height={1024} />
+              <figcaption>
+                <Camera size={12} />
+                <span>{item.label}</span>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>
@@ -272,16 +295,10 @@ function CleaningSection() {
 function TranquilitySection() {
   return (
     <section className="cine-section">
-      <video
-        className="cine-video"
-        src={phoneVideo.url}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-      />
+      <div className="cine-bg cine-bg-tranquility" aria-hidden="true">
+        <div className="cine-orb cine-orb-warm" />
+        <div className="cine-grain" />
+      </div>
       <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
@@ -383,9 +400,11 @@ html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
 .cine-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 
 .cine-bg-hero { background: radial-gradient(ellipse at 30% 40%, #2a1a14 0%, #0A0A0A 70%); }
+.cine-bg-hero-fallback { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: radial-gradient(ellipse at 30% 40%, #2a1a14 0%, #0A0A0A 70%); }
 .cine-bg-arrival { background: linear-gradient(135deg, #1a1410 0%, #2d2218 50%, #0A0A0A 100%); }
 .cine-bg-checkout { background: radial-gradient(ellipse at 70% 50%, #2a1f1a 0%, #0A0A0A 70%); }
 .cine-bg-cleaning { background: linear-gradient(180deg, #0f1419 0%, #1a2028 60%, #0A0A0A 100%); }
+.cine-bg-tranquility { background: radial-gradient(ellipse at 50% 60%, #1f1814 0%, #0A0A0A 75%); }
 .cine-bg-dark { background: #0A0A0A; }
 
 /* Orbs (parallax soft light) */
@@ -585,6 +604,34 @@ html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
 }
 @keyframes cine-photo-in {
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cine-gallery-real {
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 860px;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .cine-gallery-real { grid-template-columns: repeat(2, 1fr); }
+}
+.cine-photo-real {
+  position: relative; overflow: hidden; padding: 0;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: #111;
+  box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7);
+}
+.cine-photo-real img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.8s ease;
+}
+.cine-photo-real:hover img { transform: scale(1.05); }
+.cine-photo-real figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 12px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.75));
 }
 
 /* Footer in CTA */
