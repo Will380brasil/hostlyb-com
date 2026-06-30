@@ -106,7 +106,7 @@ export function LandingPage() {
         operatingSystem: "Web, iOS, Android",
         url: BASE_URL,
         image: OG_IMAGE,
-        offers: [{ "@type": "Offer", price: "19.99", priceCurrency: "EUR", url: `${BASE_URL}/signup` }],
+        offers: [{ "@type": "Offer", price: "24.99", priceCurrency: "EUR", url: `${BASE_URL}/signup` }],
         aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "2400", bestRating: "5", worstRating: "1" },
       },
       {

@@ -44,7 +44,7 @@ const COUNTRY_TO_CURRENCY: Record<string, CurrencyCode> = {
 };
 
 type Plan = {
-  id: "starter" | "professional" | "premium" | "enterprise";
+  id: "starter" | "professional" | "premium";
   name: string;
   basePrice: number;
   tagline: string;
@@ -89,10 +89,9 @@ function SubscribePage() {
   const numberLocale = lang === "pt" ? "pt-PT" : lang === "es" ? "es-ES" : "en-US";
 
   const PLANS: Plan[] = [
-    { id: "starter", name: t("plans.starter.name"), basePrice: 19.99, tagline: t("plans.starter.tagline") },
+    { id: "starter", name: t("plans.starter.name"), basePrice: 24.99, tagline: t("plans.starter.tagline") },
     { id: "professional", name: t("plans.professional.name"), basePrice: 34.99, tagline: t("plans.professional.tagline"), highlighted: true },
-    { id: "premium", name: t("plans.premium.name"), basePrice: 59.99, tagline: t("plans.premium.tagline") },
-    { id: "enterprise", name: t("plans.enterprise.name"), basePrice: 99.99, tagline: t("plans.enterprise.tagline") },
+    { id: "premium", name: t("plans.premium.name"), basePrice: 69.99, tagline: t("plans.premium.tagline") },
   ];
 
   const FEATURES = [
@@ -256,7 +255,7 @@ function SubscribePage() {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANS.map((plan) => {
             const isSelected = selectedPlan === plan.id;
             return (
@@ -286,9 +285,13 @@ function SubscribePage() {
                     </span>
                     <span className="text-sm text-muted-foreground">{t("inscr.perMonth")}</span>
                   </div>
-                  {cycle === "annual" && (
+                  {cycle === "annual" ? (
                     <p className="text-xs text-muted-foreground mt-1">
                       {t("inscr.billedAnnually")}
+                    </p>
+                  ) : (
+                    <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                      {t("inscr.firstMonth")}
                     </p>
                   )}
                 </div>

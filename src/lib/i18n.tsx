@@ -29,12 +29,13 @@ function guessFromNavigator(): { lang: Lang; currency: Currency } {
 }
 
 // Permanent 3-tier pricing (per month). Currency selected per visitor locale.
-export const PLAN_PRICE: Record<"pro" | "premium", Record<Currency, number>> = {
-  pro:     { BRL: 34.90, EUR: 14,   USD: 19,    GBP: 14 },
-  premium: { BRL: 69.90, EUR: 29,   USD: 39,    GBP: 29 },
+export const PLAN_PRICE: Record<"starter" | "pro" | "premium", Record<Currency, number>> = {
+  starter: { BRL: 139.90, EUR: 24.99, USD: 26.99, GBP: 21.99 },
+  pro:     { BRL: 194.90, EUR: 34.99, USD: 37.99, GBP: 29.99 },
+  premium: { BRL: 389.90, EUR: 69.99, USD: 75.99, GBP: 59.99 },
 };
 
-export function formatPrice(currency: Currency, lang: Lang, plan: "pro" | "premium" = "premium"): string {
+export function formatPrice(currency: Currency, lang: Lang, plan: "starter" | "pro" | "premium" = "pro"): string {
   const amount = PLAN_PRICE[plan][currency];
   const locale =
     lang === "en" && (currency === "EUR" || currency === "GBP") ? "en-GB" :
@@ -402,6 +403,7 @@ const pt: Dict = {
   "inscr.mostPopular": "Mais popular",
   "inscr.perMonth": "/mês",
   "inscr.billedAnnually": "Faturado anualmente",
+  "inscr.firstMonth": "✦ 1€ no primeiro mês",
   "inscr.selected": "Selecionado",
   "inscr.selectPlan": "Selecionar plano",
   "inscr.createAccount": "Criar a sua conta",
@@ -835,6 +837,7 @@ const en: Dict = {
   "inscr.mostPopular": "Most popular",
   "inscr.perMonth": "/mo",
   "inscr.billedAnnually": "Billed annually",
+  "inscr.firstMonth": "✦ €1 for the first month",
   "inscr.selected": "Selected",
   "inscr.selectPlan": "Select plan",
   "inscr.createAccount": "Create your account",
@@ -1268,6 +1271,7 @@ const es: Dict = {
   "inscr.mostPopular": "Más popular",
   "inscr.perMonth": "/mes",
   "inscr.billedAnnually": "Facturado anualmente",
+  "inscr.firstMonth": "✦ 1€ el primer mes",
   "inscr.selected": "Seleccionado",
   "inscr.selectPlan": "Seleccionar plan",
   "inscr.createAccount": "Crea tu cuenta",
