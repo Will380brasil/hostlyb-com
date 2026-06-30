@@ -114,6 +114,7 @@ function useCountUp(end: number, duration = 1600) {
 
 export function LandingPage() {
   useReveal();
+  const t = useT();
   useEffect(() => {
     initAnalytics();
     initScrollDepth();
@@ -129,8 +130,8 @@ export function LandingPage() {
         <Link to="/" className="cine-logo">HOSTLYB</Link>
         <div className="cine-nav-right">
           <LanguageSelector />
-          <Link to="/login" className="cine-nav-link">Entrar</Link>
-          <Link to="/signup" className="cine-btn-ghost" data-cta-location="nav">Começar</Link>
+          <Link to="/login" className="cine-nav-link">{t("nav.signin")}</Link>
+          <Link to="/signup" className="cine-btn-ghost" data-cta-location="nav">{t("nav.cta")}</Link>
         </div>
       </nav>
 
