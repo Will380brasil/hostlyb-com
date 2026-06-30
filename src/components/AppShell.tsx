@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound, Shield, DollarSign } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Sparkles, Users, Calendar, Bell, UsersRound, Shield, DollarSign, BarChart3 } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,6 +24,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
     { to: "/hospedes",   label: t("app.tab.guests"),     icon: Users },
     { to: "/calendario", label: t("app.tab.calendar"),   icon: Calendar },
     { to: "/financeiro", label: t("app.tab.finance"),    icon: DollarSign },
+    { to: "/relatorios", label: t("shell.reports"),      icon: BarChart3 },
   ] as const;
 
 
@@ -142,7 +143,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 mx-auto max-w-[480px] border-t border-card-border bg-card/95 backdrop-blur">
-        <ul className="grid grid-cols-5">
+        <ul className="grid grid-cols-7">
           {tabs.map(({ to, label, icon: Icon }) => {
             const active = to === "/app" ? pathname === "/app" : pathname.startsWith(to);
             return (
