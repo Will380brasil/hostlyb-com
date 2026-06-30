@@ -64,13 +64,13 @@ function PropertyDetail() {
     },
   });
 
-  if (isLoading) return <AppShell><p className="text-muted-foreground">Carregando…</p></AppShell>;
-  if (!p) return <AppShell><p className="text-muted-foreground">Imóvel não encontrado.</p></AppShell>;
+  if (isLoading) return <AppShell><p className="text-muted-foreground">{t("g.loading")}</p></AppShell>;
+  if (!p) return <AppShell><p className="text-muted-foreground">—</p></AppShell>;
 
   return (
     <AppShell>
       <Link to="/imoveis" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-3">
-        <ArrowLeft size={16} /> Voltar
+        <ArrowLeft size={16} /> {t("g.close")}
       </Link>
 
       <header className="flex items-start justify-between gap-3 mb-4">
@@ -83,12 +83,12 @@ function PropertyDetail() {
 
       <nav className="flex gap-1 mb-4 border-b overflow-x-auto">
         {([
-          ["overview", "Geral", null, false],
-          ["channels", "Canais", Link2, false],
-          ["guidebook", t("guidebook.title"), BookOpen, true],
-          ["maintenance", t("maint.tab"), Wrench, true],
-          ["performance", t("perf.tab"), BarChart3, true],
-          ["compliance", t("legal.tab"), ShieldCheck, true],
+          ["overview", t("imv.tab.overview"), null, false],
+          ["channels", t("imv.tab.ical"), Link2, false],
+          ["guidebook", t("imv.tab.guidebook"), BookOpen, true],
+          ["maintenance", t("imv.tab.maintenance"), Wrench, true],
+          ["performance", t("imv.tab.performance"), BarChart3, true],
+          ["compliance", t("imv.tab.legal"), ShieldCheck, true],
         ] as const).map(([k, l, Icon, premium]) => (
           <button key={k} onClick={() => setTab(k as any)}
             className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 -mb-px flex items-center gap-1 ${tab === k ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}>
@@ -129,34 +129,34 @@ function PropertyDetail() {
       </section>
 
       <section className="hostly-card mb-4">
-        <h3 className="font-bold mb-3">Detalhes</h3>
+        <h3 className="font-bold mb-3">{t("imv.tab.overview")}</h3>
         <div className="grid grid-cols-3 gap-3 text-sm">
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-secondary">
             <BedDouble size={18} /><span className="font-semibold">{p.bedrooms ?? 0}</span>
-            <span className="text-[10px] text-muted-foreground">Quartos</span>
+            <span className="text-[10px] text-muted-foreground">{t("imv.f.bedrooms")}</span>
           </div>
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-secondary">
             <Bath size={18} /><span className="font-semibold">{p.bathrooms ?? 0}</span>
-            <span className="text-[10px] text-muted-foreground">Banheiros</span>
+            <span className="text-[10px] text-muted-foreground">{t("imv.f.bathrooms")}</span>
           </div>
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-secondary">
             <Users size={18} /><span className="font-semibold">{p.max_guests ?? 0}</span>
-            <span className="text-[10px] text-muted-foreground">Hóspedes</span>
+            <span className="text-[10px] text-muted-foreground">{t("imv.f.maxGuests")}</span>
           </div>
         </div>
         {p.wifi_password && (
           <div className="mt-4 flex items-center gap-2 text-sm">
             <Wifi size={16} style={{ color: "var(--color-info)" }} />
-            <span className="text-muted-foreground">Wi-Fi:</span>
+            <span className="text-muted-foreground">{t("imv.f.wifi")}:</span>
             <code className="font-mono">{p.wifi_password}</code>
           </div>
         )}
       </section>
 
       <section className="hostly-card mb-4">
-        <h3 className="font-bold mb-3 flex items-center gap-2"><Sparkles size={16} /> Histórico de limpezas</h3>
+        <h3 className="font-bold mb-3 flex items-center gap-2"><Sparkles size={16} /> {t("lim.title")}</h3>
         {jobs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma limpeza registrada.</p>
+          <p className="text-sm text-muted-foreground">{t("lim.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {jobs.map((j: any) => (
@@ -170,9 +170,9 @@ function PropertyDetail() {
       </section>
 
       <section className="hostly-card mb-4">
-        <h3 className="font-bold mb-3">Histórico de hóspedes</h3>
+        <h3 className="font-bold mb-3">{t("hos.title")}</h3>
         {guests.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sem hóspedes ainda.</p>
+          <p className="text-sm text-muted-foreground">{t("hos.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {guests.map((g: any) => (
@@ -191,9 +191,9 @@ function PropertyDetail() {
         )}
       </section>
 
-      <button onClick={() => { if (confirm("Arquivar este imóvel?")) archive.mutate(); }}
+      <button onClick={() => { if (confirm(t("g.confirm") + "?")) archive.mutate(); }}
         className="btn-secondary justify-center w-full mb-6" style={{ color: "var(--color-warning)" }}>
-        <Archive size={14} /> Arquivar imóvel
+        <Archive size={14} /> {t("imv.archive")}
       </button>
       </>}
     </AppShell>

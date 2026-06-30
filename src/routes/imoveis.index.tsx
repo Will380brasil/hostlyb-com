@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatMoney } from "@/lib/format";
-import { useLocale } from "@/lib/i18n";
+import { useLocale, useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { Plus, ChevronRight, BedDouble, Bath, Users, X, Search, FileSpreadsheet } from "lucide-react";
 import { usePropertyLimit } from "@/hooks/usePropertyLimit";
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/imoveis/")({
 
 function PropertiesPage() {
   const { currency, lang } = useLocale();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -66,21 +67,21 @@ function PropertiesPage() {
     <AppShell>
       <header className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Imóveis</h2>
+          <h2 className="text-2xl font-bold">{t("imv.title")}</h2>
           <p className="text-sm text-muted-foreground">
-            {properties.length} cadastrados {!limit.inTrial && `· limite ${limit.tier === 999 ? "∞" : limit.tier}`}
+            {properties.length} · {limit.tier === 999 ? "∞" : limit.tier}
           </p>
         </div>
         <div className="flex gap-2">
-          <button className="btn-secondary !py-2 !px-3" onClick={() => setImportOpen(true)} title="Importar planilha"><FileSpreadsheet size={16} /></button>
-          <button className="btn-primary !py-2 !px-3" onClick={tryAdd}><Plus size={16} /> Novo</button>
+          <button className="btn-secondary !py-2 !px-3" onClick={() => setImportOpen(true)} title={t("hos.importSheet")}><FileSpreadsheet size={16} /></button>
+          <button className="btn-primary !py-2 !px-3" onClick={tryAdd}><Plus size={16} /> {t("g.new")}</button>
         </div>
       </header>
 
       {properties.length > 0 && (
         <div className="relative mb-3">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome, endereço, cidade..."
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("g.search")}
             className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-card border border-card-border text-sm" />
         </div>
       )}
@@ -88,13 +89,10 @@ function PropertiesPage() {
       {properties.length > 0 && (
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" title="Ver disponibilidade na data" />
+            className="px-3 py-2 rounded-lg bg-card border border-card-border text-xs" />
           {filterDate && (
-            <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">Limpar</button>
+            <button onClick={() => setFilterDate("")} className="text-xs px-2 py-2 rounded-lg bg-secondary">{t("g.close")}</button>
           )}
-          <span className="text-xs text-muted-foreground">
-            {filterDate ? `Status em ${new Date(filterDate).toLocaleDateString()}` : "Filtrar disponibilidade por data"}
-          </span>
         </div>
       )}
 
@@ -106,17 +104,17 @@ function PropertiesPage() {
         return (
           <>
             {isLoading ? (
-              <p className="text-sm text-muted-foreground">Carregando…</p>
+              <p className="text-sm text-muted-foreground">{t("g.loading")}</p>
             ) : properties.length === 0 ? (
               <div className="hostly-card text-center text-sm text-muted-foreground">
-                <p className="mb-3">Você ainda não cadastrou imóveis.</p>
+                <p className="mb-3">{t("imv.empty")}</p>
                 <div className="flex gap-2 justify-center">
-                  <button className="btn-secondary" onClick={() => setImportOpen(true)}><FileSpreadsheet size={14} /> Importar planilha</button>
-                  <button className="btn-primary" onClick={tryAdd}><Plus size={14} /> Cadastrar imóvel</button>
+                  <button className="btn-secondary" onClick={() => setImportOpen(true)}><FileSpreadsheet size={14} /> {t("hos.importSheet")}</button>
+                  <button className="btn-primary" onClick={tryAdd}><Plus size={14} /> {t("imv.add")}</button>
                 </div>
               </div>
             ) : filtered.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">Nenhum imóvel encontrado para "{q}".</p>
+              <p className="text-sm text-muted-foreground text-center py-6">{t("g.empty")}</p>
             ) : (
               <ul className="flex flex-col gap-3">
                 {filtered.map((p: any) => (

@@ -9,7 +9,7 @@ import { sanitize } from "@/lib/sanitize";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Download, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { formatMoney } from "@/lib/format";
-import { useLocale } from "@/lib/i18n";
+import { useLocale, useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/financeiro")({
   component: () => (
@@ -49,6 +49,7 @@ const empty: Partial<Tx> = {
 function FinanceiroPage() {
   const { session } = useAuth();
   const { currency, lang } = useLocale();
+  const t = useT();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Tx | null>(null);
@@ -128,9 +129,9 @@ function FinanceiroPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["transactions"] });
       setOpen(false); setEditing(null); setForm(empty); setErrors({});
-      toast.success("Transação salva");
+      toast.success(t("fin.saved"));
     },
-    onError: (e: any) => { if (e.message !== "validation") toast.error(e.message ?? "Erro ao salvar"); },
+    onError: (e: any) => { if (e.message !== "validation") toast.error(e.message ?? t("g.error")); },
   });
 
   const del = useMutation({
@@ -138,7 +139,7 @@ function FinanceiroPage() {
       const { error } = await supabase.from("transactions").delete().eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["transactions"] }); toast.success("Removida"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["transactions"] }); toast.success(t("g.removed")); },
   });
 
   const exportCSV = () => {
@@ -155,67 +156,67 @@ function FinanceiroPage() {
   const categories = (form.type === "saida" ? CATEGORIES.saida : CATEGORIES.entrada);
 
   const originLabel = (o?: string | null) => {
-    if (o === "auto:guest") return { text: "Reserva", bg: "#dbeafe", fg: "#1e40af" };
-    if (o === "auto:cleaning") return { text: "Limpeza", bg: "#fef3c7", fg: "#92400e" };
-    return { text: "Manual", bg: "#f3f4f6", fg: "#374151" };
+    if (o === "auto:guest") return { text: t("fin.origin.reservation"), bg: "#dbeafe", fg: "#1e40af" };
+    if (o === "auto:cleaning") return { text: t("fin.origin.cleaning"), bg: "#fef3c7", fg: "#92400e" };
+    return { text: t("fin.origin.manual"), bg: "#f3f4f6", fg: "#374151" };
   };
 
   return (
     <div style={{ padding: 16, maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>Financeiro</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>{t("fin.title")}</h1>
         <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={exportCSV} style={btnGhost}><Download size={16} /> Exportar CSV</button>
+          <button onClick={exportCSV} style={btnGhost}><Download size={16} /> {t("fin.exportCsv")}</button>
           <button onClick={() => { setEditing(null); setForm(empty); setErrors({}); setOpen(true); }} style={btnPrimary}>
-            <Plus size={16} /> Nova transação
+            <Plus size={16} /> {t("fin.new")}
           </button>
         </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 16 }}>
-        <Card title="Entradas" value={fmt(totals.entradas)} icon={<TrendingUp color="#15803d" />} color="#15803d" />
-        <Card title="Saídas" value={fmt(totals.saidas)} icon={<TrendingDown color="#991b1b" />} color="#991b1b" />
-        <Card title="Saldo" value={fmt(totals.saldo)} icon={<Wallet color="#0f0f0f" />} color={totals.saldo >= 0 ? "#15803d" : "#991b1b"} />
+        <Card title={t("fin.entries")} value={fmt(totals.entradas)} icon={<TrendingUp color="#15803d" />} color="#15803d" />
+        <Card title={t("fin.exits")}  value={fmt(totals.saidas)}   icon={<TrendingDown color="#991b1b" />} color="#991b1b" />
+        <Card title={t("fin.balance")} value={fmt(totals.saldo)}   icon={<Wallet color="#0f0f0f" />} color={totals.saldo >= 0 ? "#15803d" : "#991b1b"} />
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
         <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} style={inp} />
         <select value={filterType} onChange={(e) => setFilterType(e.target.value as any)} style={inp}>
-          <option value="all">Todas</option>
-          <option value="entrada">Entradas</option>
-          <option value="saida">Saídas</option>
+          <option value="all">{t("fin.filterAll")}</option>
+          <option value="entrada">{t("fin.entries")}</option>
+          <option value="saida">{t("fin.exits")}</option>
         </select>
       </div>
 
       <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
           <thead style={{ background: "#f9fafb", textAlign: "left" }}>
-            <tr><th style={th}>Data</th><th style={th}>Tipo</th><th style={th}>Categoria</th><th style={th}>Origem</th><th style={th}>Descrição</th><th style={th}>Valor</th><th style={th}>Status</th><th style={th}></th></tr>
+            <tr><th style={th}>{t("fin.colDate")}</th><th style={th}>{t("fin.colType")}</th><th style={th}>{t("fin.colCategory")}</th><th style={th}>{t("fin.colOrigin")}</th><th style={th}>{t("fin.colDescription")}</th><th style={th}>{t("fin.colAmount")}</th><th style={th}>{t("fin.colStatus")}</th><th style={th}></th></tr>
           </thead>
           <tbody>
-            {isLoading && <tr><td colSpan={8} style={{ padding: 24, textAlign: "center" }}>Carregando…</td></tr>}
-            {!isLoading && filtered.length === 0 && (<tr><td colSpan={8} style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>Nenhuma transação no período.</td></tr>)}
-            {filtered.map((t) => {
-              const orig = originLabel(t.origin);
-              const valueColor = t.type === "entrada" ? "#15803d" : "#991b1b";
-              const refId = (t.guest_id || t.cleaning_job_id || "").slice(0, 6);
+            {isLoading && <tr><td colSpan={8} style={{ padding: 24, textAlign: "center" }}>{t("g.loading")}</td></tr>}
+            {!isLoading && filtered.length === 0 && (<tr><td colSpan={8} style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>{t("fin.emptyPeriod")}</td></tr>)}
+            {filtered.map((t2) => {
+              const orig = originLabel(t2.origin);
+              const valueColor = t2.type === "entrada" ? "#15803d" : "#991b1b";
+              const refId = (t2.guest_id || t2.cleaning_job_id || "").slice(0, 6);
               return (
-              <tr key={t.id} style={{ borderTop: "1px solid #f3f4f6" }}>
-                <td style={{ ...td, color: "#0f0f0f" }}>{t.date.split("-").reverse().join("/")}</td>
-                <td style={td}><span style={{ padding: "2px 8px", borderRadius: 999, fontSize: 12, background: t.type === "entrada" ? "#dcfce7" : "#fee2e2", color: t.type === "entrada" ? "#15803d" : "#991b1b" }}>{t.type === "entrada" ? "Entrada" : "Saída"}</span></td>
-                <td style={{ ...td, color: "#0f0f0f" }}>{t.category}</td>
+              <tr key={t2.id} style={{ borderTop: "1px solid #f3f4f6" }}>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t2.date.split("-").reverse().join("/")}</td>
+                <td style={td}><span style={{ padding: "2px 8px", borderRadius: 999, fontSize: 12, background: t2.type === "entrada" ? "#dcfce7" : "#fee2e2", color: t2.type === "entrada" ? "#15803d" : "#991b1b" }}>{t2.type === "entrada" ? t("fin.entry") : t("fin.exit")}</span></td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t2.category}</td>
                 <td style={td}>
                   <span title={refId ? `#${refId}` : undefined} style={{ padding: "2px 8px", borderRadius: 999, fontSize: 11, fontWeight: 600, background: orig.bg, color: orig.fg }}>
                     {orig.text}{refId ? ` #${refId}` : ""}
                   </span>
                 </td>
-                <td style={{ ...td, color: "#0f0f0f" }}>{t.description}</td>
-                <td style={{ ...td, fontWeight: 700, color: valueColor }}>{t.type === "saida" ? "-" : ""}{fmt(Number(t.amount))}</td>
-                <td style={{ ...td, color: "#0f0f0f" }}>{t.status}</td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t2.description}</td>
+                <td style={{ ...td, fontWeight: 700, color: valueColor }}>{t2.type === "saida" ? "-" : ""}{fmt(Number(t2.amount))}</td>
+                <td style={{ ...td, color: "#0f0f0f" }}>{t(`status.${t2.status}`)}</td>
                 <td style={td}>
                   <div style={{ display: "flex", gap: 4 }}>
-                    <button onClick={() => { setEditing(t); setForm(t); setErrors({}); setOpen(true); }} style={iconBtn}><Pencil size={14} /></button>
-                    <button onClick={() => { if (confirm("Excluir transação?")) del.mutate(t.id); }} style={{ ...iconBtn, color: "#991b1b" }}><Trash2 size={14} /></button>
+                    <button onClick={() => { setEditing(t2); setForm(t2); setErrors({}); setOpen(true); }} style={iconBtn}><Pencil size={14} /></button>
+                    <button onClick={() => { if (confirm(t("fin.deleteConfirm"))) del.mutate(t2.id); }} style={{ ...iconBtn, color: "#991b1b" }}><Trash2 size={14} /></button>
                   </div>
                 </td>
               </tr>
@@ -228,9 +229,9 @@ function FinanceiroPage() {
       {open && (
         <div onClick={() => setOpen(false)} style={modalBg}>
           <div onClick={(e) => e.stopPropagation()} style={modal}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, marginTop: 0 }}>{editing ? "Editar" : "Nova"} transação</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, marginTop: 0 }}>{editing ? t("fin.edit") : t("fin.new")}</h2>
             <div style={{ display: "grid", gap: 10 }}>
-              <Field label="Tipo *" error={errors.type}>
+              <Field label={`${t("fin.type")} *`} error={errors.type}>
                 <div style={{ display: "flex", gap: 8 }}>
                   {(["entrada", "saida"] as const).map((tp) => {
                     const sel = form.type === tp;
@@ -239,81 +240,81 @@ function FinanceiroPage() {
                       <button key={tp} type="button"
                         onClick={() => setForm({ ...form, type: tp, category: "", guest_id: null, cleaning_job_id: null })}
                         style={{ flex: 1, padding: 10, background: sel ? c + "18" : "#f7f7f7", border: `2px solid ${sel ? c : "transparent"}`, borderRadius: 8, fontWeight: 700, color: sel ? c : "#616161", cursor: "pointer" }}>
-                        {tp === "entrada" ? "↑ Entrada" : "↓ Saída"}
+                        {tp === "entrada" ? `↑ ${t("fin.entry")}` : `↓ ${t("fin.exit")}`}
                       </button>
                     );
                   })}
                 </div>
               </Field>
 
-              <Field label="Categoria *" error={errors.category}>
+              <Field label={`${t("fin.category")} *`} error={errors.category}>
                 <select value={form.category || ""} onChange={(e) => setForm({ ...form, category: e.target.value })} style={inpErr(!!errors.category)}>
-                  <option value="">Selecione…</option>
+                  <option value="">{t("fin.select")}</option>
                   {categories.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </Field>
 
-              <Field label="Descrição" error={errors.description}>
+              <Field label={t("fin.colDescription")} error={errors.description}>
                 <input value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} maxLength={500} style={inpErr(!!errors.description)} />
               </Field>
 
-              <Field label="Valor (R$) *" error={errors.amount}>
+              <Field label={`${t("fin.amount")} *`} error={errors.amount}>
                 <input type="number" step="0.01" min={0} value={form.amount ?? 0} onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })} style={inpErr(!!errors.amount)} />
               </Field>
 
-              <Field label="Data *" error={errors.date}>
+              <Field label={`${t("fin.date")} *`} error={errors.date}>
                 <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} style={inpErr(!!errors.date)} />
               </Field>
 
-              <Field label="Status *" error={errors.status}>
+              <Field label={`${t("fin.colStatus")} *`} error={errors.status}>
                 <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })} style={inpErr(!!errors.status)}>
-                  <option value="pago">Pago</option><option value="pendente">Pendente</option><option value="cancelado">Cancelado</option>
+                  <option value="pago">{t("status.pago")}</option><option value="pendente">{t("status.pendente")}</option><option value="cancelado">{t("status.cancelado")}</option>
                 </select>
               </Field>
 
-              <Field label="Método de pagamento">
+              <Field label={t("fin.method")}>
                 <select value={form.payment_method || ""} onChange={(e) => setForm({ ...form, payment_method: e.target.value })} style={inp}>
-                  <option value="pix">PIX</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option><option value="outro">Outro</option>
+                  <option value="pix">PIX</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option><option value="outro">{t("g.none")}</option>
                 </select>
               </Field>
 
               <div style={{ borderTop: "1px solid #e5e7eb", margin: "8px 0 4px", paddingTop: 8 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", margin: 0, textTransform: "uppercase" }}>Vincular (opcional)</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", margin: 0, textTransform: "uppercase" }}>{t("fin.link")}</p>
               </div>
 
-              <Field label="Imóvel">
+              <Field label={t("fin.property")}>
                 <select value={form.property_id || ""} onChange={(e) => setForm({ ...form, property_id: e.target.value || null, guest_id: null, cleaning_job_id: null })} style={inp}>
-                  <option value="">Nenhum</option>
+                  <option value="">{t("g.none")}</option>
                   {(properties as any[]).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </Field>
 
               {form.property_id && guests.length > 0 && (
-                <Field label="Hóspede">
+                <Field label={t("fin.guest")}>
                   <select value={form.guest_id || ""} onChange={(e) => setForm({ ...form, guest_id: e.target.value || null })} style={inp}>
-                    <option value="">Nenhum</option>
+                    <option value="">{t("g.none")}</option>
                     {(guests as any[]).map((g) => <option key={g.id} value={g.id}>{g.name} ({g.checkin_date} → {g.checkout_date})</option>)}
                   </select>
                 </Field>
               )}
 
               {form.property_id && form.type === "saida" && jobs.length > 0 && (
-                <Field label="Limpeza">
+                <Field label={t("fin.cleaning")}>
                   <select value={form.cleaning_job_id || ""} onChange={(e) => setForm({ ...form, cleaning_job_id: e.target.value || null })} style={inp}>
-                    <option value="">Nenhuma</option>
-                    {(jobs as any[]).map((j) => <option key={j.id} value={j.id}>{j.scheduled_date} — {j.cleaners?.name ?? "Faxineira"}</option>)}
+                    <option value="">{t("g.none")}</option>
+                    {(jobs as any[]).map((j) => <option key={j.id} value={j.id}>{j.scheduled_date} — {j.cleaners?.name ?? t("lim.cleaner")}</option>)}
                   </select>
                 </Field>
               )}
 
-              <Field label="Observações">
+              <Field label={t("fin.notes")}>
                 <textarea value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} maxLength={1000} style={inp} />
               </Field>
             </div>
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
-              <button onClick={() => setOpen(false)} style={btnGhost}>Cancelar</button>
+              <button onClick={() => setOpen(false)} style={btnGhost}>{t("g.cancel")}</button>
               <button onClick={() => save.mutate()} disabled={save.isPending} style={btnPrimary}>
-                {save.isPending ? "Salvando…" : "Salvar"}
+                {save.isPending ? t("g.saving") : t("g.save")}
               </button>
             </div>
           </div>

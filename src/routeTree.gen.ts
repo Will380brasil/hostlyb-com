@@ -13,6 +13,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as PwaCheckRouteImport } from './routes/pwa-check'
 import { Route as NovaSenhaRouteImport } from './routes/nova-senha'
 import { Route as MinhaAgendaRouteImport } from './routes/minha-agenda'
@@ -84,6 +85,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosRoute = RelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PwaCheckRoute = PwaCheckRouteImport.update({
@@ -377,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/minha-agenda': typeof MinhaAgendaRoute
   '/nova-senha': typeof NovaSenhaRoute
   '/pwa-check': typeof PwaCheckRoute
+  '/relatorios': typeof RelatoriosRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
@@ -434,6 +441,7 @@ export interface FileRoutesByTo {
   '/minha-agenda': typeof MinhaAgendaRoute
   '/nova-senha': typeof NovaSenhaRoute
   '/pwa-check': typeof PwaCheckRoute
+  '/relatorios': typeof RelatoriosRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
@@ -493,6 +501,7 @@ export interface FileRoutesById {
   '/minha-agenda': typeof MinhaAgendaRoute
   '/nova-senha': typeof NovaSenhaRoute
   '/pwa-check': typeof PwaCheckRoute
+  '/relatorios': typeof RelatoriosRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/minha-agenda'
     | '/nova-senha'
     | '/pwa-check'
+    | '/relatorios'
     | '/signup'
     | '/sitemap.xml'
     | '/trust'
@@ -610,6 +620,7 @@ export interface FileRouteTypes {
     | '/minha-agenda'
     | '/nova-senha'
     | '/pwa-check'
+    | '/relatorios'
     | '/signup'
     | '/sitemap.xml'
     | '/trust'
@@ -668,6 +679,7 @@ export interface FileRouteTypes {
     | '/minha-agenda'
     | '/nova-senha'
     | '/pwa-check'
+    | '/relatorios'
     | '/signup'
     | '/sitemap.xml'
     | '/trust'
@@ -727,6 +739,7 @@ export interface RootRouteChildren {
   MinhaAgendaRoute: typeof MinhaAgendaRoute
   NovaSenhaRoute: typeof NovaSenhaRoute
   PwaCheckRoute: typeof PwaCheckRoute
+  RelatoriosRoute: typeof RelatoriosRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrustRoute: typeof TrustRoute
@@ -783,6 +796,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios': {
+      id: '/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof RelatoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pwa-check': {
@@ -1208,6 +1228,7 @@ const rootRouteChildren: RootRouteChildren = {
   MinhaAgendaRoute: MinhaAgendaRoute,
   NovaSenhaRoute: NovaSenhaRoute,
   PwaCheckRoute: PwaCheckRoute,
+  RelatoriosRoute: RelatoriosRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrustRoute: TrustRoute,
