@@ -143,17 +143,26 @@ export function LandingPage() {
   );
 }
 
-/* ---------------- Section 1: HERO ---------------- */
+/* ---------------- Section 1: HERO with video ---------------- */
 function HeroSection() {
   return (
     <section className="cine-section">
-      <div className="cine-bg cine-bg-hero" aria-hidden="true">
+      <video
+        className="cine-video"
+        src={phoneVideo.url}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+      />
+      <div className="cine-bg-hero-fallback" aria-hidden="true">
         <div className="cine-orb cine-orb-1" />
         <div className="cine-orb cine-orb-2" />
-        <div className="cine-orb cine-orb-3" />
         <div className="cine-grain" />
       </div>
-      <div className="cine-overlay" />
+      <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
         <p className="cine-eyebrow" data-reveal>GESTÃO DE AIRBNB · SEM ESFORÇO</p>
