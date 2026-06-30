@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, Bell, Camera, Sparkles } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useT } from "@/lib/i18n";
 import { initAnalytics, initScrollDepth, trackEvent } from "@/lib/analytics";
 import { buildLandingHead } from "@/lib/landing-head";
 import phoneVideo from "@/assets/phone-relax.mp4.asset.json";
@@ -12,17 +13,17 @@ import forgottenToy from "@/assets/forgotten-toy.jpg";
 import forgottenWallet from "@/assets/forgotten-wallet.jpg";
 import heroPoster from "@/assets/hero-poster.jpg";
 
-const FORGOTTEN_ITEMS = [
-  { src: forgottenPhone, label: "Telemóvel · Quarto" },
-  { src: forgottenKeys, label: "Chaves · Sala" },
-  { src: forgottenToy, label: "Brinquedo · Cama" },
-  { src: forgottenWallet, label: "Carteira · WC" },
+const FORGOTTEN_ITEMS: Array<{ src: string; key: string }> = [
+  { src: forgottenPhone, key: "landing.forgotten.phone" },
+  { src: forgottenKeys, key: "landing.forgotten.keys" },
+  { src: forgottenToy, key: "landing.forgotten.toy" },
+  { src: forgottenWallet, key: "landing.forgotten.wallet" },
 ];
 
 const FAQ_ITEMS_SEO = [
-  { q: "Preciso de cartão de crédito para começar?", a: "Não. 14 dias grátis e sem cartão." },
-  { q: "A faxineira precisa de app?", a: "Não. Recebe um link único e acede pelo navegador." },
-  { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa." },
+  { q: "Preciso de cartão de crédito para começar?", a: "Não. 14 dias grátis e sem cartão.", qKey: "landing.faq.noCard.q", aKey: "landing.faq.noCard.a" },
+  { q: "A faxineira precisa de app?", a: "Não. Recebe um link único e acede pelo navegador.", qKey: "landing.faq.cleanerApp.q", aKey: "landing.faq.cleanerApp.a" },
+  { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa.", qKey: "landing.faq.cancel.q", aKey: "landing.faq.cancel.a" },
 ];
 
 const BASE_URL = "https://www.hostlyb.com";
@@ -310,6 +311,7 @@ function CheckoutSection() {
 
 /* ---------------- Section 4: A LIMPEZA ---------------- */
 function CleaningSection() {
+  const t = useT();
   return (
     <section className="cine-section">
       <div className="cine-bg cine-bg-cleaning" aria-hidden="true">
@@ -326,15 +328,18 @@ function CleaningSection() {
         </h2>
 
         <div className="cine-gallery cine-gallery-real" data-reveal style={{ animationDelay: "0.4s" }}>
-          {FORGOTTEN_ITEMS.map((item, i) => (
-            <figure key={item.label} className="cine-photo cine-photo-real" style={{ animationDelay: `${0.5 + i * 0.14}s` }}>
-              <img src={item.src} alt={item.label} loading="lazy" width={1024} height={1024} />
-              <figcaption>
-                <Camera size={12} />
-                <span>{item.label}</span>
-              </figcaption>
-            </figure>
-          ))}
+          {FORGOTTEN_ITEMS.map((item, i) => {
+            const label = t(item.key);
+            return (
+              <figure key={item.key} className="cine-photo cine-photo-real" style={{ animationDelay: `${0.5 + i * 0.14}s` }}>
+                <img src={item.src} alt={label} loading="lazy" width={1024} height={1024} />
+                <figcaption>
+                  <Camera size={12} />
+                  <span>{label}</span>
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </div>
     </section>
