@@ -1,15 +1,35 @@
-import { META_BY_LANG, LANGS, BASE_URL, OG_IMAGE, JSON_LD } from "@/routes/index";
+const BASE_URL = "https://www.hostlyb.com";
+const OG_IMAGE = `${BASE_URL}/og-cover.jpg`;
+
+const META_BY_LANG: Record<string, { title: string; description: string; keywords: string }> = {
+  pt: {
+    title: "Hostlyb | O seu Airbnb, finalmente organizado.",
+    description: "Pare de gerir o seu Airbnb pelo WhatsApp. Fotos de limpeza, alertas e calendário num só sítio. 14 dias grátis.",
+    keywords: "gestão alojamento local, app anfitrião, sincronização airbnb booking, checklist limpeza fotos",
+  },
+  en: {
+    title: "Hostlyb | Your Airbnb, finally organized.",
+    description: "Stop running your Airbnb on WhatsApp. Cleaning photos, alerts, and calendar in one place. 14-day free trial.",
+    keywords: "short term rental management, vacation rental software, airbnb calendar sync, cleaning checklist",
+  },
+  fr: { title: "Hostlyb | Votre Airbnb, enfin organisé.", description: "Arrêtez de gérer votre Airbnb sur WhatsApp.", keywords: "gestion location courte durée" },
+  de: { title: "Hostlyb | Ihr Airbnb, endlich organisiert.", description: "Hören Sie auf, Ihr Airbnb über WhatsApp zu verwalten.", keywords: "ferienwohnung verwaltung" },
+  it: { title: "Hostlyb | Il tuo Airbnb, finalmente organizzato.", description: "Smetti di gestire il tuo Airbnb su WhatsApp.", keywords: "gestione affitti brevi" },
+  es: { title: "Hostlyb | Tu Airbnb, por fin organizado.", description: "Deja de gestionar tu Airbnb por WhatsApp.", keywords: "gestión alquiler vacacional" },
+};
+
+const LANGS = ["pt", "en", "es", "fr", "it", "de"] as const;
+type Lang = (typeof LANGS)[number];
 
 const OG_LOCALE: Record<string, string> = {
   pt: "pt_PT", en: "en_US", fr: "fr_FR", de: "de_DE", it: "it_IT", es: "es_ES",
 };
 
-// Map lang -> URL path. Portuguese uses "/" as default.
-const PATH_BY_LANG: Record<string, string> = {
+const PATH_BY_LANG: Record<Lang, string> = {
   pt: "/", en: "/en", fr: "/fr", de: "/de", it: "/it", es: "/es",
 };
 
-export function buildLandingHead(lang: keyof typeof META_BY_LANG) {
+export function buildLandingHead(lang: Lang) {
   const m = META_BY_LANG[lang];
   const canonical = BASE_URL + PATH_BY_LANG[lang];
   const altLinks = LANGS.map((l) => ({
@@ -23,7 +43,7 @@ export function buildLandingHead(lang: keyof typeof META_BY_LANG) {
       { name: "description", content: m.description },
       { name: "keywords", content: m.keywords },
       { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large" },
-      { name: "theme-color", content: "#FF6B6B" },
+      { name: "theme-color", content: "#0A0A0A" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: m.title },
       { property: "og:description", content: m.description },
@@ -48,6 +68,6 @@ export function buildLandingHead(lang: keyof typeof META_BY_LANG) {
       { rel: "alternate", hreflang: "pt-BR", href: BASE_URL + "/" },
       { rel: "alternate", hreflang: "x-default", href: BASE_URL + "/" },
     ],
-    scripts: [{ type: "application/ld+json", children: JSON.stringify(JSON_LD) }],
+    scripts: [],
   };
 }
