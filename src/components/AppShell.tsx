@@ -92,7 +92,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSelector compact />
           <InstallButton compact />
+
           {isAdmin && (
             <Link
               to={"/admin" as any}
