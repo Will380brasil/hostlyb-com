@@ -505,7 +505,7 @@ function CleanerPortal({ token }: { token: string }) {
           <h1 className="text-xl font-black">Host<span style={{ color: "var(--color-accent)" }}>lyb</span></h1>
           <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
             style={{ background: data.status === "concluido" ? "var(--color-accent)" : "var(--color-card)", color: data.status === "concluido" ? "white" : "var(--color-foreground)", border: "1px solid var(--color-card-border)" }}>
-            {STATUS_LABEL[data.status] ?? data.status}
+            {STATUS_KEY[data.status] ? t(STATUS_KEY[data.status]) : data.status}
           </span>
         </div>
       </header>
@@ -523,7 +523,7 @@ function CleanerPortal({ token }: { token: string }) {
           <div className="flex gap-3 mt-3 text-xs text-muted-foreground">
             {data.property.bedrooms != null && <span className="flex items-center gap-1"><BedDouble size={12} /> {data.property.bedrooms}</span>}
             {data.property.bathrooms != null && <span className="flex items-center gap-1"><Bath size={12} /> {data.property.bathrooms}</span>}
-            <span>📅 {new Date(data.scheduled_date + "T" + data.scheduled_time).toLocaleString("pt-PT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+            <span>📅 {new Date(data.scheduled_date + "T" + data.scheduled_time).toLocaleString(intlLocale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
           </div>
           {data.property.wifi_password && (
             <div className="mt-3 pt-3 border-t border-card-border text-xs flex items-center gap-2">
@@ -534,13 +534,13 @@ function CleanerPortal({ token }: { token: string }) {
 
         {data.status !== "em_andamento" && data.status !== "concluido" && (
           <button onClick={() => update.mutate({ status: "em_andamento" })} className="w-full py-3 rounded-2xl font-bold text-white" style={{ background: "var(--color-accent)" }}>
-            Iniciar limpeza
+            {t("fax.start")}
           </button>
         )}
 
         {data.status === "em_andamento" && (
           <section className="rounded-2xl border border-card-border p-4 text-center" style={{ background: "var(--color-accent)11" }}>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Limpeza em curso</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">{t("fax.portal.inProgressLabel")}</p>
             <p className="text-5xl font-mono font-bold tracking-widest" style={{ color: "var(--color-accent)" }}>{formatTimer(elapsed)}</p>
           </section>
         )}
