@@ -295,16 +295,10 @@ function CleaningSection() {
 function TranquilitySection() {
   return (
     <section className="cine-section">
-      <video
-        className="cine-video"
-        src={phoneVideo.url}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-      />
+      <div className="cine-bg cine-bg-tranquility" aria-hidden="true">
+        <div className="cine-orb cine-orb-warm" />
+        <div className="cine-grain" />
+      </div>
       <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
