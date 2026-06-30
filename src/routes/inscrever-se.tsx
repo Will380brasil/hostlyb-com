@@ -60,12 +60,7 @@ type Plan = {
   highlighted?: boolean;
 };
 
-const PLANS: Plan[] = [
-  { id: "starter", name: "Starter", basePrice: 19.99, tagline: "Para quem está a começar" },
-  { id: "professional", name: "Professional", basePrice: 34.99, tagline: "Para operações em crescimento", highlighted: true },
-  { id: "premium", name: "Premium", basePrice: 59.99, tagline: "Para equipas profissionais" },
-  { id: "enterprise", name: "Enterprise", basePrice: 99.99, tagline: "Para grandes operações" },
-];
+// Plans are built per-render with i18n inside SubscribePage (PLANS_I18N).
 
 const FEATURES: Array<{ icon: typeof Users; label: string }> = [
   { icon: Users, label: "Profissionais ilimitados" },
