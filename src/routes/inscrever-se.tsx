@@ -14,6 +14,7 @@ import {
   Gift,
 } from "lucide-react";
 import { PasswordField } from "@/components/PasswordField";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
@@ -31,8 +32,6 @@ export const Route = createFileRoute("/inscrever-se")({
   }),
   component: SubscribePage,
 });
-
-// ---------- Data ----------
 
 type BillingCycle = "monthly" | "annual";
 type CurrencyCode = "EUR" | "USD" | "BRL" | "GBP";
@@ -55,22 +54,10 @@ const COUNTRY_TO_CURRENCY: Record<string, CurrencyCode> = {
 type Plan = {
   id: "starter" | "professional" | "premium" | "enterprise";
   name: string;
-  basePrice: number; // EUR monthly
+  basePrice: number;
   tagline: string;
   highlighted?: boolean;
 };
-
-// Plans are built per-render with i18n inside SubscribePage (PLANS_I18N).
-
-const FEATURES: Array<{ icon: typeof Users; label: string }> = [
-  { icon: Users, label: "Profissionais ilimitados" },
-  { icon: Camera, label: "Checklist com fotos" },
-  { icon: Search, label: "Rastreio de objetos esquecidos" },
-  { icon: Bell, label: "Alertas automáticos" },
-  { icon: Calendar, label: "Integração Google Calendar" },
-  { icon: LayoutDashboard, label: "Dashboard em tempo real" },
-  { icon: MessageCircle, label: "Notificações por WhatsApp" },
-];
 
 const COUNTRIES = [
   { code: "PT", flag: "🇵🇹", dial: "+351" },
@@ -83,36 +70,11 @@ const COUNTRIES = [
   { code: "US", flag: "🇺🇸", dial: "+1" },
 ];
 
-const FAQ = [
-  {
-    q: "Como funciona o período de teste de 14 dias?",
-    a: "Pode usar todas as funcionalidades do plano escolhido durante 14 dias sem cobrança. Não pedimos cartão de crédito no início.",
-  },
-  {
-    q: "Posso mudar de plano depois?",
-    a: "Sim. Pode fazer upgrade ou downgrade a qualquer momento. A diferença é calculada proporcionalmente.",
-  },
-  {
-    q: "Qual a diferença entre os planos?",
-    a: "Todos os planos incluem as mesmas funcionalidades ilimitadas. A escolha depende do tamanho da operação e do nível de suporte que precisa.",
-  },
-  {
-    q: "Posso cancelar quando quiser?",
-    a: "Sim, sem fidelização. Cancela com um clique no painel e mantém o acesso até ao fim do período pago.",
-  },
-  {
-    q: "Aceitam que tipo de pagamento?",
-    a: "Aceitamos cartões de crédito e débito (Visa, Mastercard, Amex), Apple Pay, Google Pay e SEPA na zona euro.",
-  },
-];
-
-// ---------- Helpers ----------
-
-function formatPrice(eurPrice: number, currency: CurrencyCode, cycle: BillingCycle) {
+function formatPrice(eurPrice: number, currency: CurrencyCode, cycle: BillingCycle, locale: string) {
   const { symbol, rate } = CURRENCIES[currency];
   const monthly = cycle === "annual" ? eurPrice * 0.8 : eurPrice;
   const converted = monthly * rate;
-  const formatted = converted.toLocaleString("pt-PT", {
+  const formatted = converted.toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -129,22 +91,40 @@ function scorePassword(pw: string) {
   return Math.min(s, 4);
 }
 
-// ---------- Page ----------
-
 function SubscribePage() {
   const navigate = useNavigate();
-  const { t } = useLocale();
-  const PLANS_I18N: Plan[] = [
-    { id: "starter", name: t("plans.starter.name") || "Starter", basePrice: 19.99, tagline: t("plans.starter.tagline") || "Para quem está a começar" },
-    { id: "professional", name: t("plans.professional.name") || "Professional", basePrice: 34.99, tagline: t("plans.professional.tagline") || "Para operações em crescimento", highlighted: true },
-    { id: "premium", name: t("plans.premium.name") || "Premium", basePrice: 59.99, tagline: t("plans.premium.tagline") || "Para equipas profissionais" },
-    { id: "enterprise", name: t("plans.enterprise.name") || "Enterprise", basePrice: 99.99, tagline: t("plans.enterprise.tagline") || "Para grandes operações" },
+  const { t, lang } = useLocale();
+  const numberLocale = lang === "pt" ? "pt-PT" : lang === "es" ? "es-ES" : "en-US";
+
+  const PLANS: Plan[] = [
+    { id: "starter", name: t("plans.starter.name"), basePrice: 19.99, tagline: t("plans.starter.tagline") },
+    { id: "professional", name: t("plans.professional.name"), basePrice: 34.99, tagline: t("plans.professional.tagline"), highlighted: true },
+    { id: "premium", name: t("plans.premium.name"), basePrice: 59.99, tagline: t("plans.premium.tagline") },
+    { id: "enterprise", name: t("plans.enterprise.name"), basePrice: 99.99, tagline: t("plans.enterprise.tagline") },
   ];
+
+  const FEATURES = [
+    { icon: Users, label: t("inscr.feat.unlimited") },
+    { icon: Camera, label: t("inscr.feat.checklist") },
+    { icon: Search, label: t("inscr.feat.forgotten") },
+    { icon: Bell, label: t("inscr.feat.alerts") },
+    { icon: Calendar, label: t("inscr.feat.gcal") },
+    { icon: LayoutDashboard, label: t("inscr.feat.dashboard") },
+    { icon: MessageCircle, label: t("inscr.feat.whatsapp") },
+  ];
+
+  const FAQ = [
+    { q: t("inscr.faq.q1"), a: t("inscr.faq.a1") },
+    { q: t("inscr.faq.q2"), a: t("inscr.faq.a2") },
+    { q: t("inscr.faq.q3"), a: t("inscr.faq.a3") },
+    { q: t("inscr.faq.q4"), a: t("inscr.faq.a4") },
+    { q: t("inscr.faq.q5"), a: t("inscr.faq.a5") },
+  ];
+
   const [currency, setCurrency] = useState<CurrencyCode>("EUR");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   const [selectedPlan, setSelectedPlan] = useState<Plan["id"]>("professional");
 
-  // form
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [dial, setDial] = useState("+351");
@@ -154,7 +134,6 @@ function SubscribePage() {
   const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Auto-detect currency
   useEffect(() => {
     try {
       const locale = navigator.language || "pt-PT";
@@ -162,13 +141,10 @@ function SubscribePage() {
       if (region && COUNTRY_TO_CURRENCY[region]) {
         setCurrency(COUNTRY_TO_CURRENCY[region]);
       }
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, []);
 
   const pwScore = useMemo(() => scorePassword(password), [password]);
-  const pwLabels = ["Muito fraca", "Fraca", "Média", "Forte", "Excelente"];
   const pwColors = [
     "bg-destructive",
     "bg-destructive",
@@ -180,15 +156,15 @@ function SubscribePage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name || !email || !password || !phone) {
-      toast.error("Preencha todos os campos");
+      toast.error(t("inscr.err.fields"));
       return;
     }
     if (pwScore < 2) {
-      toast.error("A palavra-passe é demasiado fraca");
+      toast.error(t("inscr.err.weakPw"));
       return;
     }
     if (password !== confirmPassword) {
-      toast.error("As palavras-passe não coincidem");
+      toast.error(t("inscr.err.mismatch"));
       return;
     }
     setLoading(true);
@@ -209,10 +185,10 @@ function SubscribePage() {
         },
       });
       if (error) throw error;
-      toast.success("Conta criada! Verifique o seu email para confirmar.");
+      toast.success(t("inscr.ok"));
       navigate({ to: "/app" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao criar conta");
+      toast.error(err instanceof Error ? err.message : t("inscr.err.generic"));
     } finally {
       setLoading(false);
     }
@@ -220,39 +196,37 @@ function SubscribePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
       <header className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
+        <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between gap-3">
           <Link to="/" className="font-bold text-lg">Hostlyb</Link>
-          <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground">
-            Já tem conta? Entrar
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageSelector compact />
+            <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground">
+              {t("inscr.haveAccount")}
+            </Link>
+          </div>
         </div>
       </header>
 
-      {/* Trial banner */}
       <div className="bg-primary/10 border-b border-primary/20">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-center gap-2 text-sm">
-          <Gift className="h-4 w-4 text-primary" />
-          <span><strong>14 dias grátis</strong> — sem cartão de crédito, cancela quando quiser.</span>
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-center gap-2 text-sm text-center">
+          <Gift className="h-4 w-4 text-primary flex-shrink-0" />
+          <span>{t("inscr.banner")}</span>
         </div>
       </div>
 
       <main className="mx-auto max-w-7xl px-4 py-12 space-y-16">
-        {/* Hero */}
         <section className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Escolha o plano ideal para si
+            {t("inscr.heroTitle")}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Todas as funcionalidades, em todos os planos. Pague apenas pelo nível de suporte e tamanho da operação.
+            {t("inscr.heroSubtitle")}
           </p>
 
-          {/* Controls */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            {/* Currency */}
             <div className="flex items-center gap-2">
-              <label className="text-sm text-muted-foreground">Moeda:</label>
+              <label className="text-sm text-muted-foreground">{t("inscr.currency")}</label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
@@ -264,7 +238,6 @@ function SubscribePage() {
               </select>
             </div>
 
-            {/* Cycle toggle */}
             <div className="inline-flex items-center rounded-full border border-border bg-card p-1">
               <button
                 type="button"
@@ -273,7 +246,7 @@ function SubscribePage() {
                   cycle === "monthly" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
-                Mensal
+                {t("inscr.monthly")}
               </button>
               <button
                 type="button"
@@ -282,18 +255,17 @@ function SubscribePage() {
                   cycle === "annual" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
-                Anual
+                {t("inscr.annual")}
                 <span className="rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs px-2 py-0.5 font-semibold">
-                  -20%
+                  {t("inscr.save20")}
                 </span>
               </button>
             </div>
           </div>
         </section>
 
-        {/* Plans */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PLANS_I18N.map((plan) => {
+          {PLANS.map((plan) => {
             const isSelected = selectedPlan === plan.id;
             return (
               <button
@@ -308,7 +280,7 @@ function SubscribePage() {
               >
                 {plan.highlighted && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                    <Sparkles className="h-3 w-3" /> Mais popular
+                    <Sparkles className="h-3 w-3" /> {t("inscr.mostPopular")}
                   </div>
                 )}
                 <div className="space-y-1">
@@ -318,13 +290,13 @@ function SubscribePage() {
                 <div className="mt-6">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold">
-                      {formatPrice(plan.basePrice, currency, cycle)}
+                      {formatPrice(plan.basePrice, currency, cycle, numberLocale)}
                     </span>
-                    <span className="text-sm text-muted-foreground">/mês</span>
+                    <span className="text-sm text-muted-foreground">{t("inscr.perMonth")}</span>
                   </div>
                   {cycle === "annual" && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Faturado anualmente
+                      {t("inscr.billedAnnually")}
                     </p>
                   )}
                 </div>
@@ -343,51 +315,50 @@ function SubscribePage() {
                       : "bg-secondary text-secondary-foreground"
                   }`}
                 >
-                  {isSelected ? (t("signup.selectPlan") || "Selecionado") : (t("signup.selectPlan") || "Selecionar plano")}
+                  {isSelected ? t("inscr.selected") : t("inscr.selectPlan")}
                 </div>
               </button>
             );
           })}
         </section>
 
-        {/* Signup form */}
         <section className="max-w-xl mx-auto rounded-2xl border border-border bg-card p-8 space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold">{t("signup.createAccount") || "Criar a sua conta"}</h2>
+            <h2 className="text-2xl font-bold">{t("inscr.createAccount")}</h2>
             <p className="text-sm text-muted-foreground">
-              {t("signup.selectPlan") || "Plano selecionado"}:{" "}
-              <strong>{PLANS_I18N.find((p) => p.id === selectedPlan)?.name}</strong> ·{" "}
-              {formatPrice(PLANS_I18N.find((p) => p.id === selectedPlan)!.basePrice, currency, cycle)}/mês
+              {t("inscr.planSelected")}:{" "}
+              <strong>{PLANS.find((p) => p.id === selectedPlan)?.name}</strong> ·{" "}
+              {formatPrice(PLANS.find((p) => p.id === selectedPlan)!.basePrice, currency, cycle, numberLocale)}{t("inscr.perMonth")}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">{t("signup.fullName") || "Nome completo"}</label>
+              <label className="text-sm font-medium">{t("inscr.fullName")}</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                placeholder="O seu nome"
+                placeholder={t("inscr.fullNamePh")}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">{t("signup.email") || "Email"}</label>
+              <label className="text-sm font-medium">{t("inscr.email")}</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                placeholder="voce@exemplo.com"
+                placeholder={t("inscr.emailPh")}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">{t("signup.phone") || "Telemóvel"}</label>
+              <label className="text-sm font-medium">{t("inscr.phone")}</label>
               <div className="flex gap-2">
                 <select
                   value={dial}
@@ -406,17 +377,17 @@ function SubscribePage() {
                   onChange={(e) => setPhone(e.target.value)}
                   required
                   className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  placeholder="912 345 678"
+                  placeholder={t("inscr.phonePh")}
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">{t("signup.password") || "Palavra-passe"}</label>
+              <label className="text-sm font-medium">{t("inscr.password")}</label>
               <PasswordField
                 value={password}
                 onChange={setPassword}
-                placeholder="Mínimo 8 caracteres"
+                placeholder={t("inscr.passwordPh")}
               />
               {password && (
                 <div className="space-y-1 pt-1">
@@ -431,21 +402,21 @@ function SubscribePage() {
                     ))}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Força: {pwLabels[pwScore]}
+                    {t("inscr.strength")}: {t(`inscr.strength.${pwScore}`)}
                   </p>
                 </div>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">{t("signup.confirmPassword") || "Confirmar palavra-passe"}</label>
+              <label className="text-sm font-medium">{t("inscr.confirmPassword")}</label>
               <PasswordField
                 value={confirmPassword}
                 onChange={setConfirmPassword}
-                placeholder="Repita a palavra-passe"
+                placeholder={t("inscr.confirmPasswordPh")}
               />
               {confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-destructive">As palavras-passe não coincidem</p>
+                <p className="text-xs text-destructive">{t("inscr.pwMismatch")}</p>
               )}
             </div>
 
@@ -454,20 +425,19 @@ function SubscribePage() {
               disabled={loading}
               className="w-full rounded-md bg-primary text-primary-foreground font-medium py-2.5 text-sm hover:opacity-90 transition disabled:opacity-50"
             >
-              {loading ? (t("signup.submitting") || "A criar conta...") : (t("signup.submit") || "Começar 14 dias grátis")}
+              {loading ? t("inscr.submitting") : t("inscr.submit")}
             </button>
 
             <p className="text-xs text-center text-muted-foreground">
-              Ao criar conta concorda com os{" "}
-              <Link to="/trust" className="underline">Termos</Link> e a{" "}
-              <Link to="/trust" className="underline">Política de Privacidade</Link>.
+              {t("inscr.termsPre")}{" "}
+              <Link to="/trust" className="underline">{t("inscr.terms")}</Link> {t("inscr.termsAnd")}{" "}
+              <Link to="/trust" className="underline">{t("inscr.privacy")}</Link>.
             </p>
           </form>
         </section>
 
-        {/* FAQ */}
         <section className="max-w-2xl mx-auto space-y-4">
-          <h2 className="text-2xl font-bold text-center">Perguntas frequentes</h2>
+          <h2 className="text-2xl font-bold text-center">{t("inscr.faqTitle")}</h2>
           <div className="space-y-2">
             {FAQ.map((item, i) => {
               const isOpen = openFaq === i;
@@ -497,7 +467,7 @@ function SubscribePage() {
 
       <footer className="border-t border-border mt-16">
         <div className="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Hostlyb. Todos os direitos reservados.
+          {t("footer.rights")}
         </div>
       </footer>
     </div>
