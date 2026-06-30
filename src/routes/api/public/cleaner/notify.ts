@@ -87,6 +87,14 @@ export const Route = createFileRoute("/api/public/cleaner/notify")({
         // Generate a signed URL for the photo (24h) if provided
         let photoUrl: string | undefined;
         if (body.bucket && body.path) {
+          // Ensure the path belongs to this job's access token to prevent
+          // cross-job file access/deletion via the service-role client.
+          if (!body.path.startsWith(`${body.token}/`)) {
+            return Response.json(
+              { error: "Path does not belong to this job" },
+              { status: 403 }
+            );
+          }
           const { data: signed } = await admin.storage
             .from(body.bucket)
             .createSignedUrl(body.path, 60 * 60 * 24);
