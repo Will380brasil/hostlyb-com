@@ -9,6 +9,7 @@ import forgottenPhone from "@/assets/forgotten-phone.jpg";
 import forgottenKeys from "@/assets/forgotten-keys.jpg";
 import forgottenToy from "@/assets/forgotten-toy.jpg";
 import forgottenWallet from "@/assets/forgotten-wallet.jpg";
+import heroPoster from "@/assets/hero-poster.jpg";
 
 const FORGOTTEN_ITEMS = [
   { src: forgottenPhone, label: "Telemóvel · Quarto" },
