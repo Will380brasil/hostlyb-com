@@ -34,11 +34,14 @@ const COUNTRIES = [
   { code: "CL", flag: "🇨🇱", dial: "+56" },
 ];
 
-const PLAN_OPTIONS: Array<{ id: SignupPlan; name: string; price: string; description: string; features: string[] }> = [
-  { id: "free", name: "Grátis", price: "R$ 0", description: "Para começar agora", features: ["1 imóvel", "Agenda básica"] },
-  { id: "pro", name: "Pro", price: "R$ 59,90/mês", description: "Mais controle da operação", features: ["Mais imóveis", "iCal e alertas"] },
-  { id: "premium", name: "Premium", price: "Plano completo", description: "Para operações maiores", features: ["Recursos avançados", "Gestão completa"] },
-];
+function getPlanOptions(t: (k: string) => string): Array<{ id: SignupPlan; name: string; price: string; description: string; features: string[] }> {
+  return [
+    { id: "free",    name: t("signup.plan.free.name"),    price: t("signup.plan.free.price"),    description: t("signup.plan.free.desc"),    features: [t("signup.plan.free.f1"), t("signup.plan.free.f2")] },
+    { id: "pro",     name: t("signup.plan.pro.name"),     price: "R$ 59,90/mês",                  description: t("signup.plan.pro.desc"),     features: [t("signup.plan.pro.f1"), t("signup.plan.pro.f2")] },
+    { id: "premium", name: t("signup.plan.premium.name"), price: t("signup.plan.premium.price"), description: t("signup.plan.premium.desc"), features: [t("signup.plan.premium.f1"), t("signup.plan.premium.f2")] },
+  ];
+}
+
 
 function SignupPage() {
   const t = useT();
