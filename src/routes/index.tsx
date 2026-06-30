@@ -487,6 +487,8 @@ html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
 .cine-video {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
 }
+.cine-poster { z-index: 0; }
+.cine-video:not(.cine-poster) { z-index: 1; background: #0A0A0A; }
 
 /* Overlays */
 .cine-overlay { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,0.4); }
