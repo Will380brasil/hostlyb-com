@@ -249,6 +249,7 @@ function HeroSection() {
 
 /* ---------------- Section 2: A CHEGADA ---------------- */
 function ArrivalSection() {
+  const t = useT();
   const checkins = useCountUp(100);
   const calls = useCountUp(0);
   return (
@@ -260,21 +261,21 @@ function ArrivalSection() {
       <div className="cine-overlay cine-overlay-soft" />
 
       <div className="cine-content">
-        <p className="cine-time" data-reveal>07:00 — A CHEGADA</p>
+        <p className="cine-time" data-reveal>{t("cine.arrival.time")}</p>
         <h2 className="cine-h2" data-reveal style={{ animationDelay: "0.15s" }}>
-          O hóspede chega.<br />
-          <span className="cine-h2-thin">Tudo impecável. Você nem precisou estar lá.</span>
+          {t("cine.arrival.t1")}<br />
+          <span className="cine-h2-thin">{t("cine.arrival.t2")}</span>
         </h2>
 
         <div className="cine-stats" data-reveal style={{ animationDelay: "0.4s" }}>
           <div className="cine-stat">
             <span className="cine-stat-num" ref={checkins.ref}>{checkins.val}%</span>
-            <span className="cine-stat-label">Check-ins sem stress</span>
+            <span className="cine-stat-label">{t("cine.arrival.stat1")}</span>
           </div>
           <div className="cine-stat-divider" />
           <div className="cine-stat">
             <span className="cine-stat-num" ref={calls.ref}>{calls.val}</span>
-            <span className="cine-stat-label">Chamadas de emergência</span>
+            <span className="cine-stat-label">{t("cine.arrival.stat2")}</span>
           </div>
         </div>
       </div>
@@ -284,6 +285,7 @@ function ArrivalSection() {
 
 /* ---------------- Section 3: O CHECKOUT ---------------- */
 function CheckoutSection() {
+  const t = useT();
   return (
     <section className="cine-section">
       <div className="cine-bg cine-bg-checkout" aria-hidden="true">
@@ -293,17 +295,17 @@ function CheckoutSection() {
       <div className="cine-overlay" />
 
       <div className="cine-content">
-        <p className="cine-time" data-reveal>11:00 — O CHECKOUT</p>
+        <p className="cine-time" data-reveal>{t("cine.checkout.time")}</p>
         <h2 className="cine-h2" data-reveal style={{ animationDelay: "0.15s" }}>
-          O hóspede sai.<br />
-          <span className="cine-h2-thin">O Hostlyb já avisou a faxineira.</span>
+          {t("cine.checkout.t1")}<br />
+          <span className="cine-h2-thin">{t("cine.checkout.t2")}</span>
         </h2>
 
         <div className="cine-notification" data-reveal style={{ animationDelay: "0.5s" }}>
           <div className="cine-notif-icon"><Bell size={18} /></div>
           <div className="cine-notif-body">
-            <div className="cine-notif-title">Hostlyb · agora</div>
-            <div className="cine-notif-text">Checkout concluído no T2 Príncipe Real. Maria foi notificada.</div>
+            <div className="cine-notif-title">{t("cine.checkout.notifTitle")}</div>
+            <div className="cine-notif-text">{t("cine.checkout.notifText")}</div>
           </div>
         </div>
       </div>
@@ -323,10 +325,10 @@ function CleaningSection() {
       <div className="cine-overlay cine-overlay-soft" />
 
       <div className="cine-content">
-        <p className="cine-time" data-reveal>14:00 — A LIMPEZA</p>
+        <p className="cine-time" data-reveal>{t("cine.cleaning.time")}</p>
         <h2 className="cine-h2" data-reveal style={{ animationDelay: "0.15s" }}>
-          Esqueceram algo?<br />
-          <span className="cine-h2-thin">A faxineira fotografa. Você recebe na hora.</span>
+          {t("cine.cleaning.t1")}<br />
+          <span className="cine-h2-thin">{t("cine.cleaning.t2")}</span>
         </h2>
 
         <div className="cine-gallery cine-gallery-real" data-reveal style={{ animationDelay: "0.4s" }}>
@@ -350,6 +352,7 @@ function CleaningSection() {
 
 /* ---------------- Section 5: TRANQUILIDADE (real video) ---------------- */
 function TranquilitySection() {
+  const t = useT();
   return (
     <section className="cine-section">
       <div className="cine-bg cine-bg-tranquility" aria-hidden="true">
@@ -359,15 +362,15 @@ function TranquilitySection() {
       <div className="cine-overlay cine-overlay-strong" />
 
       <div className="cine-content cine-content-center">
-        <p className="cine-eyebrow" data-reveal>O DIA TODO · NO SEU BOLSO</p>
+        <p className="cine-eyebrow" data-reveal>{t("cine.tranq.eyebrow")}</p>
         <h2 className="cine-h2" data-reveal style={{ animationDelay: "0.15s" }}>
-          <span className="cine-h2-thin">Sem WhatsApp.</span><br />
-          <span className="cine-h2-thin">Sem Excel.</span><br />
-          Sem surpresas.
+          <span className="cine-h2-thin">{t("cine.tranq.t1")}</span><br />
+          <span className="cine-h2-thin">{t("cine.tranq.t2")}</span><br />
+          {t("cine.tranq.t3")}
         </h2>
         <p className="cine-sub" data-reveal style={{ animationDelay: "0.4s" }}>
           <Sparkles size={14} style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
-          Tranquilidade que cabe num gesto.
+          {t("cine.tranq.sub")}
         </p>
       </div>
     </section>
@@ -376,6 +379,7 @@ function TranquilitySection() {
 
 /* ---------------- Section 6: CTA ---------------- */
 function CtaSection() {
+  const t = useT();
   return (
     <section className="cine-section cine-section-dark">
       <div className="cine-bg cine-bg-dark" aria-hidden="true">
@@ -383,25 +387,25 @@ function CtaSection() {
       </div>
 
       <div className="cine-content cine-content-center">
-        <p className="cine-eyebrow" data-reveal>RESERVA A SUA TRANQUILIDADE</p>
+        <p className="cine-eyebrow" data-reveal>{t("cine.cta.eyebrow")}</p>
         <h2 className="cine-h1" data-reveal style={{ animationDelay: "0.15s" }}>
-          COMECE<br />
-          <span className="cine-h1-italic">hoje.</span>
+          {t("cine.cta.t1")}<br />
+          <span className="cine-h1-italic">{t("cine.cta.t2")}</span>
         </h2>
         <p className="cine-sub" data-reveal style={{ animationDelay: "0.35s" }}>
-          A partir de <strong style={{ color: "#fff", fontWeight: 600 }}>€19,99/mês</strong> · 14 dias grátis
+          {t("cine.cta.priceFrom")} <strong style={{ color: "#fff", fontWeight: 600 }}>€19,99{t("cine.cta.priceSuffix")}</strong>
         </p>
         <div className="cine-actions" data-reveal style={{ animationDelay: "0.55s" }}>
           <Link to="/signup" className="cine-btn-primary" data-cta-location="cta">
-            Começar agora <ArrowRight size={16} />
+            {t("cine.cta.btn")} <ArrowRight size={16} />
           </Link>
-          <Link to="/inscrever-se" className="cine-btn-ghost-lg">Ver planos</Link>
+          <Link to="/inscrever-se" className="cine-btn-ghost-lg">{t("cine.cta.btn2")}</Link>
         </div>
 
         <div className="cine-footer" data-reveal style={{ animationDelay: "0.8s" }}>
           <span>© {new Date().getFullYear()} Hostlyb</span>
           <span>·</span>
-          <Link to="/trust">Confiança & segurança</Link>
+          <Link to="/trust">{t("cine.footer.trust")}</Link>
           <span>·</span>
           <a href="mailto:support@hostlyb.com">support@hostlyb.com</a>
         </div>
