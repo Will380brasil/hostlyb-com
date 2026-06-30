@@ -15,6 +15,17 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const navigate = useNavigate();
   const { session, loading, signOut } = useAuth();
   const qc = useQueryClient();
+  const t = useT();
+
+  const tabs = [
+    { to: "/app",        label: t("app.tab.dashboard"),  icon: LayoutDashboard },
+    { to: "/imoveis",    label: t("app.tab.properties"), icon: Home },
+    { to: "/limpezas",   label: t("app.tab.cleanings"),  icon: Sparkles },
+    { to: "/hospedes",   label: t("app.tab.guests"),     icon: Users },
+    { to: "/calendario", label: t("app.tab.calendar"),   icon: Calendar },
+    { to: "/financeiro", label: t("app.tab.finance"),    icon: DollarSign },
+  ] as const;
+
 
   const { data: unread = 0 } = useQuery({
     queryKey: ["alerts-unread", session?.user.id],
