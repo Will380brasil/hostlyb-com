@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { DayStatusPanel } from "@/components/DayStatusPanel";
 import { IcalExportCard } from "@/components/IcalExportCard";
+import { useT, useLocale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/calendario")({
   head: () => ({ meta: [{ title: "Calendário — Hostlyb" }, { name: "description", content: "Veja check-ins, check-outs e limpezas." }] }),
@@ -77,6 +78,8 @@ const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","A
 const WEEKDAYS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
 function CalendarPage() {
+  const t = useT();
+  const { lang } = useLocale();
   const today = new Date();
   const [view, setView] = useState<"mes" | "dia">("mes");
   const [cursor, setCursor] = useState(() => { const d = new Date(); d.setDate(1); return d; });
@@ -84,6 +87,7 @@ function CalendarPage() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [shareEv, setShareEv] = useState<Ev | null>(null);
   const [panelDate, setPanelDate] = useState<string | null>(null);
+  const intlLocale = lang === "pt" ? "pt-PT" : lang === "es" ? "es-ES" : "en-GB";
 
   const { data: guests = [] } = useQuery({
     queryKey: ["guests-cal"],
@@ -126,20 +130,20 @@ function CalendarPage() {
   return (
     <AppShell>
       <header className="flex items-center justify-between mb-4 gap-2">
-        <h2 className="text-2xl font-bold">Calendário</h2>
+        <h2 className="text-2xl font-bold">{t("cal.title")}</h2>
         <div className="flex items-center gap-2">
-          <button className="btn-secondary !py-1.5 !px-2.5" title="Exportar Excel" onClick={() => downloadXlsx(events)}><FileSpreadsheet size={14} /></button>
-          <button className="btn-secondary !py-1.5 !px-2.5" title="Exportar .ics" onClick={() => downloadIcs(events)}><Download size={14} /></button>
+          <button className="btn-secondary !py-1.5 !px-2.5" title={t("cal.exportXlsx")} onClick={() => downloadXlsx(events)}><FileSpreadsheet size={14} /></button>
+          <button className="btn-secondary !py-1.5 !px-2.5" title={t("cal.exportIcs")} onClick={() => downloadIcs(events)}><Download size={14} /></button>
         </div>
       </header>
 
       <IcalExportCard />
 
       <div className="flex items-center gap-2 mb-3 text-xs">
-        <button onClick={() => setView("mes")} className={`px-3 py-1.5 rounded-lg ${view === "mes" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>Mês</button>
-        <button onClick={() => setView("dia")} className={`px-3 py-1.5 rounded-lg ${view === "dia" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>Dia</button>
-        <button onClick={() => { const t = new Date(); setCursor(new Date(t.getFullYear(), t.getMonth(), 1)); setSelectedDay(t.toISOString().slice(0, 10)); }}
-          className="ml-auto px-3 py-1.5 rounded-lg bg-secondary">Hoje</button>
+        <button onClick={() => setView("mes")} className={`px-3 py-1.5 rounded-lg ${view === "mes" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>{t("cal.viewMonth")}</button>
+        <button onClick={() => setView("dia")} className={`px-3 py-1.5 rounded-lg ${view === "dia" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>{t("cal.viewDay")}</button>
+        <button onClick={() => { const tt = new Date(); setCursor(new Date(tt.getFullYear(), tt.getMonth(), 1)); setSelectedDay(tt.toISOString().slice(0, 10)); }}
+          className="ml-auto px-3 py-1.5 rounded-lg bg-secondary">{t("cal.today")}</button>
       </div>
 
       {view === "mes" && (
@@ -147,12 +151,12 @@ function CalendarPage() {
           <div className="flex items-center justify-between mb-3">
             <button onClick={() => setCursor(new Date(year, month - 1, 1))} className="p-2 rounded-lg bg-secondary"><ChevronLeft size={16} /></button>
             <button onClick={() => setPickerOpen(true)} className="font-semibold capitalize px-3 py-1 rounded-lg hover:bg-secondary">
-              {MONTHS[month]} {year}
+              {new Date(year, month, 1).toLocaleDateString(intlLocale, { month: "long", year: "numeric" })}
             </button>
             <button onClick={() => setCursor(new Date(year, month + 1, 1))} className="p-2 rounded-lg bg-secondary"><ChevronRight size={16} /></button>
           </div>
           <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-muted-foreground mb-2">
-            {WEEKDAYS.map((d, i) => <div key={i}>{d[0]}</div>)}
+            {Array.from({ length: 7 }, (_, i) => new Date(2024, 0, i).toLocaleDateString(intlLocale, { weekday: "narrow" })).map((d, i) => <div key={i}>{d}</div>)}
           </div>
           <div className="grid grid-cols-7 gap-1">
             {cells.map((d, i) => {
@@ -182,12 +186,12 @@ function CalendarPage() {
           <div className="flex items-center justify-between mb-3">
             <button onClick={() => { const d = new Date(selectedDay); d.setDate(d.getDate() - 1); setSelectedDay(d.toISOString().slice(0, 10)); }} className="p-2 rounded-lg bg-secondary"><ChevronLeft size={16} /></button>
             <button onClick={() => setPickerOpen(true)} className="font-semibold px-3 py-1 rounded-lg hover:bg-secondary capitalize">
-              {new Date(selectedDay + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
+              {new Date(selectedDay + "T12:00:00").toLocaleDateString(intlLocale, { weekday: "long", day: "numeric", month: "long" })}
             </button>
             <button onClick={() => { const d = new Date(selectedDay); d.setDate(d.getDate() + 1); setSelectedDay(d.toISOString().slice(0, 10)); }} className="p-2 rounded-lg bg-secondary"><ChevronRight size={16} /></button>
           </div>
           {dayEvents.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">Nada agendado.</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">{t("cal.nothing")}</p>
           ) : (
             <ul className="flex flex-col gap-2">
               {dayEvents.map((e) => (
@@ -209,9 +213,9 @@ function CalendarPage() {
       )}
 
       <section className="mt-5">
-        <h3 className="font-bold mb-3 text-sm">Próximos eventos</h3>
+        <h3 className="font-bold mb-3 text-sm">{t("cal.upcoming")}</h3>
         {upcoming.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum evento.</p>
+          <p className="text-sm text-muted-foreground">{t("cal.noEvents")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {upcoming.map((e) => (
