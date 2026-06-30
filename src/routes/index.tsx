@@ -145,9 +145,31 @@ export function LandingPage() {
 
 /* ---------------- Section 1: HERO with video ---------------- */
 function HeroSection() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    (v as any).playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    const tryPlay = () => v.play().catch(() => {});
+    tryPlay();
+    const onVis = () => { if (!document.hidden) tryPlay(); };
+    const onTouch = () => { tryPlay(); document.removeEventListener("touchstart", onTouch); document.removeEventListener("click", onTouch); };
+    document.addEventListener("visibilitychange", onVis);
+    document.addEventListener("touchstart", onTouch, { once: true, passive: true });
+    document.addEventListener("click", onTouch, { once: true });
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      document.removeEventListener("touchstart", onTouch);
+      document.removeEventListener("click", onTouch);
+    };
+  }, []);
   return (
     <section className="cine-section">
       <video
+        ref={videoRef}
         className="cine-video"
         src={phoneVideo.url}
         autoPlay
@@ -156,6 +178,8 @@ function HeroSection() {
         playsInline
         preload="auto"
         aria-hidden="true"
+        controls={false}
+        disablePictureInPicture
       />
       <div className="cine-bg-hero-fallback" aria-hidden="true">
         <div className="cine-orb cine-orb-1" />
