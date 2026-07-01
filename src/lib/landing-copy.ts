@@ -68,11 +68,11 @@ export interface LandingCopy {
 /* ============ PT ============ */
 const pt: LandingCopy = {
   loginBtn: "Entrar",
-  ctaPrimary: "Começar grátis — sem cartão",
+  ctaPrimary: "Começar por 1€",
   hero: {
     headline: "Pare de gerir o seu Airbnb pelo WhatsApp.",
     subheadline: "Checkout amanhã. Limpeza agendada. Você dormiu. Enquanto está no café, o Hostlyb cuida do resto — fotos da faxineira no e-mail, alertas antes de cada checkout, calendários sincronizados sozinhos.",
-    cta: "Quero testar 14 dias grátis",
+    cta: "Começar por 1€ no primeiro mês",
     bullets: ["✓ Sem cartão", "✓ Cancele a qualquer momento", "✓ Pronto em 5 minutos"],
     social: "★★★★★ 2.400+ anfitriões em Portugal, Brasil e Europa",
     phoneDashboard: "Painel",
@@ -137,7 +137,7 @@ const pt: LandingCopy = {
       { q: "A minha faxineira não se dá bem com tecnologia.", a: "Recebe um link. Abre o navegador. Tira fotos. Pronto. Sem app. Sem palavra-passe." },
       { q: "E as fotos? Onde ficam?", a: "Vão direto para o seu e-mail em qualidade total. O inbox passa a ser o arquivo — ilimitado, pesquisável, sempre disponível." },
       { q: "Já tenho um Excel que funciona.", a: "O Excel não o avisa de checkouts. Não envia fotos. Não o notifica de avarias." },
-      { q: "É caro?", a: "O plano grátis é permanente — não é teste. O Pro custa menos que uma diária. Cancela com 1 clique se não gostar." },
+      { q: "É caro?", a: "O primeiro mês custa 1€. A partir daí, menos que uma diária. Cancela com 1 clique se não gostar." },
       { q: "E se tiver imóveis em países diferentes?", a: "Funciona em qualquer país, 6 idiomas, moeda local." },
       { q: "Funciona com Airbnb e Booking.com?", a: "Sim. Cola o link iCal de qualquer plataforma — os calendários ficam sincronizados sozinhos." },
     ],
@@ -149,8 +149,8 @@ const pt: LandingCopy = {
   },
   finalCta: {
     title: "3 imóveis. 1 telemóvel. 0 stress.",
-    subtitle: "Grátis para sempre até 1 imóvel. Sem cartão. Sem contrato.",
-    cta: "Começar grátis — sem cartão →",
+    subtitle: "Primeiro mês por 1€. Sem contrato.",
+    cta: "Começar por 1€ →",
     micro: "✓ Pronto em 5 minutos   ✓ Cancele quando quiser   ✓ Usado em 3 continentes",
   },
 };
@@ -158,11 +158,11 @@ const pt: LandingCopy = {
 /* ============ EN ============ */
 const en: LandingCopy = {
   loginBtn: "Login",
-  ctaPrimary: "Start free",
+  ctaPrimary: "Start for €1",
   hero: {
     headline: "Your short-term rental, organized in 2 minutes a day.",
     subheadline: "Stop managing cleanings over WhatsApp, losing track of forgotten items, and not knowing what's happening in your property. Hostlyb gives you full control — without the complexity.",
-    cta: "Start free — no card needed",
+    cta: "Start for €1 — first month",
     bullets: ["✓ Free plan forever", "✓ Cancel anytime", "✓ Setup in 5 minutes"],
     social: "★★★★★ Trusted by 2,400+ hosts in Brazil, USA and Europe",
     phoneDashboard: "Dashboard",
@@ -227,7 +227,7 @@ const en: LandingCopy = {
       { q: "My cleaner is not good with technology.", a: "She gets a link. Opens browser. Takes photos. Done. No app. No password." },
       { q: "What about the photos? Where do they go?", a: "Photos are sent directly to your email in full quality. Your inbox becomes your cleaning archive — unlimited, searchable, always available." },
       { q: "I already have a spreadsheet that works.", a: "A spreadsheet does not alert you about checkouts. Does not send photos. Does not notify you about maintenance issues." },
-      { q: "Is it expensive?", a: "Free plan is permanent — not a trial. Pro costs less than one night's booking. Cancel in 1 click if you do not like it." },
+      { q: "Is it expensive?", a: "First month is just €1. After that, less than one night's booking fee. Cancel in 1 click if you do not like it." },
       { q: "What if I have properties in different countries?", a: "Works in any country, 6 languages, local currency." },
       { q: "Does it work with Airbnb and Booking.com?", a: "Yes. Paste your iCal link from any platform — calendars stay in sync automatically." },
     ],
@@ -239,8 +239,8 @@ const en: LandingCopy = {
   },
   finalCta: {
     title: "Stop putting out fires. Start managing.",
-    subtitle: "Free forever up to 1 property. No card. No contract.",
-    cta: "Start free now →",
+    subtitle: "First month for €1. No contract.",
+    cta: "Start for €1 now →",
     micro: "✓ Setup in 5 minutes   ✓ Cancel anytime   ✓ Used across 3 continents",
   },
 };

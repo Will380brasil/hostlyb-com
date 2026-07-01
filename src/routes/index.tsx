@@ -21,7 +21,7 @@ const FORGOTTEN_ITEMS: Array<{ src: string; key: string }> = [
 ];
 
 const FAQ_ITEMS_SEO = [
-  { q: "Preciso de cartão de crédito para começar?", a: "Não. 14 dias grátis e sem cartão.", qKey: "landing.faq.noCard.q", aKey: "landing.faq.noCard.a" },
+  { q: "Preciso de cartão de crédito para começar?", a: "1€ no primeiro mês, depois preço normal. Sem cartão de crédito exigido.", qKey: "landing.faq.noCard.q", aKey: "landing.faq.noCard.a" },
   { q: "A faxineira precisa de app?", a: "Não. Recebe um link único e acede pelo navegador.", qKey: "landing.faq.cleanerApp.q", aKey: "landing.faq.cleanerApp.a" },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem contrato e sem multa.", qKey: "landing.faq.cancel.q", aKey: "landing.faq.cancel.a" },
 ];

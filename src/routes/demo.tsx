@@ -81,7 +81,7 @@ function DemoPage() {
 
         <div style={{ marginTop: 28, padding: 20, background: "#fff", border: "1px solid #EFEFEF", borderRadius: 16, textAlign: "center" }}>
           <p style={{ fontSize: 14, color: "#616161", marginBottom: 12 }}>
-            Gostou? Crie sua conta e comece com <strong>7 dias grátis</strong>.
+            Gostou? Crie sua conta e comece por <strong>1€ no primeiro mês</strong>.
           </p>
           <Link to={"/signup" as any}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#FF6B6B", color: "#fff", padding: "10px 22px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
@@ -136,7 +136,7 @@ function BlockedScreen() {
         </div>
         <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Demo encerrada</h1>
         <p style={{ color: "#616161", fontSize: 14, marginBottom: 22 }}>
-          Você usou seus <strong>2 acessos gratuitos</strong> à demo. Para continuar, crie sua conta com 7 dias grátis e dados reais.
+          Você usou seus <strong>2 acessos gratuitos</strong> à demo. Para continuar, crie sua conta por 1€ no primeiro mês e tenha dados reais.
         </p>
         <Link to={"/signup" as any}
           style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#FF6B6B", color: "#fff", padding: "14px 28px", borderRadius: 999, fontWeight: 700 }}>

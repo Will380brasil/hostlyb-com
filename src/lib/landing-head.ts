@@ -4,12 +4,12 @@ const OG_IMAGE = `${BASE_URL}/og-cover.jpg`;
 const META_BY_LANG: Record<string, { title: string; description: string; keywords: string }> = {
   pt: {
     title: "Hostlyb | O seu Airbnb, finalmente organizado.",
-    description: "Pare de gerir o seu Airbnb pelo WhatsApp. Fotos de limpeza, alertas e calendário num só sítio. 14 dias grátis.",
+    description: "Pare de gerir o seu Airbnb pelo WhatsApp. Fotos de limpeza, alertas e calendário num só sítio. 1€ no 1.º mês.",
     keywords: "gestão alojamento local, app anfitrião, sincronização airbnb booking, checklist limpeza fotos",
   },
   en: {
     title: "Hostlyb | Your Airbnb, finally organized.",
-    description: "Stop running your Airbnb on WhatsApp. Cleaning photos, alerts, and calendar in one place. 14-day free trial.",
+    description: "Stop running your Airbnb on WhatsApp. Cleaning photos, alerts, and calendar in one place. €1 for the first month.",
     keywords: "short term rental management, vacation rental software, airbnb calendar sync, cleaning checklist",
   },
   fr: { title: "Hostlyb | Votre Airbnb, enfin organisé.", description: "Arrêtez de gérer votre Airbnb sur WhatsApp.", keywords: "gestion location courte durée" },
@@ -99,12 +99,12 @@ export function buildLoginHead() {
 }
 
 const SIGNUP_META: Record<string, { title: string; description: string }> = {
-  pt: { title: "Inscrever-se — Planos Hostlyb", description: "Escolha o plano ideal para sua operação. 14 dias grátis, sem cartão de crédito." },
-  en: { title: "Sign up — Hostlyb Plans", description: "Pick the plan that fits your operation. 14 days free, no credit card." },
-  es: { title: "Inscribirse — Planes Hostlyb", description: "Elige el plan ideal para tu operación. 14 días gratis, sin tarjeta de crédito." },
-  fr: { title: "S'inscrire — Plans Hostlyb", description: "Choisissez le plan idéal pour votre opération. 14 jours gratuits, sans carte." },
-  de: { title: "Registrieren — Hostlyb-Pläne", description: "Wählen Sie den richtigen Plan. 14 Tage kostenlos, keine Kreditkarte." },
-  it: { title: "Iscriviti — Piani Hostlyb", description: "Scegli il piano ideale. 14 giorni gratis, senza carta di credito." },
+  pt: { title: "Inscrever-se — Planos Hostlyb", description: "Escolha o plano ideal para sua operação. 1€ no 1.º mês, sem contrato." },
+  en: { title: "Sign up — Hostlyb Plans", description: "Pick the plan that fits your operation. €1 for the first month, no contract." },
+  es: { title: "Inscribirse — Planes Hostlyb", description: "Elige el plan ideal para tu operación. 1€ el primer mes, sin permanencia." },
+  fr: { title: "S'inscrire — Plans Hostlyb", description: "Choisissez le plan idéal pour votre opération. 1€ le premier mois, sans engagement." },
+  de: { title: "Registrieren — Hostlyb-Pläne", description: "Wählen Sie den richtigen Plan. 1€ im ersten Monat, kein Vertrag." },
+  it: { title: "Iscriviti — Piani Hostlyb", description: "Scegli il piano ideale. 1€ il primo mese, senza contratto." },
 };
 
 export function buildSignupHead() {

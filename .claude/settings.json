@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$git = 'C:\\Users\\User\\AppData\\Local\\GitHubDesktop\\app-3.6.1\\resources\\app\\git\\cmd\\git.exe'; Set-Location 'c:\\Users\\User\\Documents\\GitHub\\hostlyb-com'; & $git add -A; & $git diff --cached --quiet; if ($LASTEXITCODE -ne 0) { & $git commit -m 'auto: sync'; & $git pull --rebase origin main; & $git push origin main } 2>$null",
+            "timeout": 60,
+            "statusMessage": "Syncing to GitHub..."
+          }
+        ]
+      }
+    ]
+  }
+}
