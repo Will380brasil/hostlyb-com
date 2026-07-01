@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
 
 const ALLOWED_PRICES = new Set([
+  // Starter v3 (current)
+  "starter_v3_monthly_brl", "starter_v3_monthly_eur", "starter_v3_monthly_usd", "starter_v3_monthly_gbp",
   // Pro v3 (current)
   "pro_v3_monthly_brl", "pro_v3_monthly_eur", "pro_v3_monthly_usd", "pro_v3_monthly_gbp",
   // Premium v3 (current)

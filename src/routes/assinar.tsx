@@ -145,7 +145,7 @@ function SubscribePage() {
         ) : isActive ? (
           <div className="rounded-lg border p-6 space-y-3">
             <div className="text-sm uppercase tracking-wide text-muted-foreground">Plano atual</div>
-            <div className="text-xl font-semibold">{subscription?.price_id?.startsWith("premium") ? "Hostlyb Premium" : "Hostlyb Pro"}</div>
+            <div className="text-xl font-semibold">{subscription?.price_id?.startsWith("premium") ? "Hostlyb Premium" : subscription?.price_id?.startsWith("starter") ? "Hostlyb Starter" : "Hostlyb Professional"}</div>
             <div className="text-sm">
               Status: <span className="font-medium">{subscription?.status}</span>
               {subscription?.current_period_end && (
